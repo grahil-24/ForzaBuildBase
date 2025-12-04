@@ -1,0 +1,14 @@
+{
+  "extends": "@tsconfig/node22/tsconfig.json",
+  "compilerOptions": {
+    "outDir": "./dist",
+    "rootDir": "./src",
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
+    "lib": [
+      "dom.iterable", "dom", "es5", "es6"
+    ]
+  },
+  "include": ["**/*.ts"],
+  "exclude": ["dist"],
+}
