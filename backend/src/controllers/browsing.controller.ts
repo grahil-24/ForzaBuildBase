@@ -8,8 +8,7 @@ export const getCars = async (req: Request, res: Response): Promise<void> => {
   const limit: number = 20; 
   const page: number = Number(req.query.page) || 1;
   const offset: number = (page - 1) * limit;
-
-  console.log("req.query ", req.query);
+  const search: string | undefined = String(req.query.search);
 
   // Helper to parse comma-separated strings into arrays
   const parseArrayParam = (param: unknown): string[] | undefined => {
@@ -43,12 +42,17 @@ export const getCars = async (req: Request, res: Response): Promise<void> => {
     res.status(500).json({ error: "Entity manager not available" });
     return;
   }
-
-  const [cars, count] = await em.findAndCount(Car, filters, {
-    limit, 
-    offset
-  });
-
+  let cars: Car[] = [];
+  let count: number = 0;
+  if(!search || search === 'undefined'){
+    [cars, count] = await em.findAndCount(Car, filters, {
+      limit, 
+      offset,
+      exclude: ['Vehicle']
+    });
+  }else{
+    [cars, count] = await em.findAndCount(Car, {...filters, Vehicle: {$fulltext: search}}, {limit, offset, exclude: ['Vehicle']})
+  }
   res.json({ 
     cars, 
     total: count, 

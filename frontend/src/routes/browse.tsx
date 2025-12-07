@@ -11,6 +11,7 @@ interface BrowseSearch {
   rank?: string[]
   drivetrain?: string[]
   fuel_type?: string[] 
+  search?: string
 }
 
 interface LoaderData {
@@ -33,6 +34,7 @@ export const Route = createFileRoute('/browse')({
       rank: parseArrayParam(search?.rank),
       drivetrain: parseArrayParam(search?.drivetrain),
       fuel_type: parseArrayParam(search?.fuel_type),
+      search: search.search ? search.search as string : undefined
     };
   },
   preload: true,
@@ -52,9 +54,7 @@ const fetchCars = async (location: ParsedLocation): Promise<LoaderData> => {
     }
   });
 
-  const queryString = params.toString();
-  console.log("Query string: ", queryString);
-  
+  const queryString = params.toString();  
   const res = await fetch(`http://localhost:9000/browse?${queryString}`);
   if (!res.ok) throw new Error('Failed to fetch cars');
   const data = await res.json();
@@ -66,6 +66,7 @@ function BrowseComponent(): React.ReactElement {
   const search = Route.useSearch();
   const page = search.page ?? 1;
   const [pageInputField, setPageInputField] = useState<number>(page);
+  const [searchBarText, setSearchBarText] = useState<string>("");
   
   useEffect(()=> {
     setPageInputField(page);
@@ -79,6 +80,14 @@ function BrowseComponent(): React.ReactElement {
       search: { ...search, page: newPage } 
     });
   };
+
+  const handleSearchbar = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchBarText(e.target.value);
+  }
+
+  const handleSearch = () => {
+    navigate({to: '/browse', search: {search: searchBarText, page: 1}})
+  }
 
   const handlePageInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setPageInputField(Number(e.target.value));
@@ -96,7 +105,7 @@ function BrowseComponent(): React.ReactElement {
       <div className='relative flex flex-col md:flex-row items-center justify-center px-6 pt-5 gap-4'>
         <p className='text-xl pt-5'>Showing {total} results</p>
         <div className='md:absolute md:right-6'>
-          <Searchbar />
+          <Searchbar handleSearchbar={handleSearchbar} handleSearch={handleSearch}/>
         </div>
       </div>
       <div className='flex gap-6 p-6'>

@@ -1,4 +1,4 @@
-import { Entity, PrimaryKey, Property } from '@mikro-orm/core';
+import { Entity, PrimaryKey, Property, Index } from '@mikro-orm/core';
 
 @Entity({ tableName: 'cars' })
 export class Car {
@@ -67,4 +67,8 @@ export class Car {
 
   @Property ({length: 100, nullable: true, type: "varchar"})
   image_filename?: string | null;
+
+  @Index({type: 'fulltext'})
+  @Property({length: 200, nullable: false, type: "varchar"})
+  Vehicle!: string;
 }

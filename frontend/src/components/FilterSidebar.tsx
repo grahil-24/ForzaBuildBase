@@ -45,6 +45,7 @@ const FilterSidebar = () => {
   const [filtersOpen, setFiltersOpen] = useState<boolean>(false)
   const navigate = useNavigate();
   const currentSearch = useSearch({ from: '/browse' });
+  const searchQuery: string | undefined = currentSearch.search;
   const [selected, setSelected] = useState<{[key: string]: string[]}>({}); 
   
   // Initialize selected state from URL params
@@ -76,7 +77,7 @@ const FilterSidebar = () => {
   const applyFilters = (e: React.FormEvent) => {
     e.preventDefault();
     
-    const searchParams: Record<string, string[] | number> = { page: 1 };
+    const searchParams: Record<string, string[] | number | string> = { page: 1 };
     
     // Add non-empty filter arrays
     Object.entries(selected).forEach(([key, values]) => {
@@ -84,9 +85,10 @@ const FilterSidebar = () => {
         searchParams[key] = values;
       }
     });
-    
-    console.log("Applying filters: ", searchParams);
-    navigate({ to: '/browse', search: searchParams });
+    if(searchQuery !== undefined){
+      searchParams.search = searchQuery;
+    }
+    navigate({ to: '/browse', search: searchParams});
     setFiltersOpen(false);
   }
 
