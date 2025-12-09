@@ -11,6 +11,7 @@ interface BrowseSearch {
   rank?: string[]
   drivetrain?: string[]
   fuel_type?: string[] 
+  manufacturer?: string[]
   search?: string
 }
 
@@ -34,6 +35,7 @@ export const Route = createFileRoute('/browse')({
       rank: parseArrayParam(search?.rank),
       drivetrain: parseArrayParam(search?.drivetrain),
       fuel_type: parseArrayParam(search?.fuel_type),
+      manufacturer: parseArrayParam(search?.manufacturer),
       search: search.search ? search.search as string : undefined
     };
   },
@@ -69,6 +71,7 @@ function BrowseComponent(): React.ReactElement {
   const [searchBarText, setSearchBarText] = useState<string>("");
   
   useEffect(()=> {
+    window.scrollTo(0, 0);
     setPageInputField(page);
   }, [page]);
 
@@ -103,13 +106,13 @@ function BrowseComponent(): React.ReactElement {
     <div className="w-full">
       <Nav />
       <div className='relative flex flex-col md:flex-row items-center justify-center px-6 pt-5 gap-4'>
-        <p className='text-xl pt-5'>Showing {total} results</p>
+        <p className='text-lg pt-5'>Showing {total} results</p>
         <div className='md:absolute md:right-6'>
           <Searchbar handleSearchbar={handleSearchbar} handleSearch={handleSearch}/>
         </div>
       </div>
       <div className='flex gap-6 p-6'>
-        <aside>
+        <aside className='-mt-10'>
           <FilterSidebar />
         </aside>
         <div className="flex-1 pt-10">
