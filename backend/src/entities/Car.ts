@@ -62,9 +62,6 @@ export class Car {
   @Property({ length: 10 , type: "varchar"})
   Rank!: string;
 
-  // @Property({ length: 100, type: "varchar"})
-  // Vehicle!: string;
-
   @Property ({length: 100, nullable: true, type: "varchar"})
   image_filename?: string | null;
 
