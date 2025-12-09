@@ -1,4 +1,5 @@
 type RankType = "S2" | "S1" | "A" | "B" | "C" | "D"; 
+type DrivetrainType = "AWD" | "RWD" | "FWD";
 
 interface Car {
   id: number
@@ -7,6 +8,7 @@ interface Car {
   Model: string
   Manufacturer: string
   Rank: RankType
+  Drivetrain: DrivetrainType
 }
 
 export type {RankType, Car};
