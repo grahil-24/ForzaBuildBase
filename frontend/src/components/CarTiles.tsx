@@ -1,5 +1,5 @@
 import type React from "react";
-import type { Car , RankType} from "../types/car";
+import type { Car , RankType, DrivetrainType} from "../types/car";
 
 const rank_to_color: Record<RankType, string> = {
   S2: "text-blue-800",
@@ -10,7 +10,9 @@ const rank_to_color: Record<RankType, string> = {
   D: "text-cyan-300"
 }
 
-const drivetrainSVG = (drivetrain: "AWD" | "RWD" | "FWD"): React.ReactElement => {
+const s3_bucket_url = import.meta.env.VITE_S3_BUCKET;
+
+const drivetrainSVG = (drivetrain: DrivetrainType): React.ReactElement => {
   if(drivetrain === 'RWD'){
     return <svg width="30px" height="30px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
       <g transform="rotate(270 12 12)">
@@ -54,7 +56,7 @@ const drivetrainSVG = (drivetrain: "AWD" | "RWD" | "FWD"): React.ReactElement =>
 const CarTile = ({car}: {car: Car}): React.ReactElement => {
     const manufacturerImg = car.Manufacturer.replace(/ /g, '_');
     const image_filename = car.image_filename ? car.image_filename.replace(/ /g, '_') : null;
-    const imageUrl = `https://fh5-car-images.s3.ap-south-1.amazonaws.com/images/${car.image_filename ? manufacturerImg: 'Default'}/${car.image_filename ? image_filename : 'default_car.png'}`;
+    const imageUrl = `${s3_bucket_url}/${car.image_filename ? manufacturerImg: 'Default'}/${car.image_filename ? image_filename : 'default_car.png'}`;
     const rank_color: string = rank_to_color[car.Rank];
 
     return (

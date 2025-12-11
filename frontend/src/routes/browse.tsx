@@ -6,6 +6,8 @@ import React, { useEffect, useState } from 'react';
 import type {Car} from '../types/car';
 import Searchbar from '../components/Searchbar';
 
+const BACKEND = import.meta.env.VITE_BACKEND;
+
 interface BrowseSearch {
   page?: number,
   rank?: string[]
@@ -57,7 +59,7 @@ const fetchCars = async (location: ParsedLocation): Promise<LoaderData> => {
   });
 
   const queryString = params.toString();  
-  const res = await fetch(`http://localhost:9000/browse?${queryString}`);
+  const res = await fetch(`${BACKEND}/browse?${queryString}`);
   if (!res.ok) throw new Error('Failed to fetch cars');
   const data = await res.json();
   return data as LoaderData;

@@ -11,4 +11,4 @@ interface Car {
   Drivetrain: DrivetrainType
 }
 
-export type {RankType, Car};
+export type {RankType, Car, DrivetrainType};
