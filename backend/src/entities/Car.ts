@@ -1,12 +1,12 @@
-import { Entity, PrimaryKey, Property, Index } from '@mikro-orm/core';
+import { Entity, PrimaryKey, Property, Index, SmallIntType, IntegerType, TinyIntType } from '@mikro-orm/core';
 
 @Entity({ tableName: 'cars' })
 export class Car {
   @PrimaryKey({type: "int"})
-  id!: number;
+  id!: IntegerType;
 
   @Property({type: "smallint"})
-  Year!: number;
+  Year!: SmallIntType;
 
   @Property({length: 60, type: "varchar"})
   Manufacturer!: string; 
@@ -30,16 +30,16 @@ export class Car {
   FuelType!: string;
 
   @Property({type: "smallint"})
-  Horsepower!: number;
+  Horsepower!: SmallIntType;
 
   @Property({fieldName: "Torque (ft-lb)", type:"smallint"})
-  Torque!: number;
+  Torque!: SmallIntType;
 
   @Property({fieldName: "Weight (lb)", type: "smallint"})
-  Weight!: number;
+  Weight!: SmallIntType;
 
   @Property({fieldName: "Front%", type: "tinyint"})
-  FrontPercent!: number;
+  FrontPercent!: TinyIntType;
 
   @Property({type: "decimal", precision: 3, scale: 1})
   Speed!: string;
