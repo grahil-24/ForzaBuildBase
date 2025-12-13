@@ -11,4 +11,5 @@
   },
   "include": ["**/*.ts"],
   "exclude": ["dist"],
+  "files": ["./src/types.d.ts"]
 }
