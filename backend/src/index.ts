@@ -4,8 +4,11 @@ import { MikroORM, RequestContext } from "@mikro-orm/mysql";
 // import { QueryError } from "mysql2";
 import cookieParser from 'cookie-parser';
 import browseCarsRouter from './routes/browseCar.routes';
+import authRouter from './routes/auth.routes';
 import 'reflect-metadata';
 import mikroOrmConfig from "./config/mikro-orm.config";
+import { globalErrorHandler } from "./middlewares/errorHandler";
+import { AppError } from "./utils/AppError";
 import cors from 'cors';
 
 const app = express();
@@ -27,9 +30,13 @@ async function start(){
 
     app.use('/browse', browseCarsRouter);
 
-    app.get("/", (req, res) => {
-        res.send("Hello World!");
+    app.use("/auth", authRouter);
+
+    app.all('/*path', (req, res, next) => {
+        next(new AppError(`Can't find ${req.originalUrl} on this server!`, 404));
     });
+
+    app.use(globalErrorHandler);
 
     app.listen(port, () => {
         console.log(`Example app listening on port ${port}`);
@@ -38,9 +45,4 @@ async function start(){
 }
 
 start();
-// connection.connect((err: QueryError | null) => {
-//     if(err){
-//         console.error(err.message);
-//     }
-// });
 
