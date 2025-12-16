@@ -14,9 +14,13 @@ import cors from 'cors';
 const app = express();
 const port: string = process.env.PORT ?? '3000';
 
-app.use(cors());
-app.use(express.json());
+app.use(cors({
+    origin: `${process.env.FRONTEND}`,
+    credentials: true
+}));
 app.use(cookieParser());
+app.use(express.json());
+
 
 export let orm: MikroORM;
 
