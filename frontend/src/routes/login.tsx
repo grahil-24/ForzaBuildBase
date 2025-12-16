@@ -1,11 +1,49 @@
-import { createFileRoute } from '@tanstack/react-router'
+import { createFileRoute, redirect } from '@tanstack/react-router'
 import type React from 'react'
+import { useState } from 'react';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import {faEyeSlash} from '@fortawesome/free-solid-svg-icons'
+import { faEye } from '@fortawesome/free-solid-svg-icons';
 
 export const Route = createFileRoute('/login')({
+  validateSearch: (search) => ({
+    redirect: (search.redirect as string) || '/dashboard'
+  }),
+  beforeLoad: ({context, search}) => {
+    //redirect if already authenticated
+    if(context.auth.isAuthenticated){
+      throw redirect({to: search.redirect});
+    }
+  },
   component: Login,
 })
 
 function Login(): React.ReactElement {
+
+  const {auth} = Route.useRouteContext();
+  const {redirect} = Route.useSearch();
+  const navigate = Route.useNavigate();
+  const [email, setEmail] = useState<string>('');
+  const [password, setPassword] = useState<string>('');
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [error, setError] = useState('');
+  const [showPassword, setShowPassword] = useState<boolean>(false);
+
+  const handleSubmit = async(e: React.FormEvent) => {
+    e.preventDefault();
+    setIsLoading(true);
+    setError('')
+
+    try {
+      await auth.login(email, password);
+      navigate({to: redirect as never})
+    }catch(err){
+      setError('Invalid email or password');
+    }finally{
+      setIsLoading(false);
+    }
+  }
+
   return (
     <>
       <div className="flex min-h-full flex-col justify-center px-6 py-12 lg:px-8">
@@ -21,7 +59,8 @@ function Login(): React.ReactElement {
         </div>
 
         <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
-          <form action="#" method="POST" className="space-y-6">
+          {error && <div className="pb-2 bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">{error}</div>}
+          <form onSubmit={handleSubmit} className="space-y-6">
             <div>
               <label htmlFor="email" className="block text-sm/6 font-medium text-gray-900">
                 Email address
@@ -29,6 +68,7 @@ function Login(): React.ReactElement {
               <div className="mt-2">
                 <input
                   id="email"
+                  onChange={(e) => setEmail(e.target.value)}
                   name="email"
                   type="email"
                   required
@@ -49,24 +89,28 @@ function Login(): React.ReactElement {
                   </a>
                 </div>
               </div>
-              <div className="mt-2">
+              <div className="mt-2 relative">
                 <input
                   id="password"
+                  onChange={(e) => setPassword(e.target.value)}
                   name="password"
-                  type="password"
+                  type={showPassword ? 'text' : 'password'}
                   required
                   autoComplete="current-password"
                   className="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"
                 />
+                <div className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 cursor-pointer">
+                  <FontAwesomeIcon className="cursor-pointer" onClick={() => setShowPassword(prev => !prev)} icon={showPassword ? faEyeSlash : faEye} />
+                </div>
               </div>
             </div>
 
             <div>
               <button
                 type="submit"
-                className="flex w-full justify-center rounded-md bg-indigo-600 px-3 py-1.5 text-sm/6 font-semibold text-white shadow-xs hover:bg-indigo-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                className="cursor-pointer flex w-full justify-center rounded-md bg-indigo-600 px-3 py-1.5 text-sm/6 font-semibold text-white shadow-xs hover:bg-indigo-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
               >
-                Sign in
+                {isLoading ? 'Signing in ...' : 'Sign in'}
               </button>
             </div>
           </form>

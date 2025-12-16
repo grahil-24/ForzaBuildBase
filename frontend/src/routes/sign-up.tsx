@@ -1,8 +1,19 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, redirect } from "@tanstack/react-router";
 import type React from "react";
 import { useState } from "react";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faEye, faEyeSlash } from "@fortawesome/free-solid-svg-icons";
 
 export const Route = createFileRoute('/sign-up')({
+    validateSearch: (search)=> ({
+        redirect: (search.redirect as string) || '/dashboard'
+    }),
+    beforeLoad: ({context, search}) => {
+        //redirect if already authenticated
+        if(context.auth.isAuthenticated){
+            throw redirect({to: search.redirect})
+        }
+    },
     component: Signup
 })
 
@@ -33,11 +44,15 @@ const PasswordValidation = {
 }
 
 function Signup(): React.ReactElement {
-
+    const {auth} = Route.useRouteContext();
+    const {redirect} = Route.useSearch();
+    const navigate = Route.useNavigate();
     const [email, setEmail] = useState<string>('');
     const [password, setPassword] = useState<string>('');
+    const [loading, setIsLoading] = useState<boolean>(false);
     const [error, setError] = useState<string>('');
     const [pwdStrength, setPwdStrength] = useState<typeof PasswordValidation>(PasswordValidation);
+    const [showPassword, setShowPassword] = useState<boolean>(false);
 
     const handlePasswordAndStrength = (e: React.ChangeEvent<HTMLInputElement>) => {
         const password = e.target.value;
@@ -56,13 +71,30 @@ function Signup(): React.ReactElement {
         return true;
     }
 
-    const handleSignup = (e: React.FormEvent) => {
+    const handleSignupForm = async (e: React.FormEvent) => {
         e.preventDefault();
         if(!isPasswordValid()){
             setError('Password doesnt meet the criteria!');
             setTimeout(() => {
                 setError('');
             }, 1000)
+        }else{
+            setIsLoading(true);
+            setError('');
+
+            try{
+                await auth.signup(email, password);
+                navigate({to: redirect as never});
+            }catch(err: unknown){
+                console.log(err);
+                if(err instanceof TypeError){
+                    setError('Unable to connect to server. Please check your connection and try again.')
+                }else if(err instanceof Error){
+                    setError(err.message)
+                }
+            }finally{
+                setIsLoading(false);
+            }
         }
     }
 
@@ -82,7 +114,7 @@ function Signup(): React.ReactElement {
             
             <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
             {error && <div className="pb-2 text-red-500">{error}</div>}
-            <form onSubmit={handleSignup} className="space-y-6">
+            <form onSubmit={handleSignupForm} className="space-y-6">
                 <div>
                 <label htmlFor="email" className="block text-sm/6 font-medium text-gray-900">
                     Email address
@@ -105,22 +137,20 @@ function Signup(): React.ReactElement {
                     <label htmlFor="password" className="block text-sm/6 font-medium text-gray-900">
                     Password
                     </label>
-                    <div className="text-sm">
-                    <a href="#" className="font-semibold text-indigo-600 hover:text-indigo-500">
-                        Forgot password?
-                    </a>
-                    </div>
                 </div>
-                <div className="mt-2">
+                <div className="mt-2 relative">
                     <input
                     id="password"
                     name="password"
-                    type="password"
+                    type={showPassword ? 'text' : 'password'}
                     required
                     autoComplete="current-password"
                     className="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"
                     onChange={handlePasswordAndStrength}
                     />
+                    <div className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 cursor-pointer">
+                        <FontAwesomeIcon className="cursor-pointer" onClick={() => setShowPassword(prev => !prev)} icon={showPassword ? faEyeSlash : faEye} />
+                    </div>
                 </div>
                 <div className="pt-2">
                     <ul className="font-light text-sm">
@@ -135,7 +165,7 @@ function Signup(): React.ReactElement {
                     type="submit"
                     className="flex w-full justify-center rounded-md bg-indigo-600 px-3 py-1.5 text-sm/6 font-semibold text-white shadow-xs hover:bg-indigo-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
                 >
-                    Sign up
+                    {loading ? 'Signing up ...' : 'Sign up'}
                 </button>
                 </div>
             </form>
