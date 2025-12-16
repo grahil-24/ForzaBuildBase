@@ -1,11 +1,11 @@
-import {Request, Response} from 'express';
+import {NextFunction, Request, Response} from 'express';
 import { Car } from '../entities/Car';
 import { RequestContext } from '@mikro-orm/mysql'; 
 import { FilterQuery } from '@mikro-orm/core';
 import { AppError } from '../utils/AppError';
 import { catchAsync } from '../utils/catchAsync';
 
-export const getCars = catchAsync(async (req: Request, res: Response): Promise<void> => {
+export const getCars = catchAsync(async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   const filters: FilterQuery<Car> = {};
   const limit: number = 20; 
   const page: number = Number(req.query.page) || 1;
@@ -40,7 +40,7 @@ export const getCars = catchAsync(async (req: Request, res: Response): Promise<v
 
   const em = RequestContext.getEntityManager();
   if (!em) {
-    throw new AppError("Entity manager not available", 500);
+    return next(new AppError("Entity manager not available", 500));
   }
   let cars: Omit<Car, 'Vehicle'>[] = [];
   let count: number = 0;

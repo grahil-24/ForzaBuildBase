@@ -10,16 +10,9 @@ export const globalErrorHandler = (
 ) => {
   // Handle JWT errors
   if (err instanceof JsonWebTokenError) {
-    return res.status(401).json({
+    return res.status(403).json({
       status: 'error',
       message: 'Invalid token. Please log in again.'
-    });
-  }
-
-  if (err instanceof TokenExpiredError) {
-    return res.status(401).json({
-      status: 'error',
-      message: 'Token expired. Please log in again.'
     });
   }
 
