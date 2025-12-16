@@ -9,7 +9,7 @@ import jwt from 'jsonwebtoken';
 import ms from 'ms';
 
 interface JwtPayload {
-    id: string;
+    id: number
 }
 
 const saltRounds: number = 10;
@@ -17,6 +17,8 @@ const saltRounds: number = 10;
 const JWT_EXPIRATION: string = process.env.JWT_EXPIRATION!;
 const JWT_REFRESH_EXPIRATION: string = process.env.JWT_REFRESH_EXPIRATION!;
 const JWT_SECRET: string = process.env.JWT_SECRET!;
+
+// const cookieConfig = 
 
 const hashPassword = async (password: string): Promise<string> => {
     const hashedPassword = await bcrypt.hash(password, saltRounds);
@@ -27,6 +29,27 @@ const signToken = (user_id: number, expires: string): string => {
     return jwt.sign({id: user_id}, JWT_SECRET, {expiresIn: expires as ms.StringValue});
 }
 
+const jwtVerifyPromisifed = (token: string, secret: string, tokenType: 'access' | 'refresh'): Promise<JwtPayload> => {
+    return new Promise((resolve, reject) => {
+        jwt.verify(token, secret, (err, payload) => {
+            if(err){
+                if(err.name === 'TokenExpiredError' && tokenType === 'refresh'){
+                    return reject(new AppError("Not authorized! Please log in", 403));
+                }
+                if(err.name === 'TokenExpiredError' && tokenType === 'access'){
+                    return reject(new AppError("Access token expired!", 401));
+                }
+                reject(err);
+            }else{
+                if(!payload || typeof payload ==='string'){
+                    return reject(new Error("Invalid token payload"));
+                }
+                resolve(payload as JwtPayload);
+            }
+        })
+    })
+}
+
 export const signUp = catchAsync(async (req: Request, res: Response, next: NextFunction): Promise<void> => {
 
     const newUser = new User(req.body.email, req.body.password);
@@ -34,60 +57,107 @@ export const signUp = catchAsync(async (req: Request, res: Response, next: NextF
     const em = RequestContext.getEntityManager();
 
     if (!em) {
-        throw new AppError("Entity manager not available", 500);
+        return next(new AppError("Entity manager not available", 500));
     }
     if(!validateEmail(newUser.email) || !validatePassword(newUser.password)){
-        throw new AppError("password or email dont match criteria", 200);
+        return next(new AppError("password or email dont match criteria", 200));
     }
 
     const fetched_user = await em.findOne(User, {email: newUser.email});
     if(fetched_user){
-        throw new AppError("You have already registered with this email", 400);
+        return next(new AppError("You have already registered with this email", 400));
     }
     newUser.password = await hashPassword(newUser.password);
-    const result: number = Number((await em.insert(newUser)).user_id);
+    const result: number = Number(await em.insert(newUser));
+    console.log("result ", result);
     const accessToken = signToken(result, JWT_EXPIRATION);
     const refreshToken = signToken(result, JWT_REFRESH_EXPIRATION);
     res.cookie('refresh_token', refreshToken, {httpOnly: true, sameSite: "strict", expires: new Date(Date.now() + ms(JWT_REFRESH_EXPIRATION as ms.StringValue))});
-    res.status(201).json({status: "success",message: "user created successfully", access_token: accessToken});
+    res.status(201).json({status: "success",message: "user created successfully", access_token: accessToken, user: {user_id:result}});
 });
 
 export const login = catchAsync(async(req: Request, res: Response, next: NextFunction): Promise<void>=>{
     const user: User = new User(req.body.email, req.body.password);
-
+    console.log("received user ", user);
     const em = RequestContext.getEntityManager();
 
     if (!em) {
-        throw new AppError("Entity manager not available", 500);
+        return next(new AppError("Entity manager not available", 500));
     }
     if(!validateEmail(user.email) || !validatePassword(user.password)){
-        throw new AppError("password or email dont match criteria", 200);
+        return next(new AppError("password or email dont match criteria", 401));
     }
     const userFromDB = await em.findOne(User, {email: {$eq: user.email}});
     if(!userFromDB){
-        throw new AppError("Email or password is incorrect", 401);
+        return next(new AppError("Email or password is incorrect", 401));
     }
     if(!await bcrypt.compare(user.password, userFromDB.password)){
-        throw new AppError("Email or password is incorrect", 401);
+        return next(new AppError("Email or password is incorrect", 401));
     }
     const accessToken = signToken(Number(userFromDB.user_id), JWT_EXPIRATION);
     const refreshToken = signToken(Number(userFromDB.user_id), JWT_REFRESH_EXPIRATION);
     res.cookie('refresh_token', refreshToken, {httpOnly: true, sameSite: "strict", expires: new Date(Date.now() + ms(JWT_REFRESH_EXPIRATION as ms.StringValue))});
-    res.status(200).json({status: "success",message: "logged in successfully", access_token: accessToken});
+    res.status(200).json({status: "success",message: "logged in successfully", access_token: accessToken, user: {user_id:userFromDB.user_id}});
+});
+
+export const refresh = catchAsync(async(req: Request, res: Response, next: NextFunction): Promise<void> => {
+
+    const refreshToken = req.cookies.refresh_token;
+    if(!refreshToken){
+        return next(new AppError("Refresh token invalid! Log in", 403));
+    }
+    const decoded = await jwtVerifyPromisifed(refreshToken, JWT_SECRET, 'refresh');
+    const newRefreshToken = signToken(decoded.id, JWT_REFRESH_EXPIRATION);
+    const newAccessToken = signToken(decoded.id, JWT_EXPIRATION);
+    res.cookie('refresh_token', newRefreshToken, {httpOnly: true, sameSite: "strict", expires: new Date(Date.now() + ms(JWT_REFRESH_EXPIRATION as ms.StringValue))});
+    res.status(200).json({status: "success", message: "tokens refreshed", access_token: newAccessToken, user: {user_id:decoded.id}});
+
 });
 
 export const protect = catchAsync(async(req: Request, res: Response, next: NextFunction): Promise<void> => {
     let token;
     if(req.headers.authorization && req.headers.authorization.startsWith('Bearer')){
         token = req.headers.authorization.split(' ')[1];
-        const decoded = jwt.verify(token, JWT_SECRET) as JwtPayload;
-        req.user_id = Number(decoded.id);
+        const decoded_id: number = (await jwtVerifyPromisifed(token, JWT_SECRET,'access')).id;
+        req.user_id = decoded_id;
         next();
     }else{
-        throw new AppError("Not authorized! Please log in", 401);
+        return next(new AppError("Not authorized! Please log in", 403));
     }
 });
 
+export const verify = catchAsync(async(req: Request, res: Response, next: NextFunction): Promise<void> => {
+    const accessToken:string | undefined = req.headers.authorization?.startsWith('Bearer') ? req.headers.authorization.split(' ')[1] : undefined;
+    const refreshToken:string = req.cookies.refresh_token;
+    console.log("refresh token ", refreshToken);
+    console.log("accessToken ", accessToken);
+    if(!accessToken || !refreshToken){
+        return next(new AppError("Not authorized! Please log in", 403));
+    }else{
+        //check if access token is valid and not expired
+        try {
+            const decoded: JwtPayload = await jwtVerifyPromisifed(accessToken, JWT_SECRET, 'access');
+            res.status(200).json({status: "success", message: "Token is valid", user: {user_id: decoded.id}});
+        }catch(err){
+            //access token is valid but expired. refresh it
+            if(err instanceof AppError && err.statusCode == 401){
+                try {
+                    const decoded: JwtPayload = await jwtVerifyPromisifed(refreshToken, JWT_SECRET, 'refresh');
+                    const newAccessToken = signToken(decoded.id, JWT_EXPIRATION);
+                    const newRefreshToken = signToken(decoded.id, JWT_REFRESH_EXPIRATION);
+                    res.cookie('refresh_token', newRefreshToken, {httpOnly: true, sameSite: "strict", expires: new Date(Date.now() + ms(JWT_REFRESH_EXPIRATION as ms.StringValue))});
+                    res.status(200).json({status: "success", access_token: newAccessToken, message: "Token refreshed successfully!", user: {user_id: decoded.id}});
+                //refresh token is invalid or expired. log user out
+                }catch(refreshTokenErr){
+                    return next(refreshTokenErr);
+                }
+            //access token is invalid. log user out
+            }else{
+                return next(err);
+            }
+        }
+    }
+});
 
 
 
