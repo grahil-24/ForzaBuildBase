@@ -76,6 +76,21 @@ export const signUp = catchAsync(async (req: Request, res: Response, next: NextF
     res.status(201).json({status: "success",message: "user created successfully", access_token: accessToken, user: {user_id:result}});
 });
 
+export const checkUsername = catchAsync(async (req, res, next) => {
+  const em = RequestContext.getEntityManager();
+  if (!em) {
+    return next(new AppError("Entity manager not available", 500));
+  }
+
+  const username = req.query.username as string;
+
+  const user = await em.findOne(User, { username });
+
+  res.status(200).json({
+    available: !user,
+  });
+});
+
 export const login = catchAsync(async(req: Request, res: Response, next: NextFunction): Promise<void>=>{
     const user: User = new User(req.body.email, req.body.password);
     console.log("received user ", user);
