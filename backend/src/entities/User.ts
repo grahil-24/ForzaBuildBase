@@ -12,8 +12,13 @@ export class User{
     @Property({type: "char", length: 60, nullable: false})
     password!:string
 
+    @Unique()
+    @Property({type: "varchar", nullable: false, length: 30})
+    username!:string
+
     constructor(email: string, password: string){
         this.email = email;
         this.password =  password;
     }
+
 } 
