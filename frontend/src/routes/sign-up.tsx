@@ -3,6 +3,7 @@ import type React from "react";
 import { useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEye, faEyeSlash } from "@fortawesome/free-solid-svg-icons";
+import { useUsernameAvailability } from "../hooks/useUsernameAvailability";
 
 export const Route = createFileRoute('/sign-up')({
     validateSearch: (search)=> ({
@@ -49,10 +50,12 @@ function Signup(): React.ReactElement {
     const navigate = Route.useNavigate();
     const [email, setEmail] = useState<string>('');
     const [password, setPassword] = useState<string>('');
+    const [username, setUsername] = useState<string>('');
     const [loading, setIsLoading] = useState<boolean>(false);
     const [error, setError] = useState<string>('');
     const [pwdStrength, setPwdStrength] = useState<typeof PasswordValidation>(PasswordValidation);
     const [showPassword, setShowPassword] = useState<boolean>(false);
+    const {isChecking, isAvailable, isError} = useUsernameAvailability(username);
 
     const handlePasswordAndStrength = (e: React.ChangeEvent<HTMLInputElement>) => {
         const password = e.target.value;
@@ -78,7 +81,7 @@ function Signup(): React.ReactElement {
             setTimeout(() => {
                 setError('');
             }, 1000)
-        }else{
+        }else if(isAvailable && !isError){
             setIsLoading(true);
             setError('');
 
@@ -86,7 +89,6 @@ function Signup(): React.ReactElement {
                 await auth.signup(email, password);
                 navigate({to: redirect as never});
             }catch(err: unknown){
-                console.log(err);
                 if(err instanceof TypeError){
                     setError('Unable to connect to server. Please check your connection and try again.')
                 }else if(err instanceof Error){
@@ -100,7 +102,7 @@ function Signup(): React.ReactElement {
 
     return (
         <>
-        <div className="flex min-h-full flex-col justify-center px-6 py-12 lg:px-8">
+        <div className="flex min-h-full flex-col justify-center px-6 py-6 lg:px-8">
             <div className="sm:mx-auto sm:w-full sm:max-w-sm">
             <img
                 alt="Forza Build Base"
@@ -113,8 +115,41 @@ function Signup(): React.ReactElement {
             </div>
             
             <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
-            {error && <div className="pb-2 text-red-500">{error}</div>}
+            {error && <div className="mb-3 bg-red-100 border border-red-400 text-red-700 px-3 py-2 rounded">{error}</div>}
             <form onSubmit={handleSignupForm} className="space-y-6">
+                <div>
+                <label htmlFor="username" className="block text-sm/6 font-medium text-gray-900">
+                    Username
+                </label>
+                <div className="mt-2">
+                    <input
+                    id="username"
+                    name="username"
+                    type="text"
+                    required
+                    className="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"
+                    onChange={(e) => setUsername(e.target.value)}
+                    />
+                </div>
+                {/* Feedback */}
+                {isChecking && (
+                    <p className="text-sm text-gray-500 mt-1">Checking username…</p>
+                )}
+
+                {isAvailable === false && (
+                    <p className="text-sm text-red-500 mt-1">Username already taken</p>
+                )}
+
+                {isAvailable === true && (
+                    <p className="text-sm text-green-600 mt-1">Username available</p>
+                )}
+
+                {isError && (
+                    <p className="text-sm text-red-500 mt-1">
+                    Unable to check username right now
+                    </p>
+                )}
+                </div>
                 <div>
                 <label htmlFor="email" className="block text-sm/6 font-medium text-gray-900">
                     Email address

@@ -83,7 +83,7 @@ export function AuthProvider({children}: {children: React.ReactNode}){
             //set access token we got in response
             localStorage.setItem('access_token', userData.access_token);
         }else{
-            throw new Error('log in  failed');
+            throw new Error('Email or password is incorrect');
         }
     }
     

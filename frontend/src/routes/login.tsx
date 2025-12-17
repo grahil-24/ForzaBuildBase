@@ -37,8 +37,12 @@ function Login(): React.ReactElement {
     try {
       await auth.login(email, password);
       navigate({to: redirect as never})
-    }catch(err){
-      setError('Invalid email or password');
+    }catch(err: unknown){
+      if(err instanceof TypeError){
+        setError('Unable to connect to server. Please check your connection and try again.');
+      }else if(err instanceof Error){
+        setError(err.message);
+      }
     }finally{
       setIsLoading(false);
     }
@@ -46,7 +50,7 @@ function Login(): React.ReactElement {
 
   return (
     <>
-      <div className="flex min-h-full flex-col justify-center px-6 py-12 lg:px-8">
+      <div className="flex min-h-full flex-col justify-center px-6 py-6 lg:px-8">
         <div className="sm:mx-auto sm:w-full sm:max-w-sm">
           <img
             alt="Forza Build Base"
@@ -59,7 +63,7 @@ function Login(): React.ReactElement {
         </div>
 
         <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
-          {error && <div className="pb-2 bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">{error}</div>}
+          {error && <div className="mb-3 bg-red-100 border border-red-400 text-red-700 px-3 py-2 rounded">{error}</div>}
           <form onSubmit={handleSubmit} className="space-y-6">
             <div>
               <label htmlFor="email" className="block text-sm/6 font-medium text-gray-900">
