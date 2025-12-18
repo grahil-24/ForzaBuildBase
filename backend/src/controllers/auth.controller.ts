@@ -4,7 +4,7 @@ import { RequestContext } from '@mikro-orm/mysql';
 import bcrypt from 'bcrypt';
 import { AppError } from '../utils/AppError';
 import { catchAsync } from '../utils/catchAsync';
-import { validateEmail, validatePassword } from '../utils/Validator';
+import { validateEmail, validatePassword, validateUsername } from '../utils/Validator';
 import jwt from 'jsonwebtoken';
 import ms from 'ms';
 
@@ -52,14 +52,14 @@ const jwtVerifyPromisifed = (token: string, secret: string, tokenType: 'access' 
 
 export const signUp = catchAsync(async (req: Request, res: Response, next: NextFunction): Promise<void> => {
 
-    const newUser = new User(req.body.email, req.body.password);
+    const newUser = new User(req.body.email, req.body.password, req.body.username);
 
     const em = RequestContext.getEntityManager();
 
     if (!em) {
         return next(new AppError("Entity manager not available", 500));
     }
-    if(!validateEmail(newUser.email) || !validatePassword(newUser.password)){
+    if(!validateEmail(newUser.email) || !validatePassword(newUser.password) || !validateUsername(newUser.username)){
         return next(new AppError("password or email dont match criteria", 200));
     }
 
@@ -69,11 +69,10 @@ export const signUp = catchAsync(async (req: Request, res: Response, next: NextF
     }
     newUser.password = await hashPassword(newUser.password);
     const result: number = Number(await em.insert(newUser));
-    console.log("result ", result);
     const accessToken = signToken(result, JWT_EXPIRATION);
     const refreshToken = signToken(result, JWT_REFRESH_EXPIRATION);
     res.cookie('refresh_token', refreshToken, {httpOnly: true, sameSite: "strict", expires: new Date(Date.now() + ms(JWT_REFRESH_EXPIRATION as ms.StringValue))});
-    res.status(201).json({status: "success",message: "user created successfully", access_token: accessToken, user: {user_id:result}});
+    res.status(201).json({status: "success",message: "user created successfully", access_token: accessToken, user: {user_id:result, username: newUser.username}});
 });
 
 export const checkUsername = catchAsync(async (req, res, next) => {
@@ -81,8 +80,10 @@ export const checkUsername = catchAsync(async (req, res, next) => {
   if (!em) {
     return next(new AppError("Entity manager not available", 500));
   }
-
-  const username = req.query.username as string;
+  const username: string = req.query.username as string;
+  if(!validateUsername(username)){
+    return next(new AppError('Invalid username format', 401));
+  }
 
   const user = await em.findOne(User, { username });
 
@@ -104,7 +105,7 @@ export const login = catchAsync(async(req: Request, res: Response, next: NextFun
     }
     const userFromDB = await em.findOne(User, {email: {$eq: user.email}});
     if(!userFromDB){
-        return next(new AppError("Email or password is incorrect", 401));
+        return next(new AppError("An account with this email does not exist! Please sign up", 401));
     }
     if(!await bcrypt.compare(user.password, userFromDB.password)){
         return next(new AppError("Email or password is incorrect", 401));
@@ -112,7 +113,7 @@ export const login = catchAsync(async(req: Request, res: Response, next: NextFun
     const accessToken = signToken(Number(userFromDB.user_id), JWT_EXPIRATION);
     const refreshToken = signToken(Number(userFromDB.user_id), JWT_REFRESH_EXPIRATION);
     res.cookie('refresh_token', refreshToken, {httpOnly: true, sameSite: "strict", expires: new Date(Date.now() + ms(JWT_REFRESH_EXPIRATION as ms.StringValue))});
-    res.status(200).json({status: "success",message: "logged in successfully", access_token: accessToken, user: {user_id:userFromDB.user_id}});
+    res.status(200).json({status: "success",message: "logged in successfully", access_token: accessToken, user: {user_id:userFromDB.user_id, username: userFromDB.username}});
 });
 
 export const refresh = catchAsync(async(req: Request, res: Response, next: NextFunction): Promise<void> => {
