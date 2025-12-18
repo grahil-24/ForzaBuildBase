@@ -3,15 +3,17 @@ import React, {createContext, useContext, useState, useEffect} from 'react';
 
 interface User {
     user_id: number,
+    username?: string, 
     email?: string,
 }
 
 interface AuthState {
-    isAuthenticated: boolean
+    isAuthenticated: boolean,
+    accessToken: string | null;
     user: User | null,
     login: (email: string, password: string) => Promise<void>,
     logout: () => void,
-    signup: (email: string, password: string) => Promise<void>,
+    signup: (username: string, email: string, password: string) => Promise<void>,
 }
 
 const AuthContext = createContext<AuthState | undefined>(undefined);
@@ -23,11 +25,11 @@ export function AuthProvider({children}: {children: React.ReactNode}){
     const [user, setUser] = useState<User | null>(null);
     const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
     const [isLoading, setIsLoading] = useState<boolean>(true);
+    const [accessToken, setAccessToken] = useState<string | null>(null);
 
     //restore auth state on app load
     useEffect(() => {
         const token = localStorage.getItem('access_token')
-        console.log("token ", token);
         if(token){
             //validate access token with backend
             fetch(`${BACKEND}/auth/verify`, {
@@ -37,19 +39,21 @@ export function AuthProvider({children}: {children: React.ReactNode}){
             .then((response) => response.json())
                 //valid access token or successfully refreshed token
             .then((userData) => {
-                console.log("userdata ", userData);
                 if(userData.status === 'success'){
                 //if access token got refreshed, update it in localstorage
                     if(userData.access_token){
                         localStorage.setItem('access_token', userData.access_token);
                     }
+                    setAccessToken(localStorage.getItem('access_token'));
                     setUser(userData.user);
                     setIsAuthenticated(true);
                 }else{
+                    setAccessToken(null);
                     localStorage.removeItem('access_token');
                 }
             })
             .catch(() => {
+                setAccessToken(null);
                 localStorage.removeItem('access-token');
             })
             .finally(() => {
@@ -74,45 +78,52 @@ export function AuthProvider({children}: {children: React.ReactNode}){
             method: 'POST',
             headers: {'Content-Type': 'application/json'},
             body: JSON.stringify({email, password}),
+            credentials: "include"
         })
 
-        if(response.ok){
-            const userData = await response.json();
-            setIsAuthenticated(true);
-            setUser(userData.user);
-            //set access token we got in response
-            localStorage.setItem('access_token', userData.access_token);
-        }else{
-            throw new Error('Email or password is incorrect');
+        const data = await response.json();
+
+        if (!response.ok) {
+            throw new Error(data.message || 'Login failed');
         }
+
+        setIsAuthenticated(true);
+        setUser(data.user);
+        setAccessToken(data.access_token);
+        localStorage.setItem('access_token', data.access_token);
     }
     
-    const signup = async(email: string, password: string) => {
+    const signup = async(username: string, email: string, password: string) => {
         const response = await fetch(`${BACKEND}/auth/sign-up`,{
             method: "POST",
+            credentials: "include",
             headers: {"Content-Type": "application/json"},
-            body: JSON.stringify({email, password}),
+            body: JSON.stringify({username, email, password}),
         })
 
-        if(response.ok){
-            const userData = await response.json();
-            setUser(userData.user);
-            setIsAuthenticated(true);
-            localStorage.setItem('access_token', userData.access_token);
-        }else{
-            throw new Error('An account already exists with this email');
+        const data = await response.json();
+
+        if(!response.ok){
+            throw new Error(data.message || 'Login failed');
+            
         }
+        
+        setUser(data.user);
+        setIsAuthenticated(true);
+        setAccessToken(data.access_token);
+        localStorage.setItem('access_token', data.access_token);
     }
 
     const logout = () => {
         setUser(null);
         setIsAuthenticated(false);
+        setAccessToken(null);
         localStorage.removeItem('access_token');
         // navigate({to: '/'})
     }
 
     return (
-        <AuthContext.Provider value={{isAuthenticated, user, login, logout, signup}}>
+        <AuthContext.Provider value={{isAuthenticated, user, login, logout, signup, accessToken}}>
             {children}
         </AuthContext.Provider>
     )
