@@ -1,6 +1,7 @@
 import { createFileRoute } from '@tanstack/react-router'
+import Nav from '../../components/Navbar';
 
-export const Route = createFileRoute('/_authenticated/dashboard')({
+export const Route = createFileRoute('/_authenticated/profile')({
   component: RouteComponent,
 })
 
@@ -9,7 +10,8 @@ function RouteComponent() {
     const {auth} = Route.useRouteContext();
 
     return (
-        <div className="p-6">
+        <div className="">
+            <Nav />
         <div className="flex justify-between items-center mb-6">
             <h1 className="text-3xl font-bold">Dashboard</h1>
             <button
@@ -23,7 +25,7 @@ function RouteComponent() {
         <div className="bg-white p-6 rounded-lg shadow">
             <h2 className="text-xl font-semibold mb-2">Welcome back!</h2>
             <p className="text-gray-600">
-            Hello, <strong>{auth.user?.user_id}</strong>! You are successfully
+            Hello, <strong>{auth.user?.username} {auth.user?.user_id}</strong>! You are successfully
             authenticated.
             </p>
             <p className="text-sm text-gray-500 mt-2">id: {auth.user?.user_id}</p>

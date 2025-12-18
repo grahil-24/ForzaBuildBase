@@ -1,10 +1,10 @@
 import {createFileRoute, useNavigate, type ParsedLocation} from '@tanstack/react-router'
-import CarTiles from '../components/CarTiles';
-import Nav from '../components/Navbar';
-import FilterSidebar from '../components/FilterSidebar';
+import CarTiles from '../../components/CarTiles';
+import Nav from '../../components/Navbar';
+import FilterSidebar from '../../components/FilterSidebar';
 import React, { useEffect, useState } from 'react';
-import type {Car} from '../types/car';
-import Searchbar from '../components/Searchbar';
+import type {Car} from '../../types/car';
+import Searchbar from '../../components/Searchbar';
 
 const BACKEND = import.meta.env.VITE_BACKEND;
 
@@ -23,7 +23,7 @@ interface LoaderData {
   total: number
 }
 
-export const Route = createFileRoute('/browse')({
+export const Route = createFileRoute('/_authenticated/browse')({
   validateSearch: (search: Record<string, unknown>): BrowseSearch => {
     // Parse arrays from comma-separated strings
     const parseArrayParam = (param: unknown): string[] | undefined => {
@@ -42,14 +42,14 @@ export const Route = createFileRoute('/browse')({
     };
   },
   preload: true,
-  loader: ({ location }) => fetchCars(location),
+  loader: ({ context, location }) => fetchCars(location, context.auth.accessToken),
   component: BrowseComponent,
 })
 
-const fetchCars = async (location: ParsedLocation): Promise<LoaderData> => {
+const fetchCars = async (location: ParsedLocation, accessToken: string | null): Promise<LoaderData> => {
   // Build query string with arrays as comma-separated values
   const params = new URLSearchParams();
-  
+  console.log("access token in fetch cars ", accessToken);
   Object.entries(location.search).forEach(([key, value]) => {
     if (Array.isArray(value) && value.length > 0) {
       params.set(key, value.join(','));
@@ -59,13 +59,17 @@ const fetchCars = async (location: ParsedLocation): Promise<LoaderData> => {
   });
 
   const queryString = params.toString();  
-  const res = await fetch(`${BACKEND}/browse?${queryString}`);
+  const res = await fetch(`${BACKEND}/browse?${queryString}`,{
+    method: "GET",
+    headers: {Authorization: `Bearer ${accessToken}`}
+  });
   if (!res.ok) throw new Error('Failed to fetch cars');
   const data = await res.json();
   return data as LoaderData;
 }
 
 function BrowseComponent(): React.ReactElement {
+  // const {auth} = Route.useRouteContext();
   const { cars, totalPages, total } = Route.useLoaderData();
   const search = Route.useSearch();
   const page = search.page ?? 1;

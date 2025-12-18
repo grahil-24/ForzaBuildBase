@@ -48,7 +48,7 @@ const FilterSidebar = () => {
   const [brandSearchQuery, setBrandSearchQuery] = useState<string>('');
   const [activateClearFilterButton, setActivateClearFilterButton] = useState<boolean>(false);
   const navigate = useNavigate();
-  const currentSearch = useSearch({ from: '/browse' });
+  const currentSearch = useSearch({ from: '/_authenticated/browse' });
   const searchQuery: string | undefined = currentSearch.search;
   const [selected, setSelected] = useState<{[key: string]: string[]}>({}); 
   

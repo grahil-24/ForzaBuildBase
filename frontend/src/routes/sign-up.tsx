@@ -7,7 +7,7 @@ import { useUsernameAvailability } from "../hooks/useUsernameAvailability";
 
 export const Route = createFileRoute('/sign-up')({
     validateSearch: (search)=> ({
-        redirect: (search.redirect as string) || '/dashboard'
+        redirect: (search.redirect as string) || '/profile'
     }),
     beforeLoad: ({context, search}) => {
         //redirect if already authenticated
@@ -74,19 +74,23 @@ function Signup(): React.ReactElement {
         return true;
     }
 
+    const isUsernameValid = (): boolean => {
+        return isAvailable || false;
+    }
+
     const handleSignupForm = async (e: React.FormEvent) => {
         e.preventDefault();
-        if(!isPasswordValid()){
-            setError('Password doesnt meet the criteria!');
+        if(!isPasswordValid() || !isUsernameValid()){
+            setError('Password or username doesnt meet the criteria!');
             setTimeout(() => {
                 setError('');
             }, 1000)
-        }else if(isAvailable && !isError){
+        }else {
             setIsLoading(true);
             setError('');
 
             try{
-                await auth.signup(email, password);
+                await auth.signup(username, email, password);
                 navigate({to: redirect as never});
             }catch(err: unknown){
                 if(err instanceof TypeError){
@@ -133,19 +137,19 @@ function Signup(): React.ReactElement {
                 </div>
                 {/* Feedback */}
                 {isChecking && (
-                    <p className="text-sm text-gray-500 mt-1">Checking username…</p>
+                    <p className="text-xs text-gray-500 mt-1">Checking username…</p>
                 )}
 
                 {isAvailable === false && (
-                    <p className="text-sm text-red-500 mt-1">Username already taken</p>
+                    <p className="text-xs text-red-500 mt-1">Username already taken</p>
                 )}
 
                 {isAvailable === true && (
-                    <p className="text-sm text-green-600 mt-1">Username available</p>
+                    <p className="text-xs text-green-600 mt-1">Username available</p>
                 )}
 
                 {isError && (
-                    <p className="text-sm text-red-500 mt-1">
+                    <p className="text-xs text-red-500 mt-1">
                     Unable to check username right now
                     </p>
                 )}

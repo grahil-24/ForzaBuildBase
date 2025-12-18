@@ -3,10 +3,11 @@ import { Outlet, createRootRouteWithContext } from '@tanstack/react-router'
 
 interface AuthState {
   isAuthenticated: boolean
-  user: { user_id: number} | null
+  user: { username: string, user_id: number} | null
+  accessToken: string | null
   login: (email: string, password: string) => Promise<void>
   logout: () => void
-  signup: (email: string, password: string) => Promise<void>
+  signup: (username: string, email: string, password: string) => Promise<void>
 }
 
 interface MyRouterContext {
