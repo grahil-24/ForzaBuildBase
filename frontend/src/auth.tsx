@@ -1,19 +1,12 @@
 // import { useNavigate } from '@tanstack/react-router';
 import React, {createContext, useContext, useState, useEffect} from 'react';
+import type { AuthState } from './types/auth';
+import {PulseLoader} from 'react-spinners';
 
 interface User {
     user_id: number,
-    username?: string, 
+    username: string,
     email?: string,
-}
-
-interface AuthState {
-    isAuthenticated: boolean,
-    accessToken: string | null;
-    user: User | null,
-    login: (email: string, password: string) => Promise<void>,
-    logout: () => void,
-    signup: (username: string, email: string, password: string) => Promise<void>,
 }
 
 const AuthContext = createContext<AuthState | undefined>(undefined);
@@ -21,7 +14,6 @@ const AuthContext = createContext<AuthState | undefined>(undefined);
 const BACKEND = import.meta.env.VITE_BACKEND;
 
 export function AuthProvider({children}: {children: React.ReactNode}){
-    // const navigate = useNavigate();
     const [user, setUser] = useState<User | null>(null);
     const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
     const [isLoading, setIsLoading] = useState<boolean>(true);
@@ -54,7 +46,7 @@ export function AuthProvider({children}: {children: React.ReactNode}){
             })
             .catch(() => {
                 setAccessToken(null);
-                localStorage.removeItem('access-token');
+                localStorage.removeItem('access_token');
             })
             .finally(() => {
                 setIsLoading(false);
@@ -68,9 +60,16 @@ export function AuthProvider({children}: {children: React.ReactNode}){
     if(isLoading) {
         return (
             <div className="flex items-center justify-center min-h-screen">
-                Loading...
+                <PulseLoader />
             </div>
         )
+    }
+
+    const setAccessTokenAndPersist = (token: string | null) => {
+        if(token){
+            localStorage.setItem('access_token', token);
+        }
+        setAccessToken(token);
     }
 
     const login = async(email: string, password: string) => {
@@ -92,7 +91,7 @@ export function AuthProvider({children}: {children: React.ReactNode}){
         setAccessToken(data.access_token);
         localStorage.setItem('access_token', data.access_token);
     }
-    
+
     const signup = async(username: string, email: string, password: string) => {
         const response = await fetch(`${BACKEND}/auth/sign-up`,{
             method: "POST",
@@ -105,9 +104,9 @@ export function AuthProvider({children}: {children: React.ReactNode}){
 
         if(!response.ok){
             throw new Error(data.message || 'Login failed');
-            
+
         }
-        
+
         setUser(data.user);
         setIsAuthenticated(true);
         setAccessToken(data.access_token);
@@ -119,11 +118,10 @@ export function AuthProvider({children}: {children: React.ReactNode}){
         setIsAuthenticated(false);
         setAccessToken(null);
         localStorage.removeItem('access_token');
-        // navigate({to: '/'})
     }
 
     return (
-        <AuthContext.Provider value={{isAuthenticated, user, login, logout, signup, accessToken}}>
+        <AuthContext.Provider value={{isAuthenticated, user, setAccessToken: setAccessTokenAndPersist,login, logout, signup, accessToken}}>
             {children}
         </AuthContext.Provider>
     )

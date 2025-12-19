@@ -5,6 +5,8 @@ import FilterSidebar from '../../components/FilterSidebar';
 import React, { useEffect, useState } from 'react';
 import type {Car} from '../../types/car';
 import Searchbar from '../../components/Searchbar';
+import {authFetch} from "../../api/authFetch.ts";
+import type { AuthState } from '../../types/auth.ts';
 
 const BACKEND = import.meta.env.VITE_BACKEND;
 
@@ -12,7 +14,7 @@ interface BrowseSearch {
   page?: number,
   rank?: string[]
   drivetrain?: string[]
-  fuel_type?: string[] 
+  fuel_type?: string[]
   manufacturer?: string[]
   search?: string
 }
@@ -42,15 +44,14 @@ export const Route = createFileRoute('/_authenticated/browse')({
     };
   },
   preload: true,
-  loader: ({ context, location }) => fetchCars(location, context.auth.accessToken),
+  loader: async ({ context, location }) => await fetchCars(location, context.auth),
   component: BrowseComponent,
 })
 
-const fetchCars = async (location: ParsedLocation, accessToken: string | null): Promise<LoaderData> => {
+const fetchCars = async (location: ParsedLocation, auth: AuthState): Promise<LoaderData> => {
   // Build query string with arrays as comma-separated values
   const params = new URLSearchParams();
-  console.log("access token in fetch cars ", accessToken);
-  Object.entries(location.search).forEach(([key, value]) => {
+  Object.entries(location.search).forEach(([key, value] ) => {
     if (Array.isArray(value) && value.length > 0) {
       params.set(key, value.join(','));
     } else if (value !== undefined && value !== null) {
@@ -58,11 +59,11 @@ const fetchCars = async (location: ParsedLocation, accessToken: string | null): 
     }
   });
 
-  const queryString = params.toString();  
-  const res = await fetch(`${BACKEND}/browse?${queryString}`,{
-    method: "GET",
-    headers: {Authorization: `Bearer ${accessToken}`}
-  });
+  const queryString = params.toString();
+  const res = await authFetch(`${BACKEND}/browse?${queryString}`,
+    { method: 'GET' },
+    auth
+  );
   if (!res.ok) throw new Error('Failed to fetch cars');
   const data = await res.json();
   return data as LoaderData;
@@ -75,7 +76,7 @@ function BrowseComponent(): React.ReactElement {
   const page = search.page ?? 1;
   const [pageInputField, setPageInputField] = useState<number>(page);
   const [searchBarText, setSearchBarText] = useState<string>("");
-  
+
   useEffect(()=> {
     window.scrollTo(0, 0);
     setPageInputField(page);
@@ -84,9 +85,9 @@ function BrowseComponent(): React.ReactElement {
   const navigate = useNavigate();
 
   const goToPage = (newPage: number) => {
-    navigate({ 
-      to: '/browse', 
-      search: { ...search, page: newPage } 
+    navigate({
+      to: '/browse',
+      search: { ...search, page: newPage }
     });
   };
 
@@ -100,7 +101,7 @@ function BrowseComponent(): React.ReactElement {
 
   const handlePageInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setPageInputField(Number(e.target.value));
-  } 
+  }
 
   const handlePageEnterPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
      if(e.key === 'Enter'){
