@@ -1,19 +1,36 @@
 import { createFileRoute } from '@tanstack/react-router'
 import Nav from '../../components/Navbar';
+import type { AuthState } from '../../types/auth';
+import { authFetch } from '../../api/authFetch';
+
+const BACKEND = import.meta.env.VITE_BACKEND;
 
 export const Route = createFileRoute('/_authenticated/profile')({
-  component: RouteComponent,
+    loader: ({context}) => fetchProfile(context.auth),
+    component: RouteComponent,
 })
 
+const fetchProfile = async (auth: AuthState) => {
+    const res = await authFetch(`${BACKEND}/profile`,
+        {method: 'GET'},
+        auth
+    );
+
+    if(!res.ok){
+        throw new Error('Failed to fetch profile');
+    }
+    const data = await res.json();
+    return data
+}
+
 function RouteComponent() {
-
     const {auth} = Route.useRouteContext();
-
+    const profileData = Route.useLoaderData();
+    console.log("profiledata ", profileData);
     return (
         <div className="">
             <Nav />
         <div className="flex justify-between items-center mb-6">
-            <h1 className="text-3xl font-bold">Dashboard</h1>
             <button
             onClick={auth.logout}
             className="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700"

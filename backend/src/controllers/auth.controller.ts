@@ -1,10 +1,11 @@
 import {NextFunction, Request, Response} from 'express';
 import { User } from "../entities/User";
-import { RequestContext } from '@mikro-orm/mysql'; 
+import { RequestContext } from '@mikro-orm/mysql';
 import bcrypt from 'bcrypt';
 import { AppError } from '../utils/AppError';
 import { catchAsync } from '../utils/catchAsync';
 import { validateEmail, validatePassword, validateUsername } from '../utils/Validator';
+import jwtVerifyPromisifed from '../utils/jwtVerifier';
 import jwt from 'jsonwebtoken';
 import ms from 'ms';
 
@@ -18,7 +19,7 @@ const JWT_EXPIRATION: string = process.env.JWT_EXPIRATION!;
 const JWT_REFRESH_EXPIRATION: string = process.env.JWT_REFRESH_EXPIRATION!;
 const JWT_SECRET: string = process.env.JWT_SECRET!;
 
-// const cookieConfig = 
+// const cookieConfig =
 
 const hashPassword = async (password: string): Promise<string> => {
     const hashedPassword = await bcrypt.hash(password, saltRounds);
@@ -27,27 +28,6 @@ const hashPassword = async (password: string): Promise<string> => {
 
 const signToken = (user_id: number, expires: string): string => {
     return jwt.sign({id: user_id}, JWT_SECRET, {expiresIn: expires as ms.StringValue});
-}
-
-const jwtVerifyPromisifed = (token: string, secret: string, tokenType: 'access' | 'refresh'): Promise<JwtPayload> => {
-    return new Promise((resolve, reject) => {
-        jwt.verify(token, secret, (err, payload) => {
-            if(err){
-                if(err.name === 'TokenExpiredError' && tokenType === 'refresh'){
-                    return reject(new AppError("Not authorized! Please log in", 403));
-                }
-                if(err.name === 'TokenExpiredError' && tokenType === 'access'){
-                    return reject(new AppError("Access token expired!", 401));
-                }
-                reject(err);
-            }else{
-                if(!payload || typeof payload ==='string'){
-                    return reject(new Error("Invalid token payload"));
-                }
-                resolve(payload as JwtPayload);
-            }
-        })
-    })
 }
 
 export const signUp = catchAsync(async (req: Request, res: Response, next: NextFunction): Promise<void> => {
@@ -128,18 +108,6 @@ export const refresh = catchAsync(async(req: Request, res: Response, next: NextF
     res.cookie('refresh_token', newRefreshToken, {httpOnly: true, sameSite: "strict", expires: new Date(Date.now() + ms(JWT_REFRESH_EXPIRATION as ms.StringValue))});
     res.status(200).json({status: "success", message: "tokens refreshed", access_token: newAccessToken, user: {user_id:decoded.id}});
 
-});
-
-export const protect = catchAsync(async(req: Request, res: Response, next: NextFunction): Promise<void> => {
-    let token;
-    if(req.headers.authorization && req.headers.authorization.startsWith('Bearer')){
-        token = req.headers.authorization.split(' ')[1];
-        const decoded_id: number = (await jwtVerifyPromisifed(token, JWT_SECRET,'access')).id;
-        req.user_id = decoded_id;
-        next();
-    }else{
-        return next(new AppError("Not authorized! Please log in", 403));
-    }
 });
 
 export const verify = catchAsync(async(req: Request, res: Response, next: NextFunction): Promise<void> => {

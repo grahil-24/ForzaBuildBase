@@ -5,6 +5,7 @@ import { MikroORM, RequestContext } from "@mikro-orm/mysql";
 import cookieParser from 'cookie-parser';
 import browseCarsRouter from './routes/browseCar.routes';
 import authRouter from './routes/auth.routes';
+import userRouter from './routes/user.routes'
 import 'reflect-metadata';
 import mikroOrmConfig from "./config/mikro-orm.config";
 import { globalErrorHandler } from "./middlewares/errorHandler";
@@ -35,6 +36,8 @@ async function start(){
     app.use('/browse', browseCarsRouter);
 
     app.use("/auth", authRouter);
+    
+    app.use("/profile", userRouter);
 
     app.all('/*path', (req, res, next) => {
         next(new AppError(`Can't find ${req.originalUrl} on this server!`, 404));

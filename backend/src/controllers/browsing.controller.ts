@@ -6,6 +6,7 @@ import { AppError } from '../utils/AppError';
 import { catchAsync } from '../utils/catchAsync';
 
 export const getCars = catchAsync(async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+  // console.log("req in get cars ", req);
   const filters: FilterQuery<Car> = {};
   const limit: number = 20; 
   const page: number = Number(req.query.page) || 1;
