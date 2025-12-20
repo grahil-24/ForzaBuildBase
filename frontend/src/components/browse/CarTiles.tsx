@@ -1,5 +1,5 @@
 import type React from "react";
-import type { Car , RankType, DrivetrainType} from "../types/car";
+import type { Car , RankType, DrivetrainType} from "../../types/car";
 
 const rank_to_color: Record<RankType, string> = {
   S2: "text-blue-800",

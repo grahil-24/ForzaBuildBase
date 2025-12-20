@@ -3,6 +3,11 @@ import Nav from '../../components/Navbar';
 import type { AuthState } from '../../types/auth';
 import { authFetch } from '../../api/authFetch';
 
+interface ProfileData {
+    username: string,
+    user_id: number
+}
+
 const BACKEND = import.meta.env.VITE_BACKEND;
 
 export const Route = createFileRoute('/_authenticated/profile')({
@@ -25,7 +30,7 @@ const fetchProfile = async (auth: AuthState) => {
 
 function RouteComponent() {
     const {auth} = Route.useRouteContext();
-    const profileData = Route.useLoaderData();
+    const profileData: ProfileData = Route.useLoaderData();
     console.log("profiledata ", profileData);
     return (
         <div className="">
@@ -40,7 +45,7 @@ function RouteComponent() {
         </div>
 
         <div className="bg-white p-6 rounded-lg shadow">
-            <h2 className="text-xl font-semibold mb-2">Welcome back!</h2>
+            <h2 className="text-xl font-semibold mb-2">Hi {profileData.username}!</h2>
             <p className="text-gray-600">
             Hello, <strong>{auth.user?.username} {auth.user?.user_id}</strong>! You are successfully
             authenticated.

@@ -1,7 +1,7 @@
 import {createFileRoute, useNavigate, type ParsedLocation} from '@tanstack/react-router'
-import CarTiles from '../../components/CarTiles';
+import CarTiles from '../../components/browse/CarTiles';
 import Nav from '../../components/Navbar';
-import FilterSidebar from '../../components/FilterSidebar';
+import FilterSidebar from '../../components/browse/FilterSidebar';
 import React, { useEffect, useState } from 'react';
 import type {Car} from '../../types/car';
 import Searchbar from '../../components/Searchbar';
@@ -44,7 +44,7 @@ export const Route = createFileRoute('/_authenticated/browse')({
     };
   },
   preload: true,
-  loader: async ({ context, location }) => await fetchCars(location, context.auth),
+  loader: ({ context, location }) => fetchCars(location, context.auth),
   component: BrowseComponent,
 })
 

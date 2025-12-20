@@ -5,7 +5,7 @@ import { Dialog, DialogBackdrop, DialogPanel, Disclosure, DisclosureButton, Disc
 import { XMarkIcon, ChevronRightIcon } from '@heroicons/react/24/outline'
 import { MinusIcon, PlusIcon} from '@heroicons/react/20/solid'
 import { useNavigate, useSearch } from '@tanstack/react-router'
-import brands from '../data/brands.json';
+import brands from '../../data/brands.json';
 
 const filters = [
   {
