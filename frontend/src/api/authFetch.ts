@@ -19,9 +19,6 @@ export async function authFetch(url: string, options: RequestInit = {},
     if (res.status === 401) {
         //try to refresh access token
         const refreshRes = await fetch(`${BACKEND}/auth/refresh`, {
-            headers: {
-                Authorization: `Bearer ${auth.accessToken}`,
-            },
             credentials: 'include',
         });
         //refresh token expired or invalid
@@ -31,14 +28,9 @@ export async function authFetch(url: string, options: RequestInit = {},
         }
         //access token refreshed
         const data = await refreshRes.json();
-
-        if (data.access_token) {
-            auth.setAccessToken(data.access_token);
-            // localStorage.setItem('access_token', data.access_token);
-        }
-
+        auth.setAccessToken(data.access_token);
         // retry original request
-        res = await doFetch(localStorage.getItem('access_token'));
+        res = await doFetch(data.access_token);
     }
 
     return res;
