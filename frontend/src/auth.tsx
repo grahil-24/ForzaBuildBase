@@ -1,4 +1,3 @@
-// import { useNavigate } from '@tanstack/react-router';
 import React, {createContext, useContext, useState, useEffect} from 'react';
 import type { AuthState } from './types/auth';
 import {PulseLoader} from 'react-spinners';
@@ -21,41 +20,69 @@ export function AuthProvider({children}: {children: React.ReactNode}){
 
     //restore auth state on app load
     useEffect(() => {
-        const token = localStorage.getItem('access_token')
-        if(token){
-            //validate access token with backend
-            fetch(`${BACKEND}/auth/verify`, {
-                headers: {Authorization: `Bearer ${token}`},
-                credentials: 'include'
-            })
-            .then((response) => response.json())
-                //valid access token or successfully refreshed token
-            .then((userData) => {
-                if(userData.status === 'success'){
-                //if access token got refreshed, update it in localstorage
-                    if(userData.access_token){
-                        localStorage.setItem('access_token', userData.access_token);
-                    }
-                    setAccessToken(localStorage.getItem('access_token'));
-                    setUser(userData.user);
-                    setIsAuthenticated(true);
-                }else{
-                    setAccessToken(null);
-                    localStorage.removeItem('access_token');
-                }
-            })
-            .catch(() => {
+        console.log("inside auth useeffect");
+        // const token = localStorage.getItem('access_token')
+        // if(accessToken){
+        //     //validate access token with backend
+        //     fetch(`${BACKEND}/auth/verify`, {
+        //         headers: {Authorization: `Bearer ${accessToken}`},
+        //         credentials: 'include'
+        //     })
+        //     .then((response) => response.json())
+        //         //valid access token or successfully refreshed token
+        //     .then((userData) => {
+        //         if(userData.status === 'success'){
+        //         //if access token got refreshed, update it in localstorage
+        //             if(userData.access_token){
+        //                 localStorage.setItem('access_token', userData.access_token);
+        //             }
+        //             setAccessToken(localStorage.getItem('access_token'));
+        //             setUser(userData.user);
+        //             setIsAuthenticated(true);
+        //         }else{
+        //             setAccessToken(null);
+        //             localStorage.removeItem('access_token');
+        //         }
+        //     })
+        //     .catch(() => {
+        //         setAccessToken(null);
+        //         localStorage.removeItem('access_token');
+        //     })
+        //     .finally(() => {
+        //         setIsLoading(false);
+        //     })
+        // }else{
+        //     setIsLoading(false);
+        // }
+    
+        fetch(`${BACKEND}/auth/refresh`,
+            {
+                method: 'GET',
+                credentials: "include"
+            },
+        )
+        .then((res) => {
+            if(!res.ok){
                 setAccessToken(null);
-                localStorage.removeItem('access_token');
-            })
-            .finally(() => {
-                setIsLoading(false);
-            })
-        }else{
+                setIsAuthenticated(false);
+                setUser(null);
+                throw new Error('Refresh failed');
+            }else{
+                return res.json();
+            }
+        })
+        .then((data) => {
+            setAccessToken(data.access_token);
+            setUser(data.user);
+            setIsAuthenticated(true);
+        })
+        .catch(() => {
+            setAccessToken(null);
+        })
+        .finally(() => {
             setIsLoading(false);
-        }
+        })
     }, []);
-
 
     if(isLoading) {
         return (
@@ -65,10 +92,9 @@ export function AuthProvider({children}: {children: React.ReactNode}){
         )
     }
 
-    const setAccessTokenAndPersist = (token: string | null) => {
-        if(token){
-            localStorage.setItem('access_token', token);
-        }
+    const setAccessTokenOnly = (token: string | null) => {
+        // Store only in memory, not in localStorage
+        console.log("setting token ", token);
         setAccessToken(token);
     }
 
@@ -89,7 +115,6 @@ export function AuthProvider({children}: {children: React.ReactNode}){
         setIsAuthenticated(true);
         setUser(data.user);
         setAccessToken(data.access_token);
-        localStorage.setItem('access_token', data.access_token);
     }
 
     const signup = async(username: string, email: string, password: string) => {
@@ -104,24 +129,21 @@ export function AuthProvider({children}: {children: React.ReactNode}){
 
         if(!response.ok){
             throw new Error(data.message || 'Login failed');
-
         }
 
         setUser(data.user);
         setIsAuthenticated(true);
         setAccessToken(data.access_token);
-        localStorage.setItem('access_token', data.access_token);
     }
 
     const logout = () => {
         setUser(null);
         setIsAuthenticated(false);
         setAccessToken(null);
-        localStorage.removeItem('access_token');
     }
 
     return (
-        <AuthContext.Provider value={{isAuthenticated, user, setAccessToken: setAccessTokenAndPersist,login, logout, signup, accessToken}}>
+        <AuthContext.Provider value={{isAuthenticated, user, setAccessToken: setAccessTokenOnly, login, logout, signup, accessToken}}>
             {children}
         </AuthContext.Provider>
     )
