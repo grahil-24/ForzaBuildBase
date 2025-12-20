@@ -17,5 +17,6 @@ export const profile = catchAsync(async(req: Request, res: Response, next: NextF
     if(!user){
         return next(new AppError('User not found!', 404));
     }
-    res.status(200).json(user);
+
+    res.status(200).json({user_id: user.user_id, username: user.username});
 });
