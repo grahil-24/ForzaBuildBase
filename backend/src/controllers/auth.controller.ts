@@ -96,6 +96,11 @@ export const login = catchAsync(async(req: Request, res: Response, next: NextFun
     res.status(200).json({status: "success",message: "logged in successfully", access_token: accessToken, user: {user_id:userFromDB.user_id, username: userFromDB.username}});
 });
 
+export const logout = catchAsync(async(req: Request, res: Response, next: NextFunction): Promise<void> => {
+    res.cookie('refresh_token', "", {httpOnly: true, sameSite: "strict", maxAge: 0});
+    res.status(200).json({status: "success", message: "signed out"});
+});
+
 export const refresh = catchAsync(async(req: Request, res: Response, next: NextFunction): Promise<void> => {
 
     const refreshToken = req.cookies.refresh_token;
