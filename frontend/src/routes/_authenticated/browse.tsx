@@ -1,6 +1,5 @@
 import {createFileRoute, useNavigate, type ParsedLocation} from '@tanstack/react-router'
 import CarTiles from '../../components/browse/CarTiles';
-import Nav from '../../components/Navbar';
 import FilterSidebar from '../../components/browse/FilterSidebar';
 import React, { useEffect, useState } from 'react';
 import type {Car} from '../../types/car';
@@ -50,6 +49,7 @@ export const Route = createFileRoute('/_authenticated/browse')({
 
 const fetchCars = async (location: ParsedLocation, auth: AuthState): Promise<LoaderData> => {
   // Build query string with arrays as comma-separated values
+  console.log("access token in browse ", auth.accessToken);
   const params = new URLSearchParams();
   Object.entries(location.search).forEach(([key, value] ) => {
     if (Array.isArray(value) && value.length > 0) {
@@ -111,7 +111,6 @@ function BrowseComponent(): React.ReactElement {
 
   return (
     <div className="w-full">
-      <Nav />
       <div className='relative flex flex-col md:flex-row items-center justify-center px-6 pt-5 gap-4'>
         <p className='text-lg pt-5'>Showing {total} results</p>
         <div className='md:absolute md:right-6'>

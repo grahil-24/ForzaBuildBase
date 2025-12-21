@@ -1,5 +1,4 @@
 import { createFileRoute } from '@tanstack/react-router'
-import Nav from '../../components/Navbar';
 import type { AuthState } from '../../types/auth';
 import { authFetch } from '../../api/authFetch';
 
@@ -16,6 +15,7 @@ export const Route = createFileRoute('/_authenticated/profile')({
 })
 
 const fetchProfile = async (auth: AuthState) => {
+    console.log("access token in browse ", auth.accessToken);
     const res = await authFetch(`${BACKEND}/profile`,
         {method: 'GET'},
         auth
@@ -34,7 +34,7 @@ function RouteComponent() {
     console.log("profiledata ", profileData);
     return (
         <div className="">
-            <Nav />
+            {/* <Nav /> */}
         <div className="flex justify-between items-center mb-6">
             <button
             onClick={auth.logout}

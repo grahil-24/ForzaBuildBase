@@ -4,7 +4,7 @@ interface AuthState {
   accessToken: string | null
   setAccessToken: (token: string | null) => void
   login: (email: string, password: string) => Promise<void>
-  logout: () => void
+  logout: () => Promise<void>
   signup: (username: string, email: string, password: string) => Promise<void>
 }
 
