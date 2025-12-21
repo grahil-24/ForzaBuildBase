@@ -17,7 +17,6 @@ export function AuthProvider({children}: {children: React.ReactNode}){
     const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
     const [isLoading, setIsLoading] = useState<boolean>(true);
     const [accessToken, setAccessToken] = useState<string | null>(null);
-
     //restore auth state on app load
     useEffect(() => {
         console.log("inside auth useeffect");
@@ -73,11 +72,19 @@ export function AuthProvider({children}: {children: React.ReactNode}){
         })
         .then((data) => {
             setAccessToken(data.access_token);
-            setUser(data.user);
             setIsAuthenticated(true);
+            return fetch(`${BACKEND}/profile`, {
+                headers: { Authorization: `Bearer ${data.access_token}` },
+            });
+        })
+        .then((res) => res.json())
+        .then(userData => {
+            setUser(userData);
         })
         .catch(() => {
             setAccessToken(null);
+            setIsAuthenticated(false);
+            setUser(null);
         })
         .finally(() => {
             setIsLoading(false);
@@ -136,10 +143,16 @@ export function AuthProvider({children}: {children: React.ReactNode}){
         setAccessToken(data.access_token);
     }
 
-    const logout = () => {
+    const logout = async() => {
         setUser(null);
         setIsAuthenticated(false);
         setAccessToken(null);
+        //call backend logout api to invalidate refresh cookie
+        await fetch(`${BACKEND}/auth/logout`,
+            {
+                credentials: "include"
+            }
+        );
     }
 
     return (
