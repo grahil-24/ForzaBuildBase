@@ -1,6 +1,7 @@
 import React, {createContext, useContext, useState, useEffect} from 'react';
 import type { AuthState } from './types/auth';
 import {PulseLoader} from 'react-spinners';
+import { BACKEND } from './config/env';
 
 interface User {
     user_id: number,
@@ -9,8 +10,6 @@ interface User {
 }
 
 const AuthContext = createContext<AuthState | undefined>(undefined);
-
-const BACKEND = import.meta.env.VITE_BACKEND;
 
 export function AuthProvider({children}: {children: React.ReactNode}){
     const [user, setUser] = useState<User | null>(null);

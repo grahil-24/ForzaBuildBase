@@ -1,4 +1,4 @@
-import {createFileRoute, useNavigate, type ParsedLocation} from '@tanstack/react-router'
+import {createFileRoute, redirect, useNavigate, type ParsedLocation} from '@tanstack/react-router'
 import CarTiles from '../../components/browse/CarTiles';
 import FilterSidebar from '../../components/browse/FilterSidebar';
 import React, { useEffect, useState } from 'react';
@@ -6,8 +6,8 @@ import type {Car} from '../../types/car';
 import Searchbar from '../../components/Searchbar';
 import {authFetch} from "../../api/authFetch.ts";
 import type { AuthState } from '../../types/auth.ts';
-
-const BACKEND = import.meta.env.VITE_BACKEND;
+import { BACKEND } from '../../config/env.ts';
+import { SessionExpiredError } from '../../errors/auth.errors.ts';
 
 interface BrowseSearch {
   page?: number,
@@ -60,13 +60,22 @@ const fetchCars = async (location: ParsedLocation, auth: AuthState): Promise<Loa
   });
 
   const queryString = params.toString();
-  const res = await authFetch(`${BACKEND}/browse?${queryString}`,
-    { method: 'GET' },
-    auth
-  );
-  if (!res.ok) throw new Error('Failed to fetch cars');
-  const data = await res.json();
-  return data as LoaderData;
+  try {
+    const res = await authFetch(`${BACKEND}/browse?${queryString}`,
+      { method: 'GET' },
+      auth
+    );
+    if (!res.ok) throw new Error('Failed to fetch cars');
+    const data = await res.json();
+    return data as LoaderData;
+  }catch(err){
+    if(err instanceof SessionExpiredError){
+      await auth.logout();
+      throw redirect({to: '/', replace: true})
+    }
+    throw err;
+  }
+  
 }
 
 function BrowseComponent(): React.ReactElement {

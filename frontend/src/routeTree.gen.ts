@@ -15,6 +15,7 @@ import { Route as AuthenticatedRouteImport } from './routes/_authenticated'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthenticatedProfileRouteImport } from './routes/_authenticated/profile'
 import { Route as AuthenticatedBrowseRouteImport } from './routes/_authenticated/browse'
+import { Route as AuthenticatedViewCarRouteImport } from './routes/_authenticated/view/car'
 
 const SignUpRoute = SignUpRouteImport.update({
   id: '/sign-up',
@@ -45,6 +46,11 @@ const AuthenticatedBrowseRoute = AuthenticatedBrowseRouteImport.update({
   path: '/browse',
   getParentRoute: () => AuthenticatedRoute,
 } as any)
+const AuthenticatedViewCarRoute = AuthenticatedViewCarRouteImport.update({
+  id: '/view/car',
+  path: '/view/car',
+  getParentRoute: () => AuthenticatedRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -52,6 +58,7 @@ export interface FileRoutesByFullPath {
   '/sign-up': typeof SignUpRoute
   '/browse': typeof AuthenticatedBrowseRoute
   '/profile': typeof AuthenticatedProfileRoute
+  '/view/car': typeof AuthenticatedViewCarRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -59,6 +66,7 @@ export interface FileRoutesByTo {
   '/sign-up': typeof SignUpRoute
   '/browse': typeof AuthenticatedBrowseRoute
   '/profile': typeof AuthenticatedProfileRoute
+  '/view/car': typeof AuthenticatedViewCarRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -68,12 +76,13 @@ export interface FileRoutesById {
   '/sign-up': typeof SignUpRoute
   '/_authenticated/browse': typeof AuthenticatedBrowseRoute
   '/_authenticated/profile': typeof AuthenticatedProfileRoute
+  '/_authenticated/view/car': typeof AuthenticatedViewCarRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/login' | '/sign-up' | '/browse' | '/profile'
+  fullPaths: '/' | '/login' | '/sign-up' | '/browse' | '/profile' | '/view/car'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/login' | '/sign-up' | '/browse' | '/profile'
+  to: '/' | '/login' | '/sign-up' | '/browse' | '/profile' | '/view/car'
   id:
     | '__root__'
     | '/'
@@ -82,6 +91,7 @@ export interface FileRouteTypes {
     | '/sign-up'
     | '/_authenticated/browse'
     | '/_authenticated/profile'
+    | '/_authenticated/view/car'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -135,17 +145,26 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedBrowseRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
+    '/_authenticated/view/car': {
+      id: '/_authenticated/view/car'
+      path: '/view/car'
+      fullPath: '/view/car'
+      preLoaderRoute: typeof AuthenticatedViewCarRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
   }
 }
 
 interface AuthenticatedRouteChildren {
   AuthenticatedBrowseRoute: typeof AuthenticatedBrowseRoute
   AuthenticatedProfileRoute: typeof AuthenticatedProfileRoute
+  AuthenticatedViewCarRoute: typeof AuthenticatedViewCarRoute
 }
 
 const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
   AuthenticatedBrowseRoute: AuthenticatedBrowseRoute,
   AuthenticatedProfileRoute: AuthenticatedProfileRoute,
+  AuthenticatedViewCarRoute: AuthenticatedViewCarRoute,
 }
 
 const AuthenticatedRouteWithChildren = AuthenticatedRoute._addFileChildren(

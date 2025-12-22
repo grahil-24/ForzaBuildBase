@@ -1,5 +1,6 @@
 import type React from "react";
 import type { Car , RankType, DrivetrainType} from "../../types/car";
+import { S3_BUCKET_URL } from "../../config/env";
 
 const rank_to_color: Record<RankType, string> = {
   S2: "text-blue-800",
@@ -9,8 +10,6 @@ const rank_to_color: Record<RankType, string> = {
   C: "text-amber-300",
   D: "text-cyan-300"
 }
-
-const s3_bucket_url = import.meta.env.VITE_S3_BUCKET;
 
 const drivetrainSVG = (drivetrain: DrivetrainType): React.ReactElement => {
   if(drivetrain === 'RWD'){
@@ -56,7 +55,7 @@ const drivetrainSVG = (drivetrain: DrivetrainType): React.ReactElement => {
 const CarTile = ({car}: {car: Car}): React.ReactElement => {
     const manufacturerImg = car.Manufacturer.replace(/ /g, '_');
     const image_filename = car.image_filename ? car.image_filename.replace(/ /g, '_') : null;
-    const imageUrl = `${s3_bucket_url}/${car.image_filename ? manufacturerImg: 'Default'}/${car.image_filename ? image_filename : 'default_car.png'}`;
+    const imageUrl = `${S3_BUCKET_URL}/${car.image_filename ? manufacturerImg: 'Default'}/${car.image_filename ? image_filename : 'default_car.png'}`;
     const rank_color: string = rank_to_color[car.Rank];
 
     return (
