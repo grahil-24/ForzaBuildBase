@@ -1,6 +1,7 @@
 import type React from "react";
 import type { Car , RankType, DrivetrainType} from "../../types/car";
 import { S3_BUCKET_URL } from "../../config/env";
+import { Link } from "@tanstack/react-router";
 
 const rank_to_color: Record<RankType, string> = {
   S2: "text-blue-800",
@@ -59,9 +60,10 @@ const CarTile = ({car}: {car: Car}): React.ReactElement => {
     const rank_color: string = rank_to_color[car.Rank];
 
     return (
+        <Link to="/view/car/$carId" params={{carId: car.id.toString()}}>
         <div
           key={car.id}
-          className="hover:scale-103 duration-100 relative w-full h-64 bg-gray-200 rounded-lg shadow overflow-hidden flex flex-col justify-end"
+          className="cursor-pointer hover:scale-103 duration-100 relative w-full h-64 bg-gray-200 rounded-lg shadow overflow-hidden flex flex-col justify-end"
           style={{ minWidth: '220px', maxWidth: '300px' }}
         >
             <div className="absolute top-5 left-5">{drivetrainSVG(car.Drivetrain)}</div>
@@ -77,6 +79,7 @@ const CarTile = ({car}: {car: Car}): React.ReactElement => {
                 </div>
             </div>
         </div>
+        </Link>
     )
 }
 

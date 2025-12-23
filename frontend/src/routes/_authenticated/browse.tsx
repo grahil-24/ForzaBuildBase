@@ -26,7 +26,6 @@ interface LoaderData {
 
 export const Route = createFileRoute('/_authenticated/browse')({
   validateSearch: (search: Record<string, unknown>): BrowseSearch => {
-    // Parse arrays from comma-separated strings
     const parseArrayParam = (param: unknown): string[] | undefined => {
       if (!param) return undefined;
       if (Array.isArray(param)) return param.map(String);
@@ -43,13 +42,13 @@ export const Route = createFileRoute('/_authenticated/browse')({
     };
   },
   preload: true,
+  loaderDeps: ({search: {page, rank, drivetrain, fuel_type, manufacturer, search}}) => ({page, rank, drivetrain, fuel_type, manufacturer, search}),
   loader: ({ context, location }) => fetchCars(location, context.auth),
+  staleTime: Infinity,
   component: BrowseComponent,
 })
 
 const fetchCars = async (location: ParsedLocation, auth: AuthState): Promise<LoaderData> => {
-  // Build query string with arrays as comma-separated values
-  console.log("access token in browse ", auth.accessToken);
   const params = new URLSearchParams();
   Object.entries(location.search).forEach(([key, value] ) => {
     if (Array.isArray(value) && value.length > 0) {
@@ -68,18 +67,16 @@ const fetchCars = async (location: ParsedLocation, auth: AuthState): Promise<Loa
     if (!res.ok) throw new Error('Failed to fetch cars');
     const data = await res.json();
     return data as LoaderData;
-  }catch(err){
+  } catch(err: unknown) {
     if(err instanceof SessionExpiredError){
       await auth.logout();
       throw redirect({to: '/', replace: true})
     }
     throw err;
   }
-  
 }
 
 function BrowseComponent(): React.ReactElement {
-  // const {auth} = Route.useRouteContext();
   const { cars, totalPages, total } = Route.useLoaderData();
   const search = Route.useSearch();
   const page = search.page ?? 1;
