@@ -1,7 +1,7 @@
 import {NextFunction, Request, Response} from 'express';
 import { Car } from '../entities/Car';
 import { RequestContext } from '@mikro-orm/mysql'; 
-import { FilterQuery } from '@mikro-orm/core';
+import { FilterQuery, IntegerType } from '@mikro-orm/core';
 import { AppError } from '../utils/AppError';
 import { catchAsync } from '../utils/catchAsync';
 
@@ -60,4 +60,21 @@ export const getCars = catchAsync(async (req: Request, res: Response, next: Next
     page, 
     totalPages: Math.ceil(count / limit) 
   });
+});
+
+export const getCar = catchAsync(async(req: Request, res: Response, next: NextFunction): Promise<void> => {
+    
+  const carId: number = Number(req.params.carId);
+
+  const em = RequestContext.getEntityManager();
+  if (!em) {
+    return next(new AppError("Entity manager not available", 500));
+  }
+
+  const car = await em.findOne(Car, {id: carId as unknown as IntegerType});
+  if(!car){
+    res.status(404).json({status: "error", message: "Car not found"});
+  }else{
+    res.status(200).json({status: "success", car});
+  }
 });
