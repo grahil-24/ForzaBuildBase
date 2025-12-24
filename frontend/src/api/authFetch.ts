@@ -14,12 +14,12 @@ export async function authFetch(url: string, options: RequestInit = {},
             },
             credentials: 'include',
         });
-
+    
+    
     let res = await doFetch(auth.accessToken);
 
     // access token expired
     if (res.status === 401) {
-        try {
             //try to refresh access token
             const refreshRes = await fetch(`${BACKEND}/auth/refresh`, {
                 credentials: 'include',
@@ -34,13 +34,7 @@ export async function authFetch(url: string, options: RequestInit = {},
             auth.setAccessToken(data.access_token);
             // retry original request
             res = await doFetch(data.access_token);
-        }catch(error){
-            if(error instanceof SessionExpiredError){
-                throw error;
-            }
-            throw error;
-        }
+        
     }
-
     return res;
 }

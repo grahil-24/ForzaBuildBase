@@ -1,6 +1,7 @@
-import { redirect, Outlet, createFileRoute } from "@tanstack/react-router";
+import { redirect, Outlet, createFileRoute} from "@tanstack/react-router";
 import Nav from "../components/Navbar";
 import NotFoundComponent from "../components/NotFoundComponent";
+import ErrorComponent from "../components/ErrorComponent";
 
 export const Route = createFileRoute('/_authenticated')({
     beforeLoad: ({context, location}) => {
@@ -15,6 +16,7 @@ export const Route = createFileRoute('/_authenticated')({
         }
     },
     notFoundComponent: NotFoundComponent,
+    errorComponent: ErrorComponent,
     component: () => (
         <div>
             <Nav />
