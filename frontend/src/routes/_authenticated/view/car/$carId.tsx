@@ -21,6 +21,8 @@ interface PathParams {
   carId: string 
 }
 
+type Unit = 'imperial' | 'metric';
+
 export const Route = createFileRoute('/_authenticated/view/car/$carId')({
   loader: ({context, params}) => fetchCar(params, context.auth),
   notFoundComponent: NotFoundComponent,
@@ -123,10 +125,15 @@ const getRankBg = (rank: string):string => {
 
 function RouteComponent() {
   const car = Route.useLoaderData();
+  console.log("car ", car);
+  const [unit, setUnit] = useState<Unit>('imperial');
   const manufacturerImg = car.Manufacturer.replace(/ /g, '_');
   const image_filename = car.image_filename ? car.image_filename.replace(/ /g, '_') : null;
   const imageUrl = `${S3_BUCKET_URL}/${car.image_filename ? manufacturerImg: 'Default'}/${car.image_filename ? image_filename : 'default_car.png'}`;
-  
+  const displayTorque = unit === 'imperial' 
+    ? car.Torque
+    : car.Torque * 1.36;
+  const displayWeight = unit === 'imperial' ? car.Weight : car.Weight * 0.45
   
   return (
     <div className="min-h-screen bg-linear-to-br from-slate-50 via-white to-slate-100 p-6">
@@ -146,8 +153,16 @@ function RouteComponent() {
           <div className="p-6">
             <div className="flex items-start justify-between mb-6">
               <div className='w-full'>
-                <div className="text-blue-600 text-sm font-bold mb-2 uppercase tracking-wider">
-                  {car.Manufacturer}
+                <div className='flex items-center justify-between'>
+                  <div className="text-blue-600 text-sm font-bold mb-2 uppercase tracking-wider">
+                    {car.Manufacturer}
+                  </div>
+                  <div className='items-center mb-auto'>
+                    <select onChange={e => setUnit(e.target.value as Unit)}name="unit" id="unit">
+                      <option value="imperial">Imperial</option>
+                      <option value="metric">Metric</option>
+                    </select>
+                  </div>
                 </div>
                 <div className='flex items-center'>
                   <h1 className="text-3xl w-full font-bold text-slate-900 mb-2">
@@ -170,11 +185,11 @@ function RouteComponent() {
               </div>
               <div className={`${getRankBg(car.Rank)} rounded-xl p-2 border`}>
                 <div className="text-slate-600 text-xs uppercase tracking-wide font-semibold mb-1">Torque</div>
-                <div className="text-xl font-bold text-slate-900">{car.Torque} lb-ft</div>
+                <div className="text-xl font-bold text-slate-900">{displayTorque.toFixed(0)} {unit === 'imperial' ? 'lb-ft':'N-m'}</div>
               </div>
               <div className={`${getRankBg(car.Rank)} rounded-xl p-2 border`}>
                 <div className="text-slate-600 text-xs uppercase tracking-wide font-semibold mb-1">Weight</div>
-                <div className="text-xl font-bold text-slate-900">{car.Weight.toLocaleString()} lbs</div>
+                <div className="text-xl font-bold text-slate-900">{displayWeight.toFixed(0).toLocaleString()} {unit === 'imperial' ? 'lbs' : 'kgs'}</div>
               </div>
               <div className={`${getRankBg(car.Rank)} rounded-xl p-2 border`}>
                 <div className="text-slate-600 text-xs uppercase tracking-wide font-semibold mb-1">Drivetrain</div>

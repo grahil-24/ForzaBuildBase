@@ -13,78 +13,81 @@ function Nav() {
   };
   const [isOpen, setIsOpen] = useState(false);
   return (
-    <nav className="bg-gray-800 w-full">
-      <div className="h-16 flex items-center justify-between max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-              <div className="ml-10 flex items-baseline space-x-4 w-full">
-                <Link
-                  to="/profile"
-                  className="hover:bg-gray-700 text-white px-3 py-2 rounded-md text-sm font-medium"
-                >
-                  Dashboard
-                </Link>
-                <Link
-                  to="/browse"
-                  className="text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium"
-                >
-                  Browse
-                </Link>
-                { authContext.isAuthenticated && 
-                  <Menu as="div" className="relative ml-auto">
-                    <MenuButton className="text-white relative flex rounded-full focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-500">
-                      <span className="absolute -inset-1.5" />
-                      <span className="sr-only">Open user menu</span>
-                      {authContext.user?.username}
-                    </MenuButton>
+    <nav className="bg-white w-full">
+      <div className="h-16 flex items-center justify-between w-screen px-10">
+        <div className="w-1/4 h-full flex items-center ml-auto">
+          <img src="/logo/header.png"/>
+        </div>
+        <div className="ml-10 flex items-baseline space-x-4 w-full">
+          <Link
+            to="/profile"
+            className="relative text-black px-3 py-2 rounded-md text-sm font-medium after:content-[''] after:absolute after:bottom-1 after:left-3 after:right-3 after:h-0.5 after:bg-black after:scale-x-0 after:origin-left after:transition-transform after:duration-300 hover:after:scale-x-100"
+          >
+            Dashboard
+          </Link>
+          <Link
+            to="/browse"
+            className="relative text-black px-3 py-2 rounded-md text-sm font-medium after:content-[''] after:absolute after:bottom-1 after:left-3 after:right-3 after:h-0.5 after:bg-black after:scale-x-0 after:origin-left after:transition-transform after:duration-300 hover:after:scale-x-100"
+          >
+            Browse
+          </Link>
+          { authContext.isAuthenticated && 
+            <Menu as="div" className="relative ml-auto">
+              <MenuButton className="text-black relative flex rounded-full focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-500">
+                <span className="absolute -inset-1.5" />
+                <span className="sr-only">Open user menu</span>
+                {authContext.user?.username}
+              </MenuButton>
 
-                    <MenuItems
-                      transition
-                      className="absolute right-0 z-10 mt-2 w-48 origin-top-right rounded-md bg-gray-800 py-1 outline -outline-offset-1 outline-white/10 transition data-closed:scale-95 data-closed:transform data-closed:opacity-0 data-enter:duration-100 data-enter:ease-out data-leave:duration-75 data-leave:ease-in"
-                    >
-                      <MenuItem>
-                        <a
-                          href="#"
-                          className="block px-4 py-2 text-sm text-gray-300 data-focus:bg-white/5 data-focus:outline-hidden"
-                        >
-                          Your profile
-                        </a>
-                      </MenuItem>
-                      <MenuItem>
-                        <Button
-                          className="block px-4 py-2 text-sm text-gray-300 data-focus:bg-white/5 data-focus:outline-hidden"
-                        >
-                          Settings
-                        </Button>
-                      </MenuItem>
-                      <MenuItem>
-                        <button
-                          onClick={handleLogout}
-                          className="block px-4 w-full text-left cursor-pointer py-2 text-sm text-gray-300 data-focus:bg-white/5 data-focus:outline-hidden"
-                        >
-                          Sign out
-                        </button>
-                      </MenuItem>
-                    </MenuItems>
-                  </Menu>
-                }
-                {/* <a
-                  href="#"
-                  className="text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium"
-                >
-                  Projects
-                </a>
-                <a
-                  href="#"
-                  className="text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium"
-                >
-                  Calendar
-                </a>
-                <a
-                  href="#"
-                  className="text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium"
-                >
-                  Reports
-                </a> */}
-              </div>
+              <MenuItems
+                transition
+                className="absolute right-0 z-10 mt-2 w-48 origin-top-right rounded-md bg-gray-800 py-1 outline -outline-offset-1 outline-white/10 transition data-closed:scale-95 data-closed:transform data-closed:opacity-0 data-enter:duration-100 data-enter:ease-out data-leave:duration-75 data-leave:ease-in"
+              >
+                <MenuItem>
+                  <a
+                    href="#"
+                    className="block px-4 py-2 text-sm text-gray-300 data-focus:bg-white/5 data-focus:outline-hidden"
+                  >
+                    Your profile
+                  </a>
+                </MenuItem>
+                <MenuItem>
+                  <Button
+                    className="block px-4 py-2 text-sm text-gray-300 data-focus:bg-white/5 data-focus:outline-hidden"
+                  >
+                    Settings
+                  </Button>
+                </MenuItem>
+                <MenuItem>
+                  <button
+                    onClick={handleLogout}
+                    className="block px-4 w-full text-left cursor-pointer py-2 text-sm text-gray-300 data-focus:bg-white/5 data-focus:outline-hidden"
+                  >
+                    Sign out
+                  </button>
+                </MenuItem>
+              </MenuItems>
+            </Menu>
+          }
+          {/* <a
+            href="#"
+            className="text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium"
+          >
+            Projects
+          </a>
+          <a
+            href="#"
+            className="text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium"
+          >
+            Calendar
+          </a>
+          <a
+            href="#"
+            className="text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium"
+          >
+            Reports
+          </a> */}
+        </div>
           <div className="-mr-2 flex md:hidden">
             <button
               onClick={() => setIsOpen(!isOpen)}
