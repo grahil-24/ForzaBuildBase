@@ -136,64 +136,69 @@ function RouteComponent() {
   const displayWeight = unit === 'imperial' ? car.Weight : car.Weight * 0.45
   
   return (
-    <div className="min-h-screen bg-linear-to-br from-slate-50 via-white to-slate-100 p-6">
+   <div className="min-h-screen bg-linear-to-br from-slate-50 via-white to-slate-100 p-6">
       <div className="max-w-6xl mx-auto">
         {/* Main Card with Image */}
-        <div className="flex items-center justify-between bg-white rounded-2xl shadow-lg border border-slate-200 overflow-hidden mb-6">
+        <div className="flex flex-col md:flex-row items-center justify-between bg-white rounded-2xl shadow-lg border border-slate-200 overflow-hidden mb-6">
           {/* Image Section */}
-          <div className="max-w-4/10 h-auto ml-auto mr-auto">
+          <div className="w-full lg:max-w-[40%] p-6 lg:p-0 lg:ml-auto lg:mr-auto">
             <img 
               src={imageUrl}
               alt={car.Vehicle}
-              className="object-contain drop-shadow-2xl"
+              className="object-contain drop-shadow-2xl w-full"
             />
           </div>
 
           {/* Header Info */}
-          <div className="p-6">
+          <div className="p-6 w-full">
             <div className="flex items-start justify-between mb-6">
               <div className='w-full'>
-                <div className='flex items-center justify-between'>
+                <div className='flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-0'>
                   <div className="text-blue-600 text-sm font-bold mb-2 uppercase tracking-wider">
                     {car.Manufacturer}
                   </div>
-                  <div className='items-center mb-auto'>
-                    <select onChange={e => setUnit(e.target.value as Unit)}name="unit" id="unit">
+                  <div className='mr-auto ml-auto flex items-center gap-2'>
+                    <label htmlFor="unit" className='text-sm text-slate-600'>Unit</label>
+                    <select 
+                      onChange={e => setUnit(e.target.value as Unit)}
+                      name="unit" 
+                      id="unit"
+                      className="px-3 py-2 bg-white border border-gray-300 rounded-lg shadow-sm hover:border-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent cursor-pointer transition-all text-sm"
+                    >
                       <option value="imperial">Imperial</option>
                       <option value="metric">Metric</option>
                     </select>
                   </div>
                 </div>
-                <div className='flex items-center'>
-                  <h1 className="text-3xl w-full font-bold text-slate-900 mb-2">
+                <div className='flex justify-between mr-auto items-center gap-3'>
+                  <h1 className="text-2xl sm:text-3xl font-bold text-slate-900 mb-2">
                     {car.Model}
                   </h1>
-                  <div className={`bg-linear-to-br ${getRankColor(car.Rank)} text-white text-2xl font-bold w-10 h-10 rounded-xl ml-auto flex items-center justify-center shadow-md`}>
+                  <div className={`bg-linear-to-br ${getRankColor(car.Rank)} text-white text-xl sm:text-2xl font-bold w-10 h-10 rounded-xl flex items-center justify-center shadow-md shrink-0`}>
                     {car.Rank}
                   </div>
                 </div>
-                <div className="text-slate-600 text-xl font-medium">{car.Year}</div>
+                <div className="text-slate-600 text-lg sm:text-xl font-medium">{car.Year}</div>
               </div>
-              
             </div>
 
             {/* Key Specs Grid */}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-              <div className={`${getRankBg(car.Rank)} rounded-xl p-2 border`}>
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+              <div className={`${getRankBg(car.Rank)} rounded-xl p-3 border`}>
                 <div className="text-slate-600 text-xs uppercase tracking-wide font-semibold mb-1">Horsepower</div>
-                <div className="text-xl font-bold text-slate-900">{car.Horsepower} HP</div>
+                <div className="text-lg sm:text-xl font-bold text-slate-900">{car.Horsepower} HP</div>
               </div>
-              <div className={`${getRankBg(car.Rank)} rounded-xl p-2 border`}>
+              <div className={`${getRankBg(car.Rank)} rounded-xl p-3 border`}>
                 <div className="text-slate-600 text-xs uppercase tracking-wide font-semibold mb-1">Torque</div>
-                <div className="text-xl font-bold text-slate-900">{displayTorque.toFixed(0)} {unit === 'imperial' ? 'lb-ft':'N-m'}</div>
+                <div className="text-lg sm:text-xl font-bold text-slate-900">{displayTorque.toFixed(0)} {unit === 'imperial' ? 'lb-ft':'N-m'}</div>
               </div>
-              <div className={`${getRankBg(car.Rank)} rounded-xl p-2 border`}>
+              <div className={`${getRankBg(car.Rank)} rounded-xl p-3 border`}>
                 <div className="text-slate-600 text-xs uppercase tracking-wide font-semibold mb-1">Weight</div>
-                <div className="text-xl font-bold text-slate-900">{displayWeight.toFixed(0).toLocaleString()} {unit === 'imperial' ? 'lbs' : 'kgs'}</div>
+                <div className="text-lg sm:text-xl font-bold text-slate-900">{displayWeight.toFixed(0).toLocaleString()} {unit === 'imperial' ? 'lbs' : 'kgs'}</div>
               </div>
-              <div className={`${getRankBg(car.Rank)} rounded-xl p-2 border`}>
+              <div className={`${getRankBg(car.Rank)} rounded-xl p-3 border`}>
                 <div className="text-slate-600 text-xs uppercase tracking-wide font-semibold mb-1">Drivetrain</div>
-                <div className="text-xl font-bold text-slate-900">{car.Drivetrain}</div>
+                <div className="text-lg sm:text-xl font-bold text-slate-900">{car.Drivetrain}</div>
               </div>
             </div>
           </div>
