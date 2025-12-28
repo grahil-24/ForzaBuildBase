@@ -4,12 +4,12 @@ import { User } from "./User";
 
 @Entity({tableName: 'saved_tunes'})
 export class SavedTunes {
-    @PrimaryKey({type: "smallint", nullable: false})
-    @ManyToOne(() => Tune, {fieldName: 'tune_id', deleteRule: 'cascade', primary: true})
+    // @PrimaryKey({type: "smallint", nullable: false})
+    @ManyToOne(() => Tune, {type: "smallint", fieldName: 'tune_id', deleteRule: 'cascade', primary: true, nullable: false})
     tune!: Tune
 
-    @PrimaryKey({type: "smallint", nullable: false})
-    @ManyToOne(() => User, {fieldName: 'user_id', deleteRule: 'cascade', primary: true})
+    // @PrimaryKey({type: "smallint", nullable: false})
+    @ManyToOne(() => User, {type: "smallint", fieldName: 'user_id', deleteRule: 'cascade', primary: true, nullable: false})
     user!: User;
 
     @Property({type: "datetime", nullable: false})
