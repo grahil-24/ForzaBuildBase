@@ -32,7 +32,7 @@ const signToken = (user_id: number, expires: string): string => {
 
 export const signUp = catchAsync(async (req: Request, res: Response, next: NextFunction): Promise<void> => {
 
-    const newUser = new User(req.body.email, req.body.password, req.body.username);
+    const newUser = new User({email: req.body.email, password: req.body.password, username: req.body.username});
 
     const em = RequestContext.getEntityManager();
 
@@ -47,7 +47,7 @@ export const signUp = catchAsync(async (req: Request, res: Response, next: NextF
     if(fetched_user){
         return next(new AppError("You have already registered with this email", 400));
     }
-    newUser.password = await hashPassword(newUser.password);
+    newUser.password = await hashPassword(newUser.password!);
     const result: number = Number(await em.insert(newUser));
     const accessToken = signToken(result, JWT_EXPIRATION);
     const refreshToken = signToken(result, JWT_REFRESH_EXPIRATION);
@@ -73,8 +73,7 @@ export const checkUsername = catchAsync(async (req, res, next) => {
 });
 
 export const login = catchAsync(async(req: Request, res: Response, next: NextFunction): Promise<void>=>{
-    const user: User = new User(req.body.email, req.body.password);
-    console.log("received user ", user);
+    const user: User = new User({email: req.body.email,password: req.body.password});
     const em = RequestContext.getEntityManager();
 
     if (!em) {
@@ -87,7 +86,7 @@ export const login = catchAsync(async(req: Request, res: Response, next: NextFun
     if(!userFromDB){
         return next(new AppError("An account with this email does not exist! Please sign up", 401));
     }
-    if(!await bcrypt.compare(user.password, userFromDB.password)){
+    if(!await bcrypt.compare(user.password!, userFromDB.password!)){
         return next(new AppError("Email or password is incorrect", 401));
     }
     const accessToken = signToken(Number(userFromDB.user_id), JWT_EXPIRATION);
