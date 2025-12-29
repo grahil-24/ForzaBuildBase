@@ -9,7 +9,7 @@ interface UserOptions {
 
 @Entity({tableName: "users"})
 export class User{
-    @PrimaryKey({type: "smallint", unsigned: true, autoincrement: true, nullable: false})
+    @PrimaryKey({type: "smallint", unsigned: true, autoincrement: true, nullable: false, hidden: true})
     user_id?:SmallIntType
 
     @Unique()

@@ -2,20 +2,33 @@ import { createFileRoute } from '@tanstack/react-router'
 import type { AuthState } from '../../types/auth';
 import { authFetch } from '../../api/authFetch';
 import { BACKEND } from '../../config/env';
+import MultiItemCarousel from '../../components/profile/MultiItemCarousel';
+import type { RecentTunes } from '../../types/tune';
 
-interface ProfileData {
-    username: string,
-    user_id: number
-}
+// interface ProfileData {
+//     username: string,
+//     user_id: number
+// }
 
 export const Route = createFileRoute('/_authenticated/profile')({
     loader: ({context}) => fetchProfile(context.auth),
+    preload: true,
     component: RouteComponent,
 })
 
 const fetchProfile = async (auth: AuthState) => {
-    console.log("access token in browse ", auth.accessToken);
-    const res = await authFetch(`${BACKEND}/profile`,
+    // console.log("access token in browse ", auth.accessToken);
+    // const data = {};
+    // let res = await authFetch(`${BACKEND}/profile`,
+    //     {method: 'GET'},
+    //     auth
+    // );
+
+    // if(!res.ok){
+    //     throw new Error('Failed to fetch profile');
+    // }
+    // const user = await res.json();
+    const res = await authFetch(`${BACKEND}/profile/recent-tunes`,
         {method: 'GET'},
         auth
     );
@@ -23,34 +36,24 @@ const fetchProfile = async (auth: AuthState) => {
     if(!res.ok){
         throw new Error('Failed to fetch profile');
     }
-    const data = await res.json();
-    return data
+
+    const recentTunes: RecentTunes[] = await res.json();
+    return recentTunes;
 }
 
 function RouteComponent() {
     const {auth} = Route.useRouteContext();
-    const profileData: ProfileData = Route.useLoaderData();
-    console.log("profiledata ", profileData);
+    const recentTunes: RecentTunes[] = Route.useLoaderData();
+    console.log("profiledata ", recentTunes);
     return (
-        <div>
-            {/* <Nav /> */}
-        {/* <div className="flex justify-between items-center mb-6">
-            <button
-            onClick={auth.logout}
-            className="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700"
-            >
-            Sign Out
-            </button>
-        </div> */}
-
-        <div className="bg-white p-6 rounded-lg shadow">
-            <h2 className="text-xl font-semibold mb-2">Hi {profileData.username}!</h2>
-            <p className="text-gray-600">
-            Hello, <strong>{auth.user?.username} {auth.user?.user_id}</strong>! You are successfully
-            authenticated.
-            </p>
-            <p className="text-sm text-gray-500 mt-2">id: {auth.user?.user_id}</p>
-        </div>
+        <div className='max-w-3/4 pt-10 min-w-md mr-auto'>
+            <div className='flex items-center justify-center pb-3'>
+                <div className='text-2xl ml-15'>Recent Tunes</div>
+                <div className='ml-auto'>View all</div>
+            </div>
+            {recentTunes.length > 0 && 
+                <MultiItemCarousel recentTunes={recentTunes} />
+            }
         </div>
     )
 
