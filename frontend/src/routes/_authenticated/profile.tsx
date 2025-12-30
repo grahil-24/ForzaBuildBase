@@ -46,13 +46,13 @@ function RouteComponent() {
     const recentTunes: RecentTunes[] = Route.useLoaderData();
     console.log("profiledata ", recentTunes);
     return (
-        <div className='max-w-3/4 pt-10 min-w-md mr-auto'>
+        <div className='max-w-4/5 pt-10 min-w-sm mr-auto'>
             <div className='flex items-center justify-center pb-3'>
                 <div className='text-2xl ml-15'>Recent Tunes</div>
                 <div className='ml-auto'>View all</div>
             </div>
             {recentTunes.length > 0 && 
-                <MultiItemCarousel recentTunes={recentTunes} />
+                <MultiItemCarousel user={auth.user} recentTunes={recentTunes} />
             }
         </div>
     )

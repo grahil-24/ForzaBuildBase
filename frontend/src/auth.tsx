@@ -18,7 +18,6 @@ export function AuthProvider({children}: {children: React.ReactNode}){
     const [accessToken, setAccessToken] = useState<string | null>(null);
     //restore auth state on app load
     useEffect(() => {
-        console.log("inside auth useeffect");
         // const token = localStorage.getItem('access_token')
         // if(accessToken){
         //     //validate access token with backend
@@ -100,7 +99,6 @@ export function AuthProvider({children}: {children: React.ReactNode}){
 
     const setAccessTokenOnly = (token: string | null) => {
         // Store only in memory, not in localStorage
-        console.log("setting token ", token);
         setAccessToken(token);
     }
 
