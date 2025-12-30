@@ -5,11 +5,12 @@ import { BACKEND } from '../../../../config/env';
 import { SessionExpiredError } from '../../../../errors/auth.errors';
 import NotFoundComponent from '../../../../components/NotFoundComponent';
 import ErrorComponent from '../../../../components/ErrorComponent';
-import { S3_BUCKET_URL } from '../../../../config/env';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCog, faChartLine, faBolt, faTachometerAlt, faRocket, faHandPaper, faMountain} from '@fortawesome/free-solid-svg-icons';
 import type { IconDefinition } from '@fortawesome/free-solid-svg-icons';
 import {useState, useEffect, type  ReactElement, type JSX} from 'react';
+import { formatS3BucketURL } from '../../../../util/urlFormatter';
+import type { Car } from '../../../../types/car';
 
 const faSteeringWheel: ReactElement =
     <svg stroke="currentColor" fill="currentColor" strokeWidth="0" viewBox="0 0 512 512" height="15px" width="15px" xmlns="http://www.w3.org/2000/svg">
@@ -30,7 +31,7 @@ export const Route = createFileRoute('/_authenticated/view/car/$carId')({
   component: RouteComponent,
 });
 
-const fetchCar = async(params: PathParams, authContext: AuthState) => {
+const fetchCar = async(params: PathParams, authContext: AuthState): Promise<Car> => {
     try{
       const car = await authFetch(`${BACKEND}/view/car/${params.carId}`,
           {method: 'GET'},
@@ -124,16 +125,13 @@ const getRankBg = (rank: string):string => {
 };
 
 function RouteComponent() {
-  const car = Route.useLoaderData();
-  console.log("car ", car);
+  const car: Car = Route.useLoaderData();
   const [unit, setUnit] = useState<Unit>('imperial');
-  const manufacturerImg = car.Manufacturer.replace(/ /g, '_');
-  const image_filename = car.image_filename ? car.image_filename.replace(/ /g, '_') : null;
-  const imageUrl = `${S3_BUCKET_URL}/${car.image_filename ? manufacturerImg: 'Default'}/${car.image_filename ? image_filename : 'default_car.png'}`;
+  const imageUrl = formatS3BucketURL({manufacturer: car.Manufacturer, image_filename: car.image_filename});
   const displayTorque = unit === 'imperial' 
     ? car.Torque
-    : car.Torque * 1.36;
-  const displayWeight = unit === 'imperial' ? car.Weight : car.Weight * 0.45
+    : car.Torque! * 1.36;
+  const displayWeight = unit === 'imperial' ? car.Weight : car.Weight! * 0.45
   
   return (
    <div className="min-h-screen bg-linear-to-br from-slate-50 via-white to-slate-100 p-6">
@@ -144,7 +142,7 @@ function RouteComponent() {
           <div className="w-full lg:max-w-[40%] p-6 lg:p-0 lg:ml-auto lg:mr-auto">
             <img 
               src={imageUrl}
-              alt={car.Vehicle}
+              alt={car.Vehicle!}
               className="object-contain drop-shadow-2xl w-full"
             />
           </div>
@@ -190,11 +188,11 @@ function RouteComponent() {
               </div>
               <div className={`${getRankBg(car.Rank)} rounded-xl p-3 border`}>
                 <div className="text-slate-600 text-xs uppercase tracking-wide font-semibold mb-1">Torque</div>
-                <div className="text-lg sm:text-xl font-bold text-slate-900">{displayTorque.toFixed(0)} {unit === 'imperial' ? 'lb-ft':'N-m'}</div>
+                <div className="text-lg sm:text-xl font-bold text-slate-900">{displayTorque!.toFixed(0)} {unit === 'imperial' ? 'lb-ft':'N-m'}</div>
               </div>
               <div className={`${getRankBg(car.Rank)} rounded-xl p-3 border`}>
                 <div className="text-slate-600 text-xs uppercase tracking-wide font-semibold mb-1">Weight</div>
-                <div className="text-lg sm:text-xl font-bold text-slate-900">{displayWeight.toFixed(0).toLocaleString()} {unit === 'imperial' ? 'lbs' : 'kgs'}</div>
+                <div className="text-lg sm:text-xl font-bold text-slate-900">{displayWeight!.toFixed(0).toLocaleString()} {unit === 'imperial' ? 'lbs' : 'kgs'}</div>
               </div>
               <div className={`${getRankBg(car.Rank)} rounded-xl p-3 border`}>
                 <div className="text-slate-600 text-xs uppercase tracking-wide font-semibold mb-1">Drivetrain</div>
@@ -244,12 +242,12 @@ function RouteComponent() {
               Performance Ratings
             </h2>
             <div className="space-y-4">
-              <StatBar label="Speed" value={car.Speed} icon={faBolt} />
-              <StatBar label="Acceleration" value={car.Acceleration} icon={faTachometerAlt} />
-              <StatBar label="Handling" value={car.Handling} icon={faSteeringWheel}/>
-              <StatBar label="Launch" value={car.Launch} icon={faRocket} />
-              <StatBar label="Braking" value={car.Braking} icon={faHandPaper} />
-              <StatBar label="Offroad" value={car.Offroad} icon={faMountain} />
+              <StatBar label="Speed" value={car.Speed!} icon={faBolt} />
+              <StatBar label="Acceleration" value={car.Acceleration!} icon={faTachometerAlt} />
+              <StatBar label="Handling" value={car.Handling!} icon={faSteeringWheel}/>
+              <StatBar label="Launch" value={car.Launch!} icon={faRocket} />
+              <StatBar label="Braking" value={car.Braking!} icon={faHandPaper} />
+              <StatBar label="Offroad" value={car.Offroad!} icon={faMountain} />
             </div>
           </div>
         </div>

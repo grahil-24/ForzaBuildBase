@@ -9,6 +9,22 @@ interface Car {
   Manufacturer: string
   Rank: RankType
   Drivetrain: DrivetrainType
+  Torque?:number
+  Weight?:number
+  Vehicle?:string
+  Horsepower?:number
+  EngineType?:string
+  Displacement?:string
+  FuelType?:string
+  FrontPercent?:string
+  Speed?:string
+  Acceleration?:string
+  Handling?:string
+  Launch?:string
+  Braking?:string
+  Offroad?:string
+  Aspiration?:string
 }
+
 
 export type {RankType, Car, DrivetrainType};
