@@ -5,7 +5,12 @@ interface RecentTunes {
             username: "string"
         },
         tune_id: number,
-        tune_name: "string"
+        tune_name: "string",
+        car: {
+            id: number
+            image_filename: string
+            Manufacturer: string
+        }
     }
 }
 
