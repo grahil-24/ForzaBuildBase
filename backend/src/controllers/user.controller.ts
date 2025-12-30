@@ -37,7 +37,7 @@ export const getRecentTunes = catchAsync(async(req: Request, res: Response, next
     { limit: 5, orderBy: { saved_on: 'desc' }, exclude: ['user.user_id']}
     );    
     await em.populate(savedTunes, ['tune', 'tune.creator', 'tune.car'], {
-        fields: ['tune.tune_name', 'tune.creator.username', 'tune.car.image_filename']
+        fields: ['tune.tune_name', 'tune.creator.username', 'tune.car.image_filename', 'tune.car.Manufacturer']
     });
     // await em.populate(savedTunes, ['tune.creator'], {fields: ['user.username']});
     res.status(200).json(savedTunes);
