@@ -2,8 +2,9 @@ import { createFileRoute } from '@tanstack/react-router'
 import type { AuthState } from '../../types/auth';
 import { authFetch } from '../../api/authFetch';
 import { BACKEND } from '../../config/env';
-import MultiItemCarousel from '../../components/profile/MultiItemCarousel';
+// import MultiItemCarousel from '../../components/profile/MultiItemCarousel';
 import type { RecentTunes } from '../../types/tune';
+import { Carousel } from '../../components/profile/Carousel/CarouselIndex';
 
 // interface ProfileData {
 //     username: string,
@@ -42,18 +43,16 @@ const fetchProfile = async (auth: AuthState) => {
 }
 
 function RouteComponent() {
-    const {auth} = Route.useRouteContext();
+    // const {auth} = Route.useRouteContext();
     const recentTunes: RecentTunes[] = Route.useLoaderData();
     console.log("profiledata ", recentTunes);
     return (
-        <div className='max-w-4/5 pt-10 min-w-sm mr-auto'>
-            <div className='flex items-center justify-center pb-3'>
-                <div className='text-2xl ml-15'>Recent Tunes</div>
+        <div className='max-w-4/5 pt-10 min-w-sm'>
+            <div className='flex items-center justify-center'>
+                <div className='text-2xl ml-10'>Recent Tunes</div>
                 <div className='ml-auto'>View all</div>
             </div>
-            {recentTunes.length > 0 && 
-                <MultiItemCarousel user={auth.user} recentTunes={recentTunes} />
-            }
+            <Carousel recentTunes={recentTunes} />
         </div>
     )
 
