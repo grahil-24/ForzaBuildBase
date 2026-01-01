@@ -1,26 +1,23 @@
 // RecentTunesCarousel.tsx
 import React from 'react'
 import { type EmblaOptionsType } from 'embla-carousel'
-import {
-  PrevButton,
-  NextButton,
-  usePrevNextButtons
-} from './CarouselArrowButton'
+import { PrevButton, NextButton, usePrevNextButtons } from './CarouselArrowButton'
 import useEmblaCarousel from 'embla-carousel-react'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faEllipsisVertical } from '@fortawesome/free-solid-svg-icons'
+import { faEllipsisVertical} from '@fortawesome/free-solid-svg-icons'
 import { Menu, MenuButton, MenuItem, MenuItems } from '@headlessui/react'
-import { PencilIcon, Square2StackIcon } from '@heroicons/react/16/solid'
+import { PencilIcon, MinusCircleIcon, TrashIcon} from '@heroicons/react/16/solid'
 import type { RecentTunes } from '../../../types/tune'
 import { formatS3BucketURL } from '../../../util/urlFormatter'
 
 type PropType = {
   slides: RecentTunes[]
-  options?: EmblaOptionsType
+  options?: EmblaOptionsType,
+  user: string
 }
 
 const EmblaCarousel: React.FC<PropType> = (props) => {
-  const { slides, options } = props
+  const { slides, options, user } = props
   const [emblaRef, emblaApi] = useEmblaCarousel(options)
 
   const {
@@ -64,14 +61,19 @@ const EmblaCarousel: React.FC<PropType> = (props) => {
                     </div>
 
                     {/* Text + Menu */}
-                    <div className="flex flex-row items-start mt-auto">
-                      <div className="flex-1 min-w-0">
+                    <div className="flex items-start mt-auto">
+                      <div className="flex-col min-w-0">
                         <h3 className="text-xl font-semibold truncate">
                           {tune.tune?.tune_name}
                         </h3>
                         <p className="text-sm text-gray-600">
                           Saved on {new Date(tune.saved_on).toLocaleDateString()}
                         </p>
+                      </div>
+                      
+                      <div className='mx-auto'>
+                        <div>Created by:</div>
+                        <div>{tune.tune.creator.username}</div>
                       </div>
 
                       {/* Menu Trigger */}
@@ -87,21 +89,32 @@ const EmblaCarousel: React.FC<PropType> = (props) => {
                           transition
                           modal={false}
                           anchor="bottom end"
-                          className="[--anchor-gap:--spacing(1)] data-closed:scale-95 data-closed:opacity-0 transition duration-100 ease-out z-9999 w-44 bg-white border border-gray-200 rounded-lg shadow-xl p-1 text-sm focus:outline-none mt-1"
+                          className="[--anchor-gap:--spacing(1)] data-closed:scale-95 data-closed:opacity-0 transition duration-100 ease-out z-9999 w-30 bg-white border border-gray-200 rounded-lg shadow-xl p-1 text-sm focus:outline-none mt-1"
                         >
-                          <MenuItem>
+                          {user === tune.tune.creator.username &&
+                            <MenuItem>
+                              <button className="group flex w-full items-center gap-2 rounded-lg px-3 py-2 hover:bg-gray-100 text-gray-900">
+                                <PencilIcon className="size-4 text-gray-500" />
+                                Rename
+                              </button>
+                            </MenuItem>
+                          }
+                          { user === tune.tune.creator.username ? 
+                          (<MenuItem>
                             <button className="group flex w-full items-center gap-2 rounded-lg px-3 py-2 hover:bg-gray-100 text-gray-900">
-                              <PencilIcon className="size-4 text-gray-500" />
-                              Edit
+                              <TrashIcon className="size-4 text-gray-500" />
+                              Delete
                             </button>
                           </MenuItem>
-
-                          <MenuItem>
-                            <button className="group flex w-full items-center gap-2 rounded-lg px-3 py-2 hover:bg-gray-100 text-gray-900">
-                              <Square2StackIcon className="size-4 text-gray-500" />
-                              Duplicate
-                            </button>
-                          </MenuItem>
+                          ) : (
+                            <MenuItem>
+                              <button className="group flex w-full items-center gap-2 rounded-lg px-3 py-2 hover:bg-gray-100 text-gray-900">
+                                <MinusCircleIcon className="size-4 text-gray-500" />
+                                Remove
+                              </button>
+                            </MenuItem>
+                          )
+                        }
                         </MenuItems>
                       </Menu>
                     </div>

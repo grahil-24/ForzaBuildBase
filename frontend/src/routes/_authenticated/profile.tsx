@@ -43,7 +43,7 @@ const fetchProfile = async (auth: AuthState) => {
 }
 
 function RouteComponent() {
-    // const {auth} = Route.useRouteContext();
+    const {auth} = Route.useRouteContext();
     const recentTunes: RecentTunes[] = Route.useLoaderData();
     console.log("profiledata ", recentTunes);
     return (
@@ -52,7 +52,7 @@ function RouteComponent() {
                 <div className='text-2xl ml-10'>Recent Tunes</div>
                 <div className='ml-auto'>View all</div>
             </div>
-            <Carousel recentTunes={recentTunes} />
+            <Carousel user={auth.user?.username} recentTunes={recentTunes} />
         </div>
     )
 

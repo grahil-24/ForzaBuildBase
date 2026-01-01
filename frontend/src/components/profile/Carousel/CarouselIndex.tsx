@@ -5,12 +5,13 @@ import type { RecentTunes } from '../../../types/tune'
 const OPTIONS: EmblaOptionsType = { align: 'start' }
 
 type CarouselProps = {
-  recentTunes: RecentTunes[]
+  recentTunes: RecentTunes[],
+  user: string
 }
 
 
-export const Carousel = ({ recentTunes }: CarouselProps) => (
+export const Carousel = ({ user, recentTunes }: CarouselProps) => (
   <>
-    <EmblaCarousel slides={recentTunes} options={OPTIONS} />
+    <EmblaCarousel slides={recentTunes} user={user} options={OPTIONS} />
   </>
 )
