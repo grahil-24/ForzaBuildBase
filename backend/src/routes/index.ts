@@ -3,12 +3,14 @@ import authRouter from './auth.routes';
 import browseRouter from './browseCar.routes';
 import userRouter from './user.routes';
 import viewRouter from './viewCar.routes'
+import tuneRouter from './tunes.routes'
 
 const router = Router();
 
 router.use('/browse', browseRouter);
-router.use("/auth", authRouter);
-router.use("/profile", userRouter);
-router.use("/view/car", viewRouter);
+router.use('/auth', authRouter);
+router.use('/profile', userRouter);
+router.use('/view/car', viewRouter);
+router.use('/tune', tuneRouter);
 
 export default router;
