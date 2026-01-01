@@ -5,7 +5,6 @@ import { BACKEND } from '../../config/env';
 // import MultiItemCarousel from '../../components/profile/MultiItemCarousel';
 import type { RecentTunes } from '../../types/tune';
 import { Carousel } from '../../components/profile/Carousel/CarouselIndex';
-
 // interface ProfileData {
 //     username: string,
 //     user_id: number
@@ -52,7 +51,8 @@ function RouteComponent() {
                 <div className='text-2xl ml-10'>Recent Tunes</div>
                 <div className='ml-auto'>View all</div>
             </div>
-            <Carousel user={auth.user?.username} recentTunes={recentTunes} />
+            <Carousel user={auth.user!.username} recentTunes={recentTunes} />
+            
         </div>
     )
 

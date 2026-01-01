@@ -1,5 +1,5 @@
 // RecentTunesCarousel.tsx
-import React from 'react'
+import {useState} from 'react'
 import { type EmblaOptionsType } from 'embla-carousel'
 import { PrevButton, NextButton, usePrevNextButtons } from './CarouselArrowButton'
 import useEmblaCarousel from 'embla-carousel-react'
@@ -9,6 +9,7 @@ import { Menu, MenuButton, MenuItem, MenuItems } from '@headlessui/react'
 import { PencilIcon, MinusCircleIcon, TrashIcon} from '@heroicons/react/16/solid'
 import type { RecentTunes } from '../../../types/tune'
 import { formatS3BucketURL } from '../../../util/urlFormatter'
+import { RenameDialogModal } from '../../../components/profile/RenameDialogModal';
 
 type PropType = {
   slides: RecentTunes[]
@@ -19,6 +20,7 @@ type PropType = {
 const EmblaCarousel: React.FC<PropType> = (props) => {
   const { slides, options, user } = props
   const [emblaRef, emblaApi] = useEmblaCarousel(options)
+  const [isRenameModalOpen, setIsRenameModalOpen] = useState<boolean>(false);
 
   const {
     prevBtnDisabled,
@@ -93,7 +95,7 @@ const EmblaCarousel: React.FC<PropType> = (props) => {
                         >
                           {user === tune.tune.creator.username &&
                             <MenuItem>
-                              <button className="group flex w-full items-center gap-2 rounded-lg px-3 py-2 hover:bg-gray-100 text-gray-900">
+                              <button onClick={()=>setIsRenameModalOpen(true)} className="group flex w-full items-center gap-2 rounded-lg px-3 py-2 hover:bg-gray-100 text-gray-900">
                                 <PencilIcon className="size-4 text-gray-500" />
                                 Rename
                               </button>
@@ -132,6 +134,7 @@ const EmblaCarousel: React.FC<PropType> = (props) => {
           <NextButton onClick={onNextButtonClick} disabled={nextBtnDisabled} />
         </div>
       </div>
+      <RenameDialogModal openModal={isRenameModalOpen} onClose={() => setIsRenameModalOpen(false)}/>
     </section>
   )
 }
