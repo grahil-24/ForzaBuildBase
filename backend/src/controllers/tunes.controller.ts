@@ -3,11 +3,14 @@ import { catchAsync } from "../utils/catchAsync";
 import { RequestContext, SmallIntType } from '@mikro-orm/mysql';
 import { AppError } from '../utils/AppError';
 import { Tune } from '../entities/Tunes';
+import { User } from '../entities/User';
+import { validateTuneName } from '../utils/Validator';
 
 const rename = catchAsync(async(req: Request, res: Response, next: NextFunction) => {
     const {user_id} = req;
     const tuneid = Number(req.params.tuneid);
     const newName = req.body.name;
+    
     if(isNaN(tuneid)){
         return next(new AppError('Invalid tune id', 400));
     }
@@ -20,12 +23,22 @@ const rename = catchAsync(async(req: Request, res: Response, next: NextFunction)
     if(!tune){
         return next(new AppError('Tune does not exist', 404));
     }
-    if(user_id !== tune.creator.user_id as unknown as number){
+    if(user_id !== tune.creator.user_id){
         return next(new AppError('You are not authorized to rename this tune', 403));
     }
-    em.assign(tune, {tune_name: newName});
-    await em.flush();
-    res.status(200).json({status: "success", message: "name of tune updated successfully"});
+    if(!validateTuneName(newName)){
+        res.status(422).json({status: 'error', message: 'Name needs to be in between 3 and 50 chars'});
+        return;
+    }
+    const user = new User({user_id});
+    if(await em.findOne(Tune, {creator: user, tune_name: newName})){
+        res.status(409).json({status: "error", message: "You have already created a tune with this name"});
+    }else{
+        em.assign(tune, {tune_name: newName});
+        await em.flush();
+        res.status(200).json({status: "success", message: "name of tune updated successfully"});
+    }    
 });
+
 
 export {rename};

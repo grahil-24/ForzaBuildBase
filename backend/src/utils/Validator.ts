@@ -14,4 +14,10 @@ const validateUsername = (username?: string): boolean => {
     if(username) return validator.isLength(username, {min: 4, max: 30});
     return false
 }
-export {validateEmail, validatePassword, validateUsername};
+
+const validateTuneName = (name?: string) : boolean => {
+    if(name) return validator.isLength(name, {min: 3, max: 50});
+    return false;
+}
+
+export {validateEmail, validatePassword, validateUsername, validateTuneName};
