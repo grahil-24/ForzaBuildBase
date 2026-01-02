@@ -105,6 +105,9 @@ export class Tune {
     @Property({ type: "tinyint", unsigned: true, nullable: false })
     center_diff_balance!: TinyIntType;
 
+    @Property({ type: 'varchar', length: 3, nullable: false})
+    resultant_rank!: string;
+
     constructor(tune_name: string, creator: User, car: Car){
         this.tune_name = tune_name;
         this.creator = creator;

@@ -1,15 +1,15 @@
 import { useState } from "react";
 import { Transition, Menu, MenuButton, MenuItem, MenuItems, Button} from "@headlessui/react";
-import { Link, useNavigate} from "@tanstack/react-router";
+import { Link} from "@tanstack/react-router";
 import { Route } from "../routes/__root";
 
 function Nav() {
   const authContext = Route.useRouteContext().auth;
-  const navigate = useNavigate();
+  // const navigate = useNavigate();
   const handleLogout = async() => {
     //set accesstoken, user, isauth to false  
     await authContext.logout();
-    navigate({to: '/'});
+    // navigate({to: '/'});
   };
   const [isOpen, setIsOpen] = useState(false);
   return (

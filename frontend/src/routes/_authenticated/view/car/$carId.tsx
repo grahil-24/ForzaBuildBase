@@ -1,8 +1,8 @@
-import { createFileRoute, notFound, redirect} from '@tanstack/react-router'
+import { createFileRoute, notFound} from '@tanstack/react-router'
 import type { AuthState } from '../../../../types/auth'
 import { authFetch } from '../../../../api/authFetch';
 import { BACKEND } from '../../../../config/env';
-import { SessionExpiredError } from '../../../../errors/auth.errors';
+// import { SessionExpiredError } from '../../../../errors/auth.errors';
 import NotFoundComponent from '../../../../components/NotFoundComponent';
 import ErrorComponent from '../../../../components/ErrorComponent';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -32,26 +32,36 @@ export const Route = createFileRoute('/_authenticated/view/car/$carId')({
 });
 
 const fetchCar = async(params: PathParams, authContext: AuthState): Promise<Car> => {
-    try{
-      const car = await authFetch(`${BACKEND}/view/car/${params.carId}`,
-          {method: 'GET'},
-          authContext
-      )
-      if(car.status === 404){
-        throw notFound();
-      }
-      if(!car.ok){
-        throw new Error();
-      }
-      return (await car.json()).car;
-    }catch(err: unknown){
-      console.log("error ", err);
-      if(err instanceof SessionExpiredError){
-        await authContext.logout();
-        throw redirect({to: '/'});
-      }
-      throw err;
+    // try{
+    //   const car = await authFetch(`${BACKEND}/view/car/${params.carId}`,
+    //       {method: 'GET'},
+    //       authContext
+    //   )
+    //   if(car.status === 404){
+    //     throw notFound();
+    //   }
+    //   if(!car.ok){
+    //     throw new Error();
+    //   }
+    //   return (await car.json()).car;
+    // }catch(err: unknown){
+    //   // if(err instanceof SessionExpiredError){
+    //   //   await authContext.logout();
+    //   //   throw redirect({to: '/'});
+    //   // }
+    //   throw err;
+    // }
+    const car = await authFetch(`${BACKEND}/view/car/${params.carId}`,
+        {method: 'GET'},
+        authContext
+    )
+    if(car.status === 404){
+      throw notFound();
     }
+    if(!car.ok){
+      throw new Error();
+    }
+    return (await car.json()).car;
 }
 
 const StatBar = ({

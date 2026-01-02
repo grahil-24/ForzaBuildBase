@@ -4,13 +4,13 @@ interface UserOptions {
     email?: string;
     password?: string;
     username?: string;
-    user_id?: SmallIntType;
+    user_id?: number;
 }
 
 @Entity({tableName: "users"})
 export class User{
     @PrimaryKey({type: "smallint", unsigned: true, autoincrement: true, nullable: false, hidden: true})
-    user_id?:SmallIntType
+    user_id?:number
 
     @Unique()
     @Property({type: "varchar", nullable: false, length: 255})

@@ -49,6 +49,7 @@ export const Route = createFileRoute('/_authenticated/browse')({
 })
 
 const fetchCars = async (location: ParsedLocation, auth: AuthState): Promise<LoaderData> => {
+  window.scrollTo(0, 0);
   const params = new URLSearchParams();
   Object.entries(location.search).forEach(([key, value] ) => {
     if (Array.isArray(value) && value.length > 0) {
@@ -59,21 +60,28 @@ const fetchCars = async (location: ParsedLocation, auth: AuthState): Promise<Loa
   });
 
   const queryString = params.toString();
-  try {
-    const res = await authFetch(`${BACKEND}/browse?${queryString}`,
+  // try {
+  //   const res = await authFetch(`${BACKEND}/browse?${queryString}`,
+  //     { method: 'GET' },
+  //     auth
+  //   );
+  //   if (!res.ok) throw new Error('Failed to fetch cars');
+  //   const data = await res.json();
+  //   return data as LoaderData;
+  // } catch(err: unknown) {
+  //   if(err instanceof SessionExpiredError){
+  //     await auth.logout();
+  //     throw redirect({to: '/', replace: true})
+  //   }
+  //   throw err;
+  // }
+  const res = await authFetch(`${BACKEND}/browse?${queryString}`,
       { method: 'GET' },
       auth
     );
     if (!res.ok) throw new Error('Failed to fetch cars');
     const data = await res.json();
     return data as LoaderData;
-  } catch(err: unknown) {
-    if(err instanceof SessionExpiredError){
-      await auth.logout();
-      throw redirect({to: '/', replace: true})
-    }
-    throw err;
-  }
 }
 
 function BrowseComponent(): React.ReactElement {
@@ -84,7 +92,6 @@ function BrowseComponent(): React.ReactElement {
   const [searchBarText, setSearchBarText] = useState<string>("");
 
   useEffect(()=> {
-    window.scrollTo(0, 0);
     setPageInputField(page);
   }, [page]);
 

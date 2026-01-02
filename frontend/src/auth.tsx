@@ -150,6 +150,7 @@ export function AuthProvider({children}: {children: React.ReactNode}){
                 credentials: "include"
             }
         );
+        window.location.href = '/';
     }
 
     return (

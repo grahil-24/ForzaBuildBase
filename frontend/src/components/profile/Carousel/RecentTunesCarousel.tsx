@@ -10,6 +10,7 @@ import { PencilIcon, MinusCircleIcon, TrashIcon} from '@heroicons/react/16/solid
 import type { RecentTunes } from '../../../types/tune'
 import { formatS3BucketURL } from '../../../util/urlFormatter'
 import { RenameDialogModal } from '../../../components/profile/RenameDialogModal';
+import type { RankType } from '../../../types/car'
 
 type PropType = {
   slides: RecentTunes[]
@@ -17,10 +18,20 @@ type PropType = {
   user: string
 }
 
+const rank_to_color: Record<RankType, string> = {
+  S2: "text-blue-800",
+  S1: "text-purple-500",
+  A: "text-rose-600",
+  B: "text-orange-500",
+  C: "text-amber-300",
+  D: "text-cyan-300"
+}
+
 const EmblaCarousel: React.FC<PropType> = (props) => {
   const { slides, options, user } = props
   const [emblaRef, emblaApi] = useEmblaCarousel(options)
   const [isRenameModalOpen, setIsRenameModalOpen] = useState<boolean>(false);
+  const [selectedTuneid, setSelectedTuneid] = useState<number | null>(null);
 
   const {
     prevBtnDisabled,
@@ -51,8 +62,8 @@ const EmblaCarousel: React.FC<PropType> = (props) => {
               <div className="min-w-0 flex-[0_0_100%] pl-4 sm:flex-[0_0_50%] sm:pl-6 lg:flex-[0_0_calc(100%/3)] lg:pl-8" key={tune.tune.tune_id}>
                 <div>
                   {/* Tune Card */}
-                  <div className="relative w-full rounded-lg overflow-visible bg-white p-4 text-black shadow-sm hover:shadow-md transition cursor-pointer h-full flex flex-col">
-                    
+                  <div className="relative w-full rounded-lg overflow-visible bg-white p-4 text-black shadow-sm hover:shadow-md transition h-full flex flex-col">
+                    <div className={`bg-white pl-3 pr-3 pt-1 pb-1 rounded-md absolute top-5 right-5 text-lg ${rank_to_color[tune.tune.resultant_rank]} text-center font-bold`}>{tune.tune.resultant_rank}</div>
                     {/* Car Image */}
                     <div className="w-full h-32 mb-4 flex items-center justify-center">
                       <img
@@ -65,7 +76,7 @@ const EmblaCarousel: React.FC<PropType> = (props) => {
                     {/* Text + Menu */}
                     <div className="flex items-start mt-auto">
                       <div className="flex-col min-w-0">
-                        <h3 className="text-xl font-semibold truncate">
+                        <h3 className="cursor-pointer hover:underline text-xl font-semibold truncate">
                           {tune.tune?.tune_name}
                         </h3>
                         <p className="text-sm text-gray-600">
@@ -80,10 +91,10 @@ const EmblaCarousel: React.FC<PropType> = (props) => {
 
                       {/* Menu Trigger */}
                       <Menu as="div" className="relative ml-2 shrink-0">
-                        <MenuButton className="p-1 rounded-md hover:bg-gray-100">
+                        <MenuButton className="rounded-md">
                           <FontAwesomeIcon 
                             icon={faEllipsisVertical} 
-                            className="text-gray-600" 
+                            className="text-gray-600 cursor-pointer" 
                           />
                         </MenuButton>
 
@@ -95,7 +106,7 @@ const EmblaCarousel: React.FC<PropType> = (props) => {
                         >
                           {user === tune.tune.creator.username &&
                             <MenuItem>
-                              <button onClick={()=>setIsRenameModalOpen(true)} className="group flex w-full items-center gap-2 rounded-lg px-3 py-2 hover:bg-gray-100 text-gray-900">
+                              <button onClick={()=>{setIsRenameModalOpen(true); setSelectedTuneid(tune.tune.tune_id)}} className="group flex w-full items-center gap-2 rounded-lg px-3 py-2 hover:bg-gray-100 text-gray-900">
                                 <PencilIcon className="size-4 text-gray-500" />
                                 Rename
                               </button>
@@ -134,7 +145,7 @@ const EmblaCarousel: React.FC<PropType> = (props) => {
           <NextButton onClick={onNextButtonClick} disabled={nextBtnDisabled} />
         </div>
       </div>
-      <RenameDialogModal openModal={isRenameModalOpen} onClose={() => setIsRenameModalOpen(false)}/>
+      <RenameDialogModal tune_id={selectedTuneid!} openModal={isRenameModalOpen} onClose={() => setIsRenameModalOpen(false)}/>
     </section>
   )
 }

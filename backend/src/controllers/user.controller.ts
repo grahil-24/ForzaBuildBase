@@ -4,7 +4,6 @@ import { User } from '../entities/User';
 import { RequestContext, SmallIntType, Type, UnknownType } from '@mikro-orm/core';
 import { AppError } from '../utils/AppError';
 import { SavedTunes } from '../entities/SavedTunes';
-import { Tune } from '../entities/Tunes';
 
 export const profile = catchAsync(async(req: Request, res: Response, next: NextFunction) => {
     const user_id: number = req.user_id;
@@ -15,7 +14,7 @@ export const profile = catchAsync(async(req: Request, res: Response, next: NextF
         return next(new AppError("Entity manager not available", 500));
     }
 
-    const user = await em.findOne(User, {user_id: user_id as unknown as SmallIntType});
+    const user = await em.findOne(User, {user_id});
     if(!user){
         return next(new AppError('User not found!', 404));
     }
@@ -24,7 +23,7 @@ export const profile = catchAsync(async(req: Request, res: Response, next: NextF
 });
 
 export const getRecentTunes = catchAsync(async(req: Request, res: Response, next: NextFunction) => {
-    const user = new User({user_id: req.user_id as unknown as SmallIntType});
+    const user = new User({user_id: req.user_id});
     
     const em = RequestContext.getEntityManager();
     if(!em){
@@ -37,8 +36,7 @@ export const getRecentTunes = catchAsync(async(req: Request, res: Response, next
     { limit: 5, orderBy: { saved_on: 'desc' }, exclude: ['user.user_id']}
     );    
     await em.populate(savedTunes, ['tune', 'tune.creator', 'tune.car'], {
-        fields: ['tune.tune_name', 'tune.creator.username', 'tune.car.image_filename', 'tune.car.Manufacturer']
+        fields: ['tune.tune_name', 'tune.creator.username', 'tune.car.image_filename', 'tune.car.Manufacturer', 'tune.resultant_rank']
     });
-    // await em.populate(savedTunes, ['tune.creator'], {fields: ['user.username']});
     res.status(200).json(savedTunes);
 });

@@ -1,9 +1,9 @@
-import { SessionExpiredError } from "../errors/auth.errors";
+// import { SessionExpiredError } from "../errors/auth.errors";
 
 const BACKEND = import.meta.env.VITE_BACKEND;
 
 export async function authFetch(url: string, options: RequestInit = {},
-                                auth: { accessToken: string | null; logout: () => void; setAccessToken: (token: string | null) => void}
+                                auth: { accessToken: string | null; logout: () => Promise<void>; setAccessToken: (token: string | null) => void}
 ) {
     const doFetch = (token: string | null) =>
         fetch(url, {
@@ -17,24 +17,28 @@ export async function authFetch(url: string, options: RequestInit = {},
     
     
     let res = await doFetch(auth.accessToken);
-
-    // access token expired
-    if (res.status === 401) {
+    if(!res.ok){
+        // access token expired
+        if (res.status === 401) {
             //try to refresh access token
             const refreshRes = await fetch(`${BACKEND}/auth/refresh`, {
                 credentials: 'include',
             });
             //refresh token expired or invalid
             if (!refreshRes.ok) {
-                // auth.logout();
-                throw new SessionExpiredError();
+                await auth.logout();
+                // throw new SessionExpiredError();
             }
             //access token refreshed
             const data = await refreshRes.json();
             auth.setAccessToken(data.access_token);
             // retry original request
             res = await doFetch(data.access_token);
-        
+        }else{
+            const error = await res.json();
+            throw Error(error.message);
+        }
     }
+    
     return res;
 }
