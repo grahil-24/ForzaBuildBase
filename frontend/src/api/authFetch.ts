@@ -15,30 +15,37 @@ export async function authFetch(url: string, options: RequestInit = {},
             credentials: 'include',
         });
     
-    
-    let res = await doFetch(auth.accessToken);
-    if(!res.ok){
-        // access token expired
-        if (res.status === 401) {
-            //try to refresh access token
-            const refreshRes = await fetch(`${BACKEND}/auth/refresh`, {
-                credentials: 'include',
-            });
-            //refresh token expired or invalid
-            if (!refreshRes.ok) {
-                await auth.logout();
-                // throw new SessionExpiredError();
+    try{
+        let res = await doFetch(auth.accessToken);
+        if(!res.ok){
+            // access token expired
+            if (res.status === 401) {
+                //try to refresh access token
+                const refreshRes = await fetch(`${BACKEND}/auth/refresh`, {
+                    credentials: 'include',
+                });
+                //refresh token expired or invalid
+                if (!refreshRes.ok) {
+                    await auth.logout();
+                    // throw new SessionExpiredError();
+                }
+                //access token refreshed
+                const data = await refreshRes.json();
+                auth.setAccessToken(data.access_token);
+                // retry original request
+                res = await doFetch(data.access_token);
+            }else{
+                const error = await res.json();
+                throw Error(error.message);
             }
-            //access token refreshed
-            const data = await refreshRes.json();
-            auth.setAccessToken(data.access_token);
-            // retry original request
-            res = await doFetch(data.access_token);
-        }else{
-            const error = await res.json();
-            throw Error(error.message);
         }
+        return res;
+    }catch(error){
+        if(error instanceof Error){
+            if (error.message.includes('NetworkError') || error.message.includes('Failed to fetch')) {
+                throw new Error('Connection failed. Please check your internet connection and try again.');
+            }
+        }
+        throw error;
     }
-    
-    return res;
 }

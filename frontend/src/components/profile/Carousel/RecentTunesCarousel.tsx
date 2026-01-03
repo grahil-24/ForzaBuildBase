@@ -1,5 +1,4 @@
 // RecentTunesCarousel.tsx
-import {useState} from 'react'
 import { type EmblaOptionsType } from 'embla-carousel'
 import { PrevButton, NextButton, usePrevNextButtons } from './CarouselArrowButton'
 import useEmblaCarousel from 'embla-carousel-react'
@@ -9,13 +8,13 @@ import { Menu, MenuButton, MenuItem, MenuItems } from '@headlessui/react'
 import { PencilIcon, MinusCircleIcon, TrashIcon} from '@heroicons/react/16/solid'
 import type { RecentTunes } from '../../../types/tune'
 import { formatS3BucketURL } from '../../../util/urlFormatter'
-import { RenameDialogModal } from '../../../components/profile/RenameDialogModal';
 import type { RankType } from '../../../types/car'
 
 type PropType = {
   slides: RecentTunes[]
   options?: EmblaOptionsType,
-  user: string
+  user: string,
+  onRenameClick: (tuneid: number) => void
 }
 
 const rank_to_color: Record<RankType, string> = {
@@ -28,10 +27,8 @@ const rank_to_color: Record<RankType, string> = {
 }
 
 const EmblaCarousel: React.FC<PropType> = (props) => {
-  const { slides, options, user } = props
+  const { slides, options, user, onRenameClick } = props
   const [emblaRef, emblaApi] = useEmblaCarousel(options)
-  const [isRenameModalOpen, setIsRenameModalOpen] = useState<boolean>(false);
-  const [selectedTuneid, setSelectedTuneid] = useState<number | null>(null);
 
   const {
     prevBtnDisabled,
@@ -106,7 +103,7 @@ const EmblaCarousel: React.FC<PropType> = (props) => {
                         >
                           {user === tune.tune.creator.username &&
                             <MenuItem>
-                              <button onClick={()=>{setIsRenameModalOpen(true); setSelectedTuneid(tune.tune.tune_id)}} className="group flex w-full items-center gap-2 rounded-lg px-3 py-2 hover:bg-gray-100 text-gray-900">
+                              <button onClick={() => onRenameClick(tune.tune.tune_id)} className="group flex w-full items-center gap-2 rounded-lg px-3 py-2 hover:bg-gray-100 text-gray-900">
                                 <PencilIcon className="size-4 text-gray-500" />
                                 Rename
                               </button>
@@ -145,7 +142,6 @@ const EmblaCarousel: React.FC<PropType> = (props) => {
           <NextButton onClick={onNextButtonClick} disabled={nextBtnDisabled} />
         </div>
       </div>
-      <RenameDialogModal tune_id={selectedTuneid!} openModal={isRenameModalOpen} onClose={() => setIsRenameModalOpen(false)}/>
     </section>
   )
 }

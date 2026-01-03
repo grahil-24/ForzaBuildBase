@@ -6,12 +6,13 @@ const OPTIONS: EmblaOptionsType = { align: 'start' }
 
 type CarouselProps = {
   recentTunes: RecentTunes[],
-  user: string
+  user: string,
+  onRenameClick: (tuneid: number) => void,
 }
 
 
-export const Carousel = ({ user, recentTunes }: CarouselProps) => (
+export const Carousel = ({ user, recentTunes,onRenameClick}: CarouselProps) => (
   <>
-    <EmblaCarousel slides={recentTunes} user={user} options={OPTIONS} />
+    <EmblaCarousel slides={recentTunes} user={user} options={OPTIONS} onRenameClick={onRenameClick}/>
   </>
 )
