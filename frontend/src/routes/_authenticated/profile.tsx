@@ -5,17 +5,23 @@ import { BACKEND } from '../../config/env';
 import type { RecentTunes } from '../../types/tune';
 import { Carousel } from '../../components/profile/Carousel/CarouselIndex';
 import { useMutation } from '@tanstack/react-query';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { RenameDialogModal } from '../../components/profile/RenameDialogModal';
-import {toast, ToastContainer} from 'react-toastify';
+import {toast} from 'react-toastify';
+// import ErrorToast from '../../components/ErrorToast';
+
+const ProfileErrorComponent = ({error}: {error: Error}) => {
+    useEffect(() => {
+        toast.error(error.message);
+    }, [error.message]);
+    return null; // Just show toast, no UI
+};
 
 export const Route = createFileRoute('/_authenticated/profile')({
     loader: ({context}) => fetchProfile(context.auth),
     preload: true,
     component: RouteComponent,
-    onError: (error) => {
-        console.log("error ", error);
-    },
+    errorComponent: ProfileErrorComponent
 })
 
 const fetchProfile = async (auth: AuthState) => {
@@ -24,9 +30,9 @@ const fetchProfile = async (auth: AuthState) => {
         auth
     );
 
-    if(!res.ok){
-        throw new Error('Failed to fetch profile');
-    }
+    // if(!res.ok){
+    //     throw new Error('Failed to fetch profile');
+    // }
 
     const recentTunes: RecentTunes[] = await res.json();
     return recentTunes;
@@ -44,21 +50,21 @@ function RouteComponent() {
     };
 
     const renameTune = useMutation({
-            mutationFn: ({newName, tune_id}: {newName: string, tune_id: number}) => {
-                return authFetch(`${BACKEND}/tune/${tune_id}/rename`, 
-                {method: 'PATCH', body: JSON.stringify({name: newName}), headers: {'Content-Type': 'application/json'}},
-                auth);
-            },
-            onSuccess: () => {
-                setTimeout(() => setRenameModalOpen(false), 1500);
-            },
-            onError: (error) => {
-                toast.error(error?.message || 'Failed to rename tune');
-            }
+        mutationFn: ({newName, tune_id}: {newName: string, tune_id: number}) => {
+            return authFetch(`${BACKEND}/tune/${tune_id}/rename`, 
+            {method: 'PATCH', body: JSON.stringify({name: newName}), headers: {'Content-Type': 'application/json'}},
+            auth);
+        },
+        onSuccess: () => {
+            setTimeout(() => setRenameModalOpen(false), 1500);
+        },
+        onError: (error) => {
+            toast.error(error?.message || 'Failed to rename tune');
+        }
     });
     return (
         <> 
-            <ToastContainer position='top-center' autoClose={5000}/>
+            {/* <ErrorToast /> */}
             <RenameDialogModal 
             openModal={renameModalOpen}
             onClose={() => {
