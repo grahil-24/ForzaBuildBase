@@ -5,6 +5,7 @@ import { AppError } from '../utils/AppError';
 import { Tune } from '../entities/Tunes';
 import { User } from '../entities/User';
 import { validateTuneName } from '../utils/Validator';
+import { SavedTunes } from '../entities/SavedTunes';
 
 const rename = catchAsync(async(req: Request, res: Response, next: NextFunction) => {
     const {user_id} = req;
@@ -19,11 +20,11 @@ const rename = catchAsync(async(req: Request, res: Response, next: NextFunction)
         return next(new AppError("Entity manager not available", 500));
     }
 
-    const tune: Tune | null = await em.findOne(Tune, {tune_id: tuneid as unknown as SmallIntType})
+    const tune: Tune | null = await em.findOne(Tune, {tune_id: tuneid})
     if(!tune){
         return next(new AppError('Tune does not exist', 404));
     }
-    if(user_id !== tune.creator.user_id){
+    if(user_id !== tune.creator?.user_id){
         return next(new AppError('You are not authorized to rename this tune', 403));
     }
     if(!validateTuneName(newName)){
@@ -40,5 +41,25 @@ const rename = catchAsync(async(req: Request, res: Response, next: NextFunction)
     }    
 });
 
+const remove = catchAsync(async(req: Request, res: Response, next: NextFunction) => {
+    const {user_id} = req;
+    const tuneid = Number(req.params.tuneid);
+    if(isNaN(tuneid)){
+        return next(new AppError('Invalid tune id', 400));
+    }
+    const em = RequestContext.getEntityManager();
+    if (!em) {
+        return next(new AppError("Entity manager not available", 500));
+    }
 
-export {rename};
+    const savedTune = new SavedTunes(new Tune(tuneid), new User({user_id}));
+    const result: SavedTunes | null = await em.findOne(SavedTunes, savedTune);
+    if(!result){
+        return next(new AppError('Tune does not exist', 404));
+    } 
+    await em.removeAndFlush(result);
+    res.status(204).json({status: "success", "message": "Tune deleted successfully"});
+});
+
+
+export {rename, remove};

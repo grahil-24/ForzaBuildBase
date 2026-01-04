@@ -7,7 +7,6 @@ import Searchbar from '../../components/Searchbar';
 import {authFetch} from "../../api/authFetch.ts";
 import type { AuthState } from '../../types/auth.ts';
 import { BACKEND } from '../../config/env.ts';
-import { SessionExpiredError } from '../../errors/auth.errors.ts';
 
 interface BrowseSearch {
   page?: number,
@@ -43,7 +42,7 @@ export const Route = createFileRoute('/_authenticated/browse')({
   },
   preload: true,
   loaderDeps: ({search: {page, rank, drivetrain, fuel_type, manufacturer, search}}) => ({page, rank, drivetrain, fuel_type, manufacturer, search}),
-  loader: ({ context, location }) => fetchCars(location, context.auth),
+  loader: async({ context, location }) => await fetchCars(location, context.auth),
   staleTime: Infinity,
   component: BrowseComponent,
 })

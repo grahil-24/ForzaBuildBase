@@ -7,22 +7,22 @@ import { User } from './User';
 @Unique({properties: ['creator', 'tune_name']})
 export class Tune {
     @PrimaryKey({type: "smallint", autoincrement: true, nullable: false})
-    tune_id!: SmallIntType
+    tune_id?: number
 
     @Property({type: "varchar", length: 50, nullable: false})
-    tune_name!: string
+    tune_name?: string
 
     @ManyToOne(() => User, {fieldName: 'creator_user_id', nullable: false})
-    creator!: User
+    creator?: User
 
     @ManyToOne(() => Car, {fieldName: 'car_id', nullable: false})
-    car!: Car
+    car?: Car
 
     @Property({type: "datetime", nullable: false})
-    created_on!: Date
+    created_on?: Date
 
     @Property({type: "datetime", nullable: false})
-    updated_on!: Date
+    updated_on?: Date
 
     @Property({ type: "decimal", precision: 2, scale: 1, nullable: false })
     front_tire_pressure!: string;
@@ -108,11 +108,12 @@ export class Tune {
     @Property({ type: 'varchar', length: 3, nullable: false})
     resultant_rank!: string;
 
-    constructor(tune_name: string, creator: User, car: Car){
+    constructor(tune_id?: number, tune_name?: string, creator?: User, car?: Car, created_on?: Date){
         this.tune_name = tune_name;
         this.creator = creator;
         this.car = car;
-        this.created_on = new Date();
-        this.updated_on = new Date();
+        this.tune_id = tune_id;
+        this.created_on = created_on;
+        this.updated_on = created_on;
     }
 }

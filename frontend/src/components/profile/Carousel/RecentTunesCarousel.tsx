@@ -11,10 +11,11 @@ import { formatS3BucketURL } from '../../../util/urlFormatter'
 import type { RankType } from '../../../types/car'
 
 type PropType = {
-  slides: Record<number, RecentTunes>,
+  slides: RecentTunes[],
   options?: EmblaOptionsType,
   user: string,
-  onRenameClick: (tuneid: number) => void
+  onRenameClick: (tuneid: number) => void,
+  onRemoveClick: (tuneid: number) => void,
 }
 
 const rank_to_color: Record<RankType, string> = {
@@ -27,7 +28,7 @@ const rank_to_color: Record<RankType, string> = {
 }
 
 const EmblaCarousel: React.FC<PropType> = (props) => {
-  const { slides, options, user, onRenameClick } = props
+  const { slides, options, user, onRenameClick, onRemoveClick } = props
   const [emblaRef, emblaApi] = useEmblaCarousel(options)
 
   const {
@@ -50,7 +51,7 @@ const EmblaCarousel: React.FC<PropType> = (props) => {
       <div className="overflow-hidden" ref={emblaRef}>
         <div className="flex p-2 touch-pan-y touch-pinch-zoom -ml-4 sm:-ml-6 lg:-ml-8 backface-hidden">
           { 
-          Object.entries(slides).map(([tune_id, tune]) => {
+          slides.map((tune) => {
             const imageURL = formatS3BucketURL({
               manufacturer: tune.tune.car.Manufacturer,
               image_filename: tune.tune.car.image_filename,
@@ -119,7 +120,7 @@ const EmblaCarousel: React.FC<PropType> = (props) => {
                           </MenuItem>
                           ) : (
                             <MenuItem>
-                              <button className="group flex w-full items-center gap-2 rounded-lg px-3 py-2 hover:bg-gray-100 text-gray-900">
+                              <button onClick={() => onRemoveClick(tune.tune.tune_id)}className="group flex w-full items-center gap-2 rounded-lg px-3 py-2 hover:bg-gray-100 text-gray-900">
                                 <MinusCircleIcon className="size-4 text-gray-500" />
                                 Remove
                               </button>
