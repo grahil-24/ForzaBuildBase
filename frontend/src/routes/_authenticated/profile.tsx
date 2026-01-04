@@ -41,6 +41,12 @@ const fetchProfile = async (auth: AuthState) => {
 function RouteComponent() {
     const {auth} = Route.useRouteContext();
     const recentTunes: RecentTunes[] = Route.useLoaderData();
+    const idToTunes = recentTunes.reduce<Record<number, RecentTunes>>((map, obj)=> {
+        map[obj.tune.tune_id] = obj;
+        return map;
+    }, {});
+    const [tunes, setTunes] = useState<Record<number, RecentTunes>>(idToTunes);
+    const [newName, setNewName] = useState<string>("");
     const [renameModalOpen, setRenameModalOpen] = useState<boolean>(false);
     const [selectedTuneId, setSelectedTuneId] = useState<number | null>(null);
 
@@ -56,7 +62,20 @@ function RouteComponent() {
             auth);
         },
         onSuccess: () => {
-            setTimeout(() => setRenameModalOpen(false), 1500);
+            toast.success('Tune renamed successfully!');
+            setTimeout(() => {
+                setRenameModalOpen(false); renameTune.reset();
+                setTunes((tunes) => ({
+                    ...tunes,
+                    [selectedTuneId!]: {
+                        ...tunes[selectedTuneId!],
+                        tune: {
+                            ...tunes[selectedTuneId!].tune,
+                            tune_name: newName
+                        }
+                    }
+                }));
+            }, 1500);
         },
         onError: (error) => {
             toast.error(error?.message || 'Failed to rename tune');
@@ -71,7 +90,7 @@ function RouteComponent() {
                 renameTune.reset();
                 setRenameModalOpen(false);
             }}
-            onSubmit={(newName) => renameTune.mutate({newName, tune_id: selectedTuneId!})}
+            onSubmit={(newName) => {setNewName(newName); renameTune.mutate({newName, tune_id: selectedTuneId!});}}
             isLoading={renameTune.isPending}
             isSuccess={renameTune.isSuccess}
             />
@@ -80,7 +99,7 @@ function RouteComponent() {
                     <div className='text-2xl ml-10'>Recent Tunes</div>
                     <div className='ml-auto'>View all</div>
                 </div>
-                <Carousel user={auth.user!.username} recentTunes={recentTunes} onRenameClick={handleOpenRenameModal}/>   
+                <Carousel user={auth.user!.username} recentTunes={tunes} onRenameClick={handleOpenRenameModal}/>   
             </div>
         </>
     )

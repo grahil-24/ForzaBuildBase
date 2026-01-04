@@ -11,7 +11,7 @@ import { formatS3BucketURL } from '../../../util/urlFormatter'
 import type { RankType } from '../../../types/car'
 
 type PropType = {
-  slides: RecentTunes[]
+  slides: Record<number, RecentTunes>,
   options?: EmblaOptionsType,
   user: string,
   onRenameClick: (tuneid: number) => void
@@ -37,7 +37,7 @@ const EmblaCarousel: React.FC<PropType> = (props) => {
     onNextButtonClick
   } = usePrevNextButtons(emblaApi)
 
-  if (!slides || slides.length === 0) {
+  if (!slides) {
     return (
       <div className="text-center text-black py-8">
         No recent tunes found
@@ -49,7 +49,8 @@ const EmblaCarousel: React.FC<PropType> = (props) => {
     <section className="max-w-280 m-auto">
       <div className="overflow-hidden" ref={emblaRef}>
         <div className="flex p-2 touch-pan-y touch-pinch-zoom -ml-4 sm:-ml-6 lg:-ml-8 backface-hidden">
-          {slides.map((tune: RecentTunes) => {
+          { 
+          Object.entries(slides).map(([tune_id, tune]) => {
             const imageURL = formatS3BucketURL({
               manufacturer: tune.tune.car.Manufacturer,
               image_filename: tune.tune.car.image_filename,

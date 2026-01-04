@@ -5,7 +5,7 @@ import type { RecentTunes } from '../../../types/tune'
 const OPTIONS: EmblaOptionsType = { align: 'start' }
 
 type CarouselProps = {
-  recentTunes: RecentTunes[],
+  recentTunes: Record<number, RecentTunes>,
   user: string,
   onRenameClick: (tuneid: number) => void,
 }
