@@ -40,6 +40,7 @@ function RouteComponent() {
     const [renameModalOpen, setRenameModalOpen] = useState<boolean>(false);
     const [removeModalOpen, setRemoveModalOpen] = useState<boolean>(false);
     const [selectedTuneId, setSelectedTuneId] = useState<number | null>(null);
+    const [removeMode, setRemoveMode] = useState<'delete' | 'remove'>('delete');
 
     const handleOpenRenameModal = (tuneId: number) => {
         setSelectedTuneId(tuneId);
@@ -54,6 +55,13 @@ function RouteComponent() {
 
     const handleOpenRemoveModal = (tuneId: number) => {
         setSelectedTuneId(tuneId);
+        setRemoveMode('remove');
+        setRemoveModalOpen(true);
+    }
+
+    const handleOpenDeleteModal = (tuneId: number) => {
+        setSelectedTuneId(tuneId);
+        setRemoveMode('delete');
         setRemoveModalOpen(true);
     }
     
@@ -112,6 +120,7 @@ function RouteComponent() {
                 setRemoveModalOpen(false);
             }}
             onSubmit={() => {removeTune.mutate({tune_id: selectedTuneId!});}}
+            mode={removeMode}
             isLoading={removeTune.isPending}
             />
             <div className='max-w-4/5 pt-10 min-w-sm'>
@@ -119,7 +128,7 @@ function RouteComponent() {
                     <div className='text-2xl ml-10'>Recent Tunes</div>
                     <div className='ml-auto'>View all</div>
                 </div>
-                <Carousel user={auth.user!.username} recentTunes={recentTunes} onRenameClick={handleOpenRenameModal} onRemoveClick={handleOpenRemoveModal}/>   
+                <Carousel user={auth.user!.username} recentTunes={recentTunes} onRenameClick={handleOpenRenameModal} onRemoveClick={handleOpenRemoveModal} onDeleteClick={handleOpenDeleteModal}/>   
             </div>
         </>
     )

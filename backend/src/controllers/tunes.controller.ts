@@ -51,13 +51,18 @@ const remove = catchAsync(async(req: Request, res: Response, next: NextFunction)
     if (!em) {
         return next(new AppError("Entity manager not available", 500));
     }
-
-    const savedTune = new SavedTunes(new Tune(tuneid), new User({user_id}));
+    const tune = new Tune(tuneid);
+    const savedTune = new SavedTunes(tune, new User({user_id}));
     const result: SavedTunes | null = await em.findOne(SavedTunes, savedTune);
     if(!result){
         return next(new AppError('Tune does not exist', 404));
     } 
-    await em.removeAndFlush(result);
+    await em.populate(result, ['tune.creator.user_id'], {fields: ['tune.creator.user_id']});
+    if(user_id === result.tune.creator?.user_id){
+        await em.removeAndFlush(tune);
+    }else{
+        await em.removeAndFlush(savedTune);
+    }
     res.status(204).json({status: "success", "message": "Tune deleted successfully"});
 });
 

@@ -1,11 +1,12 @@
 import { Button, Dialog, DialogPanel, DialogTitle } from '@headlessui/react'
 import { useState, useEffect } from 'react'
 
-export const RemoveDialogModal = ({openModal, onClose,onSubmit,isLoading}: {
+export const RemoveDialogModal = ({openModal, onClose,onSubmit,isLoading, mode}: {
   openModal: boolean;
   onClose: () => void;
   onSubmit: () => void;
   isLoading: boolean;
+  mode: 'remove' | 'delete';
 }) => {
   const [isOpen, setIsOpen] = useState(openModal);
 
@@ -31,7 +32,7 @@ export const RemoveDialogModal = ({openModal, onClose,onSubmit,isLoading}: {
                 Remove Tune
               </DialogTitle>
               <p className="text-sm/6 text-black">
-                Are you sure you want to remove this tune?
+                Are you sure you want to {mode} this tune?
               </p>
               <div className="mt-4 flex justify-end gap-2">
                 <Button
@@ -49,9 +50,9 @@ export const RemoveDialogModal = ({openModal, onClose,onSubmit,isLoading}: {
                             <svg className="mr-3 size-5 animate-spin ..." viewBox="0 0 24 24">
                                 <path fill="currentColor" d="M12,1A11,11,0,1,0,23,12,11,11,0,0,0,12,1Zm0,19a8,8,0,1,1,8-8A8,8,0,0,1,12,20Z" opacity=".25"/><path fill="currentColor" d="M10.72,19.9a8,8,0,0,1-6.5-9.79A7.77,7.77,0,0,1,10.4,4.16a8,8,0,0,1,9.49,6.52A1.54,1.54,0,0,0,21.38,12h.13a1.37,1.37,0,0,0,1.38-1.54,11,11,0,1,0-12.7,12.39A1.54,1.54,0,0,0,12,21.34h0A1.47,1.47,0,0,0,10.72,19.9Z"></path>
                             </svg>  
-                            Removing...
+                            {mode === 'delete' ? 'deleting...' : 'removing...'}
                         </>
-                    ) : <>Remove</>
+                    ) : <>{mode === 'delete' ? 'delete' : 'remove'}</>
                 }
                 </Button>
               </div>

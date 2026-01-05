@@ -9,11 +9,12 @@ type CarouselProps = {
   user: string,
   onRenameClick: (tuneid: number) => void,
   onRemoveClick: (tuneid: number) => void,
+  onDeleteClick: (tuneid: number) => void,
 }
 
 
-export const Carousel = ({ user, recentTunes,onRenameClick, onRemoveClick}: CarouselProps) => (
+export const Carousel = ({ user, recentTunes,onRenameClick, onRemoveClick, onDeleteClick}: CarouselProps) => (
   <>
-    <EmblaCarousel slides={recentTunes} user={user} options={OPTIONS} onRenameClick={onRenameClick} onRemoveClick={onRemoveClick}/>
+    <EmblaCarousel slides={recentTunes} user={user} options={OPTIONS} onRenameClick={onRenameClick} onRemoveClick={onRemoveClick} onDeleteClick={onDeleteClick}/>
   </>
 )

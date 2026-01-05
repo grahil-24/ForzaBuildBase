@@ -16,6 +16,7 @@ type PropType = {
   user: string,
   onRenameClick: (tuneid: number) => void,
   onRemoveClick: (tuneid: number) => void,
+  onDeleteClick: (tuneid: number) => void,
 }
 
 const rank_to_color: Record<RankType, string> = {
@@ -28,7 +29,7 @@ const rank_to_color: Record<RankType, string> = {
 }
 
 const EmblaCarousel: React.FC<PropType> = (props) => {
-  const { slides, options, user, onRenameClick, onRemoveClick } = props
+  const { slides, options, user, onRenameClick, onRemoveClick, onDeleteClick} = props
   const [emblaRef, emblaApi] = useEmblaCarousel(options)
 
   const {
@@ -113,7 +114,7 @@ const EmblaCarousel: React.FC<PropType> = (props) => {
                           }
                           { user === tune.tune.creator.username ? 
                           (<MenuItem>
-                            <button className="group flex w-full items-center gap-2 rounded-lg px-3 py-2 hover:bg-gray-100 text-gray-900">
+                            <button onClick={() => onDeleteClick(tune.tune.tune_id)} className="group flex w-full items-center gap-2 rounded-lg px-3 py-2 hover:bg-gray-100 text-gray-900">
                               <TrashIcon className="size-4 text-gray-500" />
                               Delete
                             </button>

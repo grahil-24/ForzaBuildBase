@@ -13,7 +13,7 @@ function Nav() {
   };
   const [isOpen, setIsOpen] = useState(false);
   return (
-    <nav className="bg-white w-full shadow-sm">
+    <nav className="fixed bg-white w-full shadow-sm z-1">
       <div className="h-16 flex items-center justify-between px-4 sm:px-6 lg:px-10">
         {/* Logo */}
         <div className="shrink-0 min-w-40 max-w-1/5 h-full flex items-center">
