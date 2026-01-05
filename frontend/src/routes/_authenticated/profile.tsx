@@ -14,7 +14,7 @@ const ProfileErrorComponent = ({error}: {error: Error}) => {
     useEffect(() => {
         toast.error(error.message);
     }, [error.message]);
-    return null; // Just show toast, no UI
+    return null;
 };
 
 export const Route = createFileRoute('/_authenticated/profile')({
@@ -46,6 +46,12 @@ function RouteComponent() {
         setRenameModalOpen(true);
     };
 
+    const handleCloseRenameModal = () => {
+        renameTune.reset();
+        setRenameModalOpen(false);
+        setSelectedTuneId(null);
+    };
+
     const handleOpenRemoveModal = (tuneId: number) => {
         setSelectedTuneId(tuneId);
         setRemoveModalOpen(true);
@@ -57,11 +63,10 @@ function RouteComponent() {
             {method: 'PATCH', body: JSON.stringify({name: newName}), headers: {'Content-Type': 'application/json'}},
             auth);
         },
-        onSuccess: () => {
+        onSuccess: async () => {
             toast.success('Tune renamed successfully!');
-            setTimeout(async() => {
-                setRenameModalOpen(false); 
-                renameTune.reset();
+            setTimeout(async () => {
+                handleCloseRenameModal();
                 await router.invalidate();
             }, 1500);
         },
@@ -95,10 +100,7 @@ function RouteComponent() {
             {/* <ErrorToast /> */}
             <RenameDialogModal 
             openModal={renameModalOpen}
-            onClose={() => {
-                renameTune.reset();
-                setRenameModalOpen(false);
-            }}
+            onClose={handleCloseRenameModal}
             onSubmit={(newName) => {renameTune.mutate({newName, tune_id: selectedTuneId!});}}
             isLoading={renameTune.isPending}
             isSuccess={renameTune.isSuccess}
