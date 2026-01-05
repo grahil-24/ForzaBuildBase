@@ -130,10 +130,10 @@ function BrowseComponent(): React.ReactElement {
         </div>
       </div>
       <div className='flex gap-6 p-6'>
-        <aside className='-mt-10'>
+        <aside className='fixed -mt-10'>
           <FilterSidebar />
         </aside>
-        <div className="flex-1 pt-10">
+        <div className="ml-15 flex-1 pt-10">
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5 gap-3">
             {cars.map((car) => (
               <CarTiles key={car.id} car={car} />

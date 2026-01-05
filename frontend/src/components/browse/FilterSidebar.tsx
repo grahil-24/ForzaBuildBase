@@ -119,11 +119,6 @@ const FilterSidebar = () => {
     <>
       {/* Main Filters Dialog */}
       <Dialog open={filtersOpen} onClose={setFiltersOpen} className="relative z-40">
-        <DialogBackdrop
-          transition
-          className="fixed inset-0 bg-black/25 transition-opacity duration-300 ease-linear data-closed:opacity-0"
-        />
-
         <div className="fixed inset-0 z-40 flex">
           <DialogPanel
             transition
@@ -226,7 +221,7 @@ const FilterSidebar = () => {
                   <Dialog open={brandDialogOpen} onClose={setBrandDialogOpen} className="relative z-50">
                     <DialogBackdrop
                       transition
-                      className="fixed inset-0 bg-black/50 transition-opacity duration-150 ease-linear data-closed:opacity-0"
+                      className="fixed inset-0 bg-black/30 transition-opacity duration-100 ease-linear data-closed:opacity-0"
                     />
 
                     <div className="fixed inset-0 z-50 overflow-y-auto">
