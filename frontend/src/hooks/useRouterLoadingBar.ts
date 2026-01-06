@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import { useRouter } from '@tanstack/react-router';
-import { useLoadingBar } from '../contexts/LoadingBarContext';
+import { useLoadingBar } from './useLoadingBar';
 
 export function useRouterLoadingBar() {
   const router = useRouter();

@@ -1,13 +1,6 @@
-import { createContext, useContext, useRef, type ReactNode } from 'react';
+import {useRef, type ReactNode } from 'react';
 import LoadingBar, { type LoadingBarRef } from 'react-top-loading-bar';
-
-interface LoadingBarContextType {
-  startLoading: () => void;
-  completeLoading: () => void;
-  continueLoading: (progress: number) => void;
-}
-
-const LoadingBarContext = createContext<LoadingBarContextType | undefined>(undefined);
+import { LoadingBarContext } from './LoadingBarContext';
 
 export function LoadingBarProvider({ children }: { children: ReactNode }) {
   const loadingBarRef = useRef<LoadingBarRef>(null);
@@ -36,12 +29,4 @@ export function LoadingBarProvider({ children }: { children: ReactNode }) {
       {children}
     </LoadingBarContext.Provider>
   );
-}
-
-export function useLoadingBar() {
-  const context = useContext(LoadingBarContext);
-  if (!context) {
-    throw new Error('useLoadingBar must be used within LoadingBarProvider');
-  }
-  return context;
 }

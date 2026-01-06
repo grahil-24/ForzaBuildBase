@@ -1,15 +1,13 @@
-import React, {createContext, useContext, useState, useEffect} from 'react';
-import type { AuthState } from './types/auth';
+import React, {useState, useEffect} from 'react';
+import { AuthContext } from './AuthContext';
 import {PulseLoader} from 'react-spinners';
-import { BACKEND } from './config/env';
+import { BACKEND } from '../../config/env';
 
 interface User {
     user_id: number,
     username: string,
     email?: string,
 }
-
-const AuthContext = createContext<AuthState | undefined>(undefined);
 
 export function AuthProvider({children}: {children: React.ReactNode}){
     const [user, setUser] = useState<User | null>(null);
@@ -158,12 +156,4 @@ export function AuthProvider({children}: {children: React.ReactNode}){
             {children}
         </AuthContext.Provider>
     )
-}
-
-export function useAuth() {
-    const context = useContext(AuthContext);
-    if(context === undefined){
-        throw new Error('useAuth must be used within an AuthProvider')
-    }
-    return context;
 }
