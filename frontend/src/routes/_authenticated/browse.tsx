@@ -1,4 +1,4 @@
-import {createFileRoute, redirect, useNavigate, type ParsedLocation} from '@tanstack/react-router'
+import {createFileRoute, useNavigate, type ParsedLocation} from '@tanstack/react-router'
 import CarTiles from '../../components/browse/CarTiles';
 import FilterSidebar from '../../components/browse/FilterSidebar';
 import React, { useEffect, useState } from 'react';

@@ -104,7 +104,7 @@ function RouteComponent() {
     })
 
     return (
-        <> 
+        <div> 
             {/* <ErrorToast /> */}
             <RenameDialogModal 
             openModal={renameModalOpen}
@@ -128,9 +128,22 @@ function RouteComponent() {
                     <div className='text-2xl ml-10'>Recent Tunes</div>
                     <div className='ml-auto'>View all</div>
                 </div>
-                <Carousel user={auth.user!.username} recentTunes={recentTunes} onRenameClick={handleOpenRenameModal} onRemoveClick={handleOpenRemoveModal} onDeleteClick={handleOpenDeleteModal}/>   
+                {recentTunes.length > 0 ? (
+                        <Carousel user={auth.user!.username} recentTunes={recentTunes} onRenameClick={handleOpenRenameModal} onRemoveClick={handleOpenRemoveModal} onDeleteClick={handleOpenDeleteModal}/>   
+                    ) :
+                    (
+                        <div className='mt-4 flex-row items-center'>
+                            <div className='flex justify-center'>
+                                <p>no tunes created yet.</p>
+                            </div>
+                            <div className='flex items-center justify-center'>
+                                <button className='cursor-pointer hover:bg-black hover:text-white duration-200 border-black border-2 p-3 mt-4'>Create tune</button>
+                            </div>
+                        </div>
+                    )
+                }
             </div>
-        </>
+        </div>
     )
 
 }
