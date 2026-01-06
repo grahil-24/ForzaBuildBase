@@ -139,10 +139,18 @@ const EmblaCarousel: React.FC<PropType> = (props) => {
         </div>
       </div>
 
-      <div className="grid-cols-[auto_1fr] flex justify-between gap-5 mt-7">
-        <div className="grid grid-cols-2 gap-2 m-auto items-center">
-          <PrevButton onClick={onPrevButtonClick} disabled={prevBtnDisabled} />
-          <NextButton onClick={onNextButtonClick} disabled={nextBtnDisabled} />
+      <div className="flex-row">
+        <div className="flex m-auto w-1/13 gap-1">
+          <div className='mr-auto'>
+            {!prevBtnDisabled && 
+              <PrevButton onClick={onPrevButtonClick} disabled={prevBtnDisabled} />
+            }
+          </div>
+          <div className='ml-auto'>
+            {!nextBtnDisabled && 
+              <NextButton onClick={onNextButtonClick} disabled={nextBtnDisabled} />
+            }
+          </div>
         </div>
       </div>
     </section>
