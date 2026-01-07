@@ -123,7 +123,7 @@ function BrowseComponent(): React.ReactElement {
 
   return (
     <div className="w-full">
-      <div className='relative flex flex-col md:flex-row items-center justify-center px-6 pt-5 gap-4'>
+      <div className='relative flex flex-col md:flex-row items-center justify-center px-6 gap-4'>
         <p className='text-lg pt-5'>Showing {total} results</p>
         <div className='md:absolute md:right-6'>
           <Searchbar handleSearchbar={handleSearchbar} handleSearch={handleSearch}/>
@@ -133,7 +133,7 @@ function BrowseComponent(): React.ReactElement {
         <aside className='fixed -mt-10'>
           <FilterSidebar />
         </aside>
-        <div className="ml-15 flex-1 pt-10">
+        <div className="ml-15 flex-1 pt-5">
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5 gap-3">
             {cars.map((car) => (
               <CarTiles key={car.id} car={car} />

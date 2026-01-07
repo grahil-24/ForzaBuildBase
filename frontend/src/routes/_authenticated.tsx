@@ -20,7 +20,7 @@ export const Route = createFileRoute('/_authenticated')({
     component: () => (
         <div>
             <Nav />
-            <div className="pt-10">
+            <div className="pt-17">
                 <Outlet/>
             </div>
         </div>

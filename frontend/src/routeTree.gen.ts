@@ -13,8 +13,9 @@ import { Route as SignUpRouteImport } from './routes/sign-up'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as AuthenticatedRouteImport } from './routes/_authenticated'
 import { Route as IndexRouteImport } from './routes/index'
-import { Route as AuthenticatedProfileRouteImport } from './routes/_authenticated/profile'
 import { Route as AuthenticatedBrowseRouteImport } from './routes/_authenticated/browse'
+import { Route as AuthenticatedProfileIndexRouteImport } from './routes/_authenticated/profile/index'
+import { Route as AuthenticatedProfileTunesRouteImport } from './routes/_authenticated/profile/tunes'
 import { Route as AuthenticatedViewCarCarIdRouteImport } from './routes/_authenticated/view/car/$carId'
 
 const SignUpRoute = SignUpRouteImport.update({
@@ -36,16 +37,23 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AuthenticatedProfileRoute = AuthenticatedProfileRouteImport.update({
-  id: '/profile',
-  path: '/profile',
-  getParentRoute: () => AuthenticatedRoute,
-} as any)
 const AuthenticatedBrowseRoute = AuthenticatedBrowseRouteImport.update({
   id: '/browse',
   path: '/browse',
   getParentRoute: () => AuthenticatedRoute,
 } as any)
+const AuthenticatedProfileIndexRoute =
+  AuthenticatedProfileIndexRouteImport.update({
+    id: '/profile/',
+    path: '/profile/',
+    getParentRoute: () => AuthenticatedRoute,
+  } as any)
+const AuthenticatedProfileTunesRoute =
+  AuthenticatedProfileTunesRouteImport.update({
+    id: '/profile/tunes',
+    path: '/profile/tunes',
+    getParentRoute: () => AuthenticatedRoute,
+  } as any)
 const AuthenticatedViewCarCarIdRoute =
   AuthenticatedViewCarCarIdRouteImport.update({
     id: '/view/car/$carId',
@@ -58,7 +66,8 @@ export interface FileRoutesByFullPath {
   '/login': typeof LoginRoute
   '/sign-up': typeof SignUpRoute
   '/browse': typeof AuthenticatedBrowseRoute
-  '/profile': typeof AuthenticatedProfileRoute
+  '/profile/tunes': typeof AuthenticatedProfileTunesRoute
+  '/profile': typeof AuthenticatedProfileIndexRoute
   '/view/car/$carId': typeof AuthenticatedViewCarCarIdRoute
 }
 export interface FileRoutesByTo {
@@ -66,7 +75,8 @@ export interface FileRoutesByTo {
   '/login': typeof LoginRoute
   '/sign-up': typeof SignUpRoute
   '/browse': typeof AuthenticatedBrowseRoute
-  '/profile': typeof AuthenticatedProfileRoute
+  '/profile/tunes': typeof AuthenticatedProfileTunesRoute
+  '/profile': typeof AuthenticatedProfileIndexRoute
   '/view/car/$carId': typeof AuthenticatedViewCarCarIdRoute
 }
 export interface FileRoutesById {
@@ -76,7 +86,8 @@ export interface FileRoutesById {
   '/login': typeof LoginRoute
   '/sign-up': typeof SignUpRoute
   '/_authenticated/browse': typeof AuthenticatedBrowseRoute
-  '/_authenticated/profile': typeof AuthenticatedProfileRoute
+  '/_authenticated/profile/tunes': typeof AuthenticatedProfileTunesRoute
+  '/_authenticated/profile/': typeof AuthenticatedProfileIndexRoute
   '/_authenticated/view/car/$carId': typeof AuthenticatedViewCarCarIdRoute
 }
 export interface FileRouteTypes {
@@ -86,10 +97,18 @@ export interface FileRouteTypes {
     | '/login'
     | '/sign-up'
     | '/browse'
+    | '/profile/tunes'
     | '/profile'
     | '/view/car/$carId'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/login' | '/sign-up' | '/browse' | '/profile' | '/view/car/$carId'
+  to:
+    | '/'
+    | '/login'
+    | '/sign-up'
+    | '/browse'
+    | '/profile/tunes'
+    | '/profile'
+    | '/view/car/$carId'
   id:
     | '__root__'
     | '/'
@@ -97,7 +116,8 @@ export interface FileRouteTypes {
     | '/login'
     | '/sign-up'
     | '/_authenticated/browse'
-    | '/_authenticated/profile'
+    | '/_authenticated/profile/tunes'
+    | '/_authenticated/profile/'
     | '/_authenticated/view/car/$carId'
   fileRoutesById: FileRoutesById
 }
@@ -138,18 +158,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/_authenticated/profile': {
-      id: '/_authenticated/profile'
-      path: '/profile'
-      fullPath: '/profile'
-      preLoaderRoute: typeof AuthenticatedProfileRouteImport
-      parentRoute: typeof AuthenticatedRoute
-    }
     '/_authenticated/browse': {
       id: '/_authenticated/browse'
       path: '/browse'
       fullPath: '/browse'
       preLoaderRoute: typeof AuthenticatedBrowseRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/profile/': {
+      id: '/_authenticated/profile/'
+      path: '/profile'
+      fullPath: '/profile'
+      preLoaderRoute: typeof AuthenticatedProfileIndexRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/profile/tunes': {
+      id: '/_authenticated/profile/tunes'
+      path: '/profile/tunes'
+      fullPath: '/profile/tunes'
+      preLoaderRoute: typeof AuthenticatedProfileTunesRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
     '/_authenticated/view/car/$carId': {
@@ -164,13 +191,15 @@ declare module '@tanstack/react-router' {
 
 interface AuthenticatedRouteChildren {
   AuthenticatedBrowseRoute: typeof AuthenticatedBrowseRoute
-  AuthenticatedProfileRoute: typeof AuthenticatedProfileRoute
+  AuthenticatedProfileTunesRoute: typeof AuthenticatedProfileTunesRoute
+  AuthenticatedProfileIndexRoute: typeof AuthenticatedProfileIndexRoute
   AuthenticatedViewCarCarIdRoute: typeof AuthenticatedViewCarCarIdRoute
 }
 
 const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
   AuthenticatedBrowseRoute: AuthenticatedBrowseRoute,
-  AuthenticatedProfileRoute: AuthenticatedProfileRoute,
+  AuthenticatedProfileTunesRoute: AuthenticatedProfileTunesRoute,
+  AuthenticatedProfileIndexRoute: AuthenticatedProfileIndexRoute,
   AuthenticatedViewCarCarIdRoute: AuthenticatedViewCarCarIdRoute,
 }
 

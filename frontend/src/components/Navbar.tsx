@@ -34,6 +34,12 @@ function Nav() {
           >
             Browse
           </Link>
+          <Link
+            to="/profile/tunes"
+            className="relative text-black px-3 py-2 rounded-md text-sm font-medium after:content-[''] after:absolute after:bottom-1 after:left-3 after:right-3 after:h-0.5 after:bg-black after:scale-x-0 after:origin-left after:transition-transform after:duration-300 hover:after:scale-x-100"
+          >
+            My Tunes
+          </Link>
           
           {/* User Menu */}
           {authContext.isAuthenticated && 
@@ -152,6 +158,12 @@ function Nav() {
               className="text-gray-700 hover:bg-gray-100 hover:text-gray-900 block px-3 py-2 rounded-md text-base font-medium"
             >
               Browse
+            </Link>
+            <Link
+              to="/profile/tunes"
+              className="text-gray-700 hover:bg-gray-100 hover:text-gray-900 block px-3 py-2 rounded-md text-base font-medium"
+            >
+              My Tunes
             </Link>
             
             {/* Mobile user menu */}

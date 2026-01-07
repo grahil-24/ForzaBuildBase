@@ -1,13 +1,13 @@
-import { createFileRoute, useRouter } from '@tanstack/react-router'
-import type { AuthState } from '../../types/auth';
-import { authFetch } from '../../api/authFetch';
-import { BACKEND } from '../../config/env';
-import type { RecentTunes } from '../../types/tune';
-import { Carousel } from '../../components/profile/Carousel/CarouselIndex';
+import { createFileRoute, useRouter, Link } from '@tanstack/react-router'
+import type { AuthState } from '../../../types/auth';
+import { authFetch } from '../../../api/authFetch';
+import { BACKEND } from '../../../config/env';
+import type { RecentTunes } from '../../../types/tune';
+import { Carousel } from '../../../components/profile/Carousel/CarouselIndex';
 import { useMutation } from '@tanstack/react-query';
 import { useState, useEffect } from 'react';
-import { RenameDialogModal } from '../../components/profile/RenameDialogModal';
-import {RemoveDialogModal} from '../../components/profile/RemoveDialogModal';
+import { RenameDialogModal } from '../../../components/profile/RenameDialogModal';
+import {RemoveDialogModal} from '../../../components/profile/RemoveDialogModal';
 import {toast} from 'react-toastify';
 
 const ProfileErrorComponent = ({error}: {error: Error}) => {
@@ -17,11 +17,11 @@ const ProfileErrorComponent = ({error}: {error: Error}) => {
     return null;
 };
 
-export const Route = createFileRoute('/_authenticated/profile')({
+export const Route = createFileRoute('/_authenticated/profile/')({
     loader: async({context}) => await fetchProfile(context.auth),
     preload: true,
     component: RouteComponent,
-    errorComponent: ProfileErrorComponent
+    errorComponent: ProfileErrorComponent,
 })
 
 const fetchProfile = async (auth: AuthState) => {
@@ -30,10 +30,12 @@ const fetchProfile = async (auth: AuthState) => {
         auth
     );
     const recentTunes: RecentTunes[] = await res.json();
+    console.log("data fetched");
     return recentTunes;
 }
 
 function RouteComponent() {
+    console.log("route mounted ");
     const {auth} = Route.useRouteContext();
     const recentTunes: RecentTunes[] = Route.useLoaderData();
     const router = useRouter();
@@ -126,7 +128,7 @@ function RouteComponent() {
             <div className='max-w-4/5 pt-10 min-w-sm'>
                 <div className='flex items-center justify-center'>
                     <div className='text-2xl ml-10'>Recent Tunes</div>
-                    <div className='ml-auto'>View all</div>
+                    <div className='ml-auto'><Link to={'/profile/tunes'}>View all</Link></div>
                 </div>
                 {recentTunes.length > 0 ? (
                         <Carousel user={auth.user!.username} recentTunes={recentTunes} onRenameClick={handleOpenRenameModal} onRemoveClick={handleOpenRemoveModal} onDeleteClick={handleOpenDeleteModal}/>   
