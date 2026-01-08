@@ -18,8 +18,7 @@ const saltRounds: number = 10;
 const JWT_EXPIRATION: string = process.env.JWT_EXPIRATION!;
 const JWT_REFRESH_EXPIRATION: string = process.env.JWT_REFRESH_EXPIRATION!;
 const JWT_SECRET: string = process.env.JWT_SECRET!;
-
-// const cookieConfig =
+const secure: boolean = process.env.NODE_ENV === 'production' ? true : false;
 
 const hashPassword = async (password: string): Promise<string> => {
     const hashedPassword = await bcrypt.hash(password, saltRounds);
@@ -51,7 +50,7 @@ export const signUp = catchAsync(async (req: Request, res: Response, next: NextF
     const result: number = Number(await em.insert(newUser));
     const accessToken = signToken(result, JWT_EXPIRATION);
     const refreshToken = signToken(result, JWT_REFRESH_EXPIRATION);
-    res.cookie('refresh_token', refreshToken, {httpOnly: true, sameSite: "strict", expires: new Date(Date.now() + ms(JWT_REFRESH_EXPIRATION as ms.StringValue))});
+    res.cookie('refresh_token', refreshToken, {httpOnly: true, sameSite: "strict", secure ,expires: new Date(Date.now() + ms(JWT_REFRESH_EXPIRATION as ms.StringValue))});
     res.status(201).json({status: "success",message: "user created successfully", access_token: accessToken, user: {user_id:result, username: newUser.username}});
 });
 
@@ -91,12 +90,12 @@ export const login = catchAsync(async(req: Request, res: Response, next: NextFun
     }
     const accessToken = signToken(Number(userFromDB.user_id), JWT_EXPIRATION);
     const refreshToken = signToken(Number(userFromDB.user_id), JWT_REFRESH_EXPIRATION);
-    res.cookie('refresh_token', refreshToken, {httpOnly: true, sameSite: "strict", expires: new Date(Date.now() + ms(JWT_REFRESH_EXPIRATION as ms.StringValue))});
-    res.status(200).json({status: "success",message: "logged in successfully", access_token: accessToken, user: {user_id:userFromDB.user_id, username: userFromDB.username}});
+    res.cookie('refresh_token', refreshToken, {httpOnly: true, sameSite: "strict", secure, expires: new Date(Date.now() + ms(JWT_REFRESH_EXPIRATION as ms.StringValue))});
+    res.status(200).json({status: "success",message: "logged in successfully", access_token: accessToken, user: {user_id:userFromDB.user_id, username: userFromDB.username}});       
 });
 
 export const logout = catchAsync(async(req: Request, res: Response, next: NextFunction): Promise<void> => {
-    res.cookie('refresh_token', "", {httpOnly: true, sameSite: "strict", maxAge: 0});
+    res.cookie('refresh_token', "", {httpOnly: true, sameSite: "strict", secure, maxAge: 0});
     res.status(200).json({status: "success", message: "signed out"});
 });
 
@@ -109,7 +108,7 @@ export const refresh = catchAsync(async(req: Request, res: Response, next: NextF
     const decoded = await jwtVerifyPromisifed(refreshToken, JWT_SECRET, 'refresh');
     const newRefreshToken = signToken(decoded.id, JWT_REFRESH_EXPIRATION);
     const newAccessToken = signToken(decoded.id, JWT_EXPIRATION);
-    res.cookie('refresh_token', newRefreshToken, {httpOnly: true, sameSite: "strict", expires: new Date(Date.now() + ms(JWT_REFRESH_EXPIRATION as ms.StringValue))});
+    res.cookie('refresh_token', newRefreshToken, {httpOnly: true, sameSite: "strict", secure, expires: new Date(Date.now() + ms(JWT_REFRESH_EXPIRATION as ms.StringValue))});
     res.status(200).json({status: "success", message: "tokens refreshed", access_token: newAccessToken, user: {user_id:decoded.id}});
 
 });
@@ -133,7 +132,7 @@ export const verify = catchAsync(async(req: Request, res: Response, next: NextFu
                     const decoded: JwtPayload = await jwtVerifyPromisifed(refreshToken, JWT_SECRET, 'refresh');
                     const newAccessToken = signToken(decoded.id, JWT_EXPIRATION);
                     const newRefreshToken = signToken(decoded.id, JWT_REFRESH_EXPIRATION);
-                    res.cookie('refresh_token', newRefreshToken, {httpOnly: true, sameSite: "strict", expires: new Date(Date.now() + ms(JWT_REFRESH_EXPIRATION as ms.StringValue))});
+                    res.cookie('refresh_token', newRefreshToken, {httpOnly: true, sameSite: "strict", secure, expires: new Date(Date.now() + ms(JWT_REFRESH_EXPIRATION as ms.StringValue))});
                     res.status(200).json({status: "success", access_token: newAccessToken, message: "Token refreshed successfully!", user: {user_id: decoded.id}});
                 //refresh token is invalid or expired. log user out
                 }catch(refreshTokenErr){

@@ -153,12 +153,12 @@ function RouteComponent() {
             <img 
               src={imageUrl}
               alt={car.Vehicle!}
-              className="object-contain drop-shadow-2xl w-full"
+              className="-mt-10 object-contain drop-shadow-2xl w-full"
             />
           </div>
 
           {/* Header Info */}
-          <div className="p-6 w-full">
+          <div className="p-2 w-full">
             <div className="flex items-start justify-between mb-6">
               <div className='w-full'>
                 <div className='flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-0'>
