@@ -3,12 +3,33 @@ import { Menu, MenuButton, MenuItem, MenuItems } from '@headlessui/react'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faEllipsisH } from '@fortawesome/free-solid-svg-icons'
 import { PencilIcon, TrashIcon, MinusCircleIcon } from '@heroicons/react/24/outline'
+import { BACKEND } from '../../../config/env'
+import { useInfiniteQuery } from '@tanstack/react-query'
+import { authFetch } from '../../../api/authFetch'
+import type { AuthState } from '../../../types/auth'
 
 export const Route = createFileRoute('/_authenticated/profile/tunes')({
   component: RouteComponent,
 })
 
+const fetchTunes = async({pageParam, auth}: {pageParam: number, auth: AuthState}) => {
+  const url = pageParam 
+    ? `${BACKEND}/tunes?cursor=${pageParam}` 
+    : `${BACKEND}/tunes`;
+  const res = await authFetch(url, {method: 'GET'}, auth);
+  return res.json();
+}
+
+
 function RouteComponent() {
+  const {auth} = Route.useRouteContext();
+  const {data, error, fetchNextPage, hasNextPage, isFetching, isFetchingNextPage, status} = useInfiniteQuery({
+    queryKey: ['tunes'],
+    queryFn: ({pageParam}) => fetchTunes({auth,pageParam}),
+    initialPageParam: 0,
+    getNextPageParam: (lastPage, pages) => lastPage.nextCursor,
+  })
+  
   return (
     <div className='max-w-4xl mx-auto px-4 py-6 space-y-3'>
       {/* First Item */}

@@ -30,7 +30,6 @@ const fetchProfile = async (auth: AuthState) => {
         auth
     );
     const recentTunes: RecentTunes[] = await res.json();
-    console.log("data fetched");
     return recentTunes;
 }
 
