@@ -5,23 +5,17 @@ import { BACKEND } from '../../../config/env';
 import type { RecentTunes } from '../../../types/tune';
 import { Carousel } from '../../../components/profile/Carousel/CarouselIndex';
 import { useMutation } from '@tanstack/react-query';
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { RenameDialogModal } from '../../../components/profile/RenameDialogModal';
 import {RemoveDialogModal} from '../../../components/profile/RemoveDialogModal';
 import {toast} from 'react-toastify';
-
-const ProfileErrorComponent = ({error}: {error: Error}) => {
-    useEffect(() => {
-        toast.error(error.message);
-    }, [error.message]);
-    return null;
-};
+import ErrorToast from '../../../components/ErrorToast';
 
 export const Route = createFileRoute('/_authenticated/profile/')({
     loader: async({context}) => await fetchProfile(context.auth),
     preload: true,
     component: RouteComponent,
-    errorComponent: ProfileErrorComponent,
+    errorComponent: ErrorToast,
 })
 
 const fetchProfile = async (auth: AuthState) => {

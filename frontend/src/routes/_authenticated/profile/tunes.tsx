@@ -7,19 +7,31 @@ import { BACKEND } from '../../../config/env'
 import { useInfiniteQuery } from '@tanstack/react-query'
 import { authFetch } from '../../../api/authFetch'
 import type { AuthState } from '../../../types/auth'
+import ErrorToast from '../../../components/ErrorToast'
+import { formatS3BucketURL } from '../../../util/urlFormatter'
+import type { RankType } from '../../../types/car'
 
 export const Route = createFileRoute('/_authenticated/profile/tunes')({
   component: RouteComponent,
+  errorComponent: ErrorToast
 })
 
 const fetchTunes = async({pageParam, auth}: {pageParam: number, auth: AuthState}) => {
   const url = pageParam 
-    ? `${BACKEND}/tunes?cursor=${pageParam}` 
-    : `${BACKEND}/tunes`;
+    ? `${BACKEND}/profile/my-tunes?cursor=${pageParam}` 
+    : `${BACKEND}/profile/my-tunes`;
   const res = await authFetch(url, {method: 'GET'}, auth);
-  return res.json();
+  return await res.json();
 }
 
+const rank_to_color: Record<RankType, string> = {
+  S2: "bg-blue-800",
+  S1: "bg-purple-500",
+  A: "bg-rose-600",
+  B: "bg-orange-500",
+  C: "bg-amber-300",
+  D: "bg-cyan-300"
+}
 
 function RouteComponent() {
   const {auth} = Route.useRouteContext();
@@ -27,177 +39,124 @@ function RouteComponent() {
     queryKey: ['tunes'],
     queryFn: ({pageParam}) => fetchTunes({auth,pageParam}),
     initialPageParam: 0,
-    getNextPageParam: (lastPage, pages) => lastPage.nextCursor,
+    getNextPageParam: (lastPage) => lastPage.nextCursor,
   })
-  
+
   return (
-    <div className='max-w-4xl mx-auto px-4 py-6 space-y-3'>
-      {/* First Item */}
-      <div className='cursor-pointer relative flex items-center border border-gray-200 bg-white hover:shadow-lg transition-shadow duration-200 overflow-hidden'>
-        {/* Rank Badge */}
-        <div className='hidden sm:flex items-center justify-center w-16 md:w-20 text-black'>
-          <span className='text-2xl md:text-3xl font-bold opacity-50'>#1</span>
-        </div>
-        
-        {/* Car Image */}
-        <div className='w-32 sm:w-40 md:w-48 lg:w-56 shrink-0 flex items-center justify-center  from-gray-50 to-gray-100'>
-          <img 
-            className='w-full h-auto object-contain' 
-            src='https://fh5-car-images.s3.ap-south-1.amazonaws.com/images/Abarth/Abarth_124_Spider.png'
-            alt="Abarth 124 Spider"
-          />
-        </div>
-        
-        {/* Content */}
-        <div className='flex-1 px-4 py-2 md:px-6 flex flex-col justify-center min-w-0'>
-          <h2 className='text-sm sm:text-sm md:text-2xl font-bold text-gray-900 mb-1 truncate'>
-            ABARTH 124 SPIDER
-          </h2>
-          
-          <p className='text-sm md:text-base text-gray-600 mb-3'>
-            My Custom Tune
-          </p>
-          
-          <div className='flex flex-wrap items-center gap-x-4 gap-y-2 text-xs md:text-sm text-gray-600'>
-            <span>Creator: <span className='font-semibold text-gray-800'>Rahil</span></span>
-            <span className='hidden sm:inline text-gray-400'>•</span>
-            <span>Created: January 5, 2026</span>
-          </div>
-        </div>
-        
-        {/* Class Badge - Top Right */}
-        <div className='absolute top-3 right-3 sm:right-16 md:right-20'>
-          <span className='inline-block px-3 py-1 bg-purple-500 text-white text-xs md:text-sm font-bold shadow-md'>
-            CLASS A
-          </span>
-        </div>
-        
-        {/* Menu */}
-        <div className='flex items-center pr-3 md:pr-4'>
-          <Menu as="div" className="relative">
-            <MenuButton className="p-2 hover:bg-gray-100 transition-colors duration-150">
-              <FontAwesomeIcon 
-                icon={faEllipsisH} 
-                className="text-gray-600 text-lg md:text-xl" 
-              />
-            </MenuButton>
-            <MenuItems
-              transition
-              modal={false}
-              anchor="bottom end"
-              className="absolute right-0 mt-2 w-48 bg-white border border-gray-200  shadow-xl overflow-hidden z-50 focus:outline-none transition duration-100 ease-out data-closed:scale-95 data-closed:opacity-0"
-            >
-              <MenuItem>
-                {({ active }) => (
-                  <button className={`${active ? 'bg-gray-50' : ''} group flex w-full items-center gap-3 px-4 py-3 text-sm font-medium transition-colors`}>
-                    <PencilIcon className="size-5 text-gray-600" />
-                    <span className='text-gray-700'>Rename</span>
-                  </button>
-                )}
-              </MenuItem>
-              <MenuItem>
-                {({ active }) => (
-                  <button className={`${active ? 'bg-gray-50' : ''} group flex w-full items-center gap-3 px-4 py-3 text-sm font-medium transition-colors`}>
-                    <TrashIcon className="size-5 text-gray-600" />
-                    <span className='text-gray-700'>Delete</span>
-                  </button>
-                )}
-              </MenuItem>
-              <MenuItem>
-                {({ active }) => (
-                  <button className={`${active ? 'bg-gray-50' : ''} group flex w-full items-center gap-3 px-4 py-3 text-sm font-medium transition-colors`}>
-                    <MinusCircleIcon className="size-5 text-gray-600" />
-                    <span className='text-gray-700'>Remove</span>
-                  </button>
-                )}
-              </MenuItem>
-            </MenuItems>
-          </Menu>
-        </div>
+  <div className='flex-col max-w-4xl mx-auto px-4 py-6 space-y-3'>
+    {status === 'pending' ? (
+      <div className='flex justify-center'>
+        <svg className="size-5 animate-spin" viewBox="0 0 24 24">
+            <path fill="currentColor" d="M12,1A11,11,0,1,0,23,12,11,11,0,0,0,12,1Zm0,19a8,8,0,1,1,8-8A8,8,0,0,1,12,20Z" opacity=".25"/><path fill="currentColor" d="M10.72,19.9a8,8,0,0,1-6.5-9.79A7.77,7.77,0,0,1,10.4,4.16a8,8,0,0,1,9.49,6.52A1.54,1.54,0,0,0,21.38,12h.13a1.37,1.37,0,0,0,1.38-1.54,11,11,0,1,0-12.7,12.39A1.54,1.54,0,0,0,12,21.34h0A1.47,1.47,0,0,0,10.72,19.9Z"></path>
+        </svg>  
       </div>
-      {/* Second Item */}
-      <div className='cursor-pointer relative flex items-center border border-gray-200 bg-white hover:shadow-lg transition-shadow duration-200 overflow-hidden'>
-        {/* Rank Badge */}
-        <div className='hidden sm:flex items-center justify-center w-16 md:w-20 text-black'>
-          <span className='text-2xl md:text-3xl font-bold opacity-50'>#1</span>
+    ) : (
+      <>
+        {data!.pages.flatMap((page) => page.pages).map((tune, index) => {
+          const image_url = formatS3BucketURL({manufacturer: tune.tune.car.Manufacturer, image_filename: tune.tune.car.image_filename});
+          return (
+            <div key={index} className='cursor-pointer relative flex items-center border border-gray-200 bg-white hover:shadow-lg transition-shadow duration-200 overflow-hidden'>
+              {/* Rank Badge */}
+              <div className='hidden sm:flex items-center justify-center w-16 md:w-20 text-black'>
+                <span className='text-2xl md:text-3xl font-bold opacity-50'>#{index+1}</span>
+              </div>
+              
+              {/* Car Image */}
+              <div className='w-32 sm:w-40 md:w-48 lg:w-56 shrink-0 flex items-center justify-center from-gray-50 to-gray-100'>
+                <img 
+                  className='w-full h-auto object-contain' 
+                  src={image_url}
+                  alt="Abarth 124 Spider"
+                />
+              </div>
+              
+              {/* Content */}
+              <div className='flex-1 px-4 py-2 md:px-6 flex flex-col justify-center min-w-0'>
+                <h2 className='overflow-hidden text-sm sm:text-sm md:text-xl font-bold text-gray-900 mb-1 truncate'>
+                  {tune.tune.car.Manufacturer} {tune.tune.car.Model}
+                </h2>
+                
+                <p className='text-sm md:text-base text-gray-600 mb-3'>
+                  {tune.tune.tune_name}
+                </p>
+                
+                <div className='flex flex-wrap items-center gap-x-4 gap-y-2 text-xs md:text-sm text-gray-600'>
+                  <span>Creator: <span className='font-semibold text-gray-800'>{tune.tune.creator.username}</span></span>
+                  <span className='hidden sm:inline text-gray-400'>•</span>
+                  <span>Created: {tune.saved_on}</span>
+                </div>
+              </div>
+              
+              {/* Class Badge - Top Right */}
+              <div className='absolute top-3 right-3 sm:right-16 md:right-20'>
+                <span className={`inline-block px-3 py-1 ${rank_to_color[tune.tune.resultant_rank as RankType]} text-white text-xs md:text-sm font-bold shadow-md`}>
+                  CLASS {tune.tune.resultant_rank}
+                </span>
+              </div>
+              
+              {/* Menu */}
+              <div className='flex items-center pr-3 md:pr-4'>
+                <Menu as="div" className="relative">
+                  <MenuButton className="p-2 hover:bg-gray-100 transition-colors duration-150">
+                    <FontAwesomeIcon 
+                      icon={faEllipsisH} 
+                      className="text-gray-600 text-lg md:text-xl" 
+                    />
+                  </MenuButton>
+                  <MenuItems
+                    transition
+                    modal={false}
+                    anchor="bottom end"
+                    className="absolute right-0 mt-2 w-48 bg-white border border-gray-200 shadow-xl overflow-hidden z-50 focus:outline-none transition duration-100 ease-out data-closed:scale-95 data-closed:opacity-0"
+                  >
+                    <MenuItem>
+                      {({ active }) => (
+                        <button className={`${active ? 'bg-gray-50' : ''} group flex w-full items-center gap-3 px-4 py-3 text-sm font-medium transition-colors`}>
+                          <PencilIcon className="size-5 text-gray-600" />
+                          <span className='text-gray-700'>Rename</span>
+                        </button>
+                      )}
+                    </MenuItem>
+                    <MenuItem>
+                      {({ active }) => (
+                        <button className={`${active ? 'bg-gray-50' : ''} group flex w-full items-center gap-3 px-4 py-3 text-sm font-medium transition-colors`}>
+                          <TrashIcon className="size-5 text-gray-600" />
+                          <span className='text-gray-700'>Delete</span>
+                        </button>
+                      )}
+                    </MenuItem>
+                    <MenuItem>
+                      {({ active }) => (
+                        <button className={`${active ? 'bg-gray-50' : ''} group flex w-full items-center gap-3 px-4 py-3 text-sm font-medium transition-colors`}>
+                          <MinusCircleIcon className="size-5 text-gray-600" />
+                          <span className='text-gray-700'>Remove</span>
+                        </button>
+                      )}
+                    </MenuItem>
+                  </MenuItems>
+                </Menu>
+              </div>
+            </div>
+          );
+        })}
+        
+        <div className='flex justify-center'>
+          <button
+            className='cursor-pointer border-black border p-2 mt-5'
+            onClick={async() => await fetchNextPage()}
+            disabled={!hasNextPage || isFetching}
+          >
+            {isFetchingNextPage
+              ? 'Loading more...'
+              : hasNextPage
+                ? 'Load More'
+                : 'Nothing more to load'}
+          </button>
         </div>
         
-        {/* Car Image */}
-        <div className='w-32 sm:w-40 md:w-48 lg:w-56 shrink-0 flex items-center justify-center  from-gray-50 to-gray-100'>
-          <img 
-            className='w-full h-auto object-contain' 
-            src='https://fh5-car-images.s3.ap-south-1.amazonaws.com/images/Abarth/Abarth_124_Spider.png'
-            alt="Abarth 124 Spider"
-          />
-        </div>
-        
-        {/* Content */}
-        <div className='flex-1 px-4 py-2 md:px-6 flex flex-col justify-center min-w-0'>
-          <h2 className='text-sm sm:text-sm md:text-2xl font-bold text-gray-900 mb-1 truncate'>
-            ABARTH 124 SPIDER
-          </h2>
-          
-          <p className='text-sm md:text-base text-gray-600 mb-3'>
-            My Custom Tune
-          </p>
-          
-          <div className='flex flex-wrap items-center gap-x-4 gap-y-2 text-xs md:text-sm text-gray-600'>
-            <span>Creator: <span className='font-semibold text-gray-800'>Rahil</span></span>
-            <span className='hidden sm:inline text-gray-400'>•</span>
-            <span>Created: January 5, 2026</span>
-          </div>
-        </div>
-        
-        {/* Class Badge - Top Right */}
-        <div className='absolute top-3 right-3 sm:right-16 md:right-20'>
-          <span className='inline-block px-3 py-1 bg-purple-500 text-white text-xs md:text-sm font-bold shadow-md'>
-            CLASS A
-          </span>
-        </div>
-        
-        {/* Menu */}
-        <div className='flex items-center pr-3 md:pr-4'>
-          <Menu as="div" className="relative">
-            <MenuButton className="p-2 hover:bg-gray-100 transition-colors duration-150">
-              <FontAwesomeIcon 
-                icon={faEllipsisH} 
-                className="text-gray-600 text-lg md:text-xl" 
-              />
-            </MenuButton>
-            <MenuItems
-              transition
-              modal={false}
-              anchor="bottom end"
-              className="absolute right-0 mt-2 w-48 bg-white border border-gray-200  shadow-xl overflow-hidden z-50 focus:outline-none transition duration-100 ease-out data-closed:scale-95 data-closed:opacity-0"
-            >
-              <MenuItem>
-                {({ active }) => (
-                  <button className={`${active ? 'bg-gray-50' : ''} group flex w-full items-center gap-3 px-4 py-3 text-sm font-medium transition-colors`}>
-                    <PencilIcon className="size-5 text-gray-600" />
-                    <span className='text-gray-700'>Rename</span>
-                  </button>
-                )}
-              </MenuItem>
-              <MenuItem>
-                {({ active }) => (
-                  <button className={`${active ? 'bg-gray-50' : ''} group flex w-full items-center gap-3 px-4 py-3 text-sm font-medium transition-colors`}>
-                    <TrashIcon className="size-5 text-gray-600" />
-                    <span className='text-gray-700'>Delete</span>
-                  </button>
-                )}
-              </MenuItem>
-              <MenuItem>
-                {({ active }) => (
-                  <button className={`${active ? 'bg-gray-50' : ''} group flex w-full items-center gap-3 px-4 py-3 text-sm font-medium transition-colors`}>
-                    <MinusCircleIcon className="size-5 text-gray-600" />
-                    <span className='text-gray-700'>Remove</span>
-                  </button>
-                )}
-              </MenuItem>
-            </MenuItems>
-          </Menu>
-        </div>
-      </div>
-    </div>
-  )
+        <div>{isFetching && !isFetchingNextPage ? 'Fetching...' : null}</div>
+      </>
+    )}
+  </div>
+)
 }
