@@ -10,6 +10,9 @@ import type { AuthState } from '../../../types/auth'
 import ErrorToast from '../../../components/ErrorToast'
 import { formatS3BucketURL } from '../../../util/urlFormatter'
 import type { RankType } from '../../../types/car'
+import { useState } from 'react'
+import { useRemoveTune } from '../../../hooks/useRemoveTune'
+import { RemoveDialogModal } from '../../../components/profile/RemoveDialogModal'
 
 export const Route = createFileRoute('/_authenticated/profile/tunes')({
   component: RouteComponent,
@@ -35,12 +38,28 @@ const rank_to_color: Record<RankType, string> = {
 
 function RouteComponent() {
   const {auth} = Route.useRouteContext();
+  const removeTune = useRemoveTune(auth);
+  const [removeModalOpen, setRemoveModalOpen] = useState<boolean>(false);
+  const [selectedTuneId, setSelectedTuneId] = useState<number | null>(null);
+  const [removeMode, setRemoveMode] = useState<'delete' | 'remove'>('delete');
   const {data, error, fetchNextPage, hasNextPage, isFetching, isFetchingNextPage, status} = useInfiniteQuery({
     queryKey: ['tunes'],
     queryFn: ({pageParam}) => fetchTunes({auth,pageParam}),
     initialPageParam: 0,
     getNextPageParam: (lastPage) => lastPage.nextCursor,
   })
+
+  const handleOpenRemoveModal = (tuneId: number) => {
+      setSelectedTuneId(tuneId);
+      setRemoveMode('remove');
+      setRemoveModalOpen(true);
+  }
+
+  const handleOpenDeleteModal = (tuneId: number) => {
+      setSelectedTuneId(tuneId);
+      setRemoveMode('delete');
+      setRemoveModalOpen(true);
+  }
 
   return (
   <div className='flex-col max-w-4xl mx-auto px-4 py-6 space-y-3'>
@@ -52,6 +71,16 @@ function RouteComponent() {
       </div>
     ) : (
       <>
+        <RemoveDialogModal 
+          openModal={removeModalOpen}
+          onClose={() => {
+              removeTune.reset();
+              setRemoveModalOpen(false);
+          }}
+          onSubmit={() => {removeTune.mutate({tune_id: selectedTuneId!}); setRemoveModalOpen(false)}}
+          mode={removeMode}
+          isLoading={removeTune.isPending}
+        />
         {data!.pages.flatMap((page) => page.pages).map((tune, index) => {
           const image_url = formatS3BucketURL({manufacturer: tune.tune.car.Manufacturer, image_filename: tune.tune.car.image_filename});
           return (
@@ -110,29 +139,28 @@ function RouteComponent() {
                     className="absolute right-0 mt-2 w-48 bg-white border border-gray-200 shadow-xl overflow-hidden z-50 focus:outline-none transition duration-100 ease-out data-closed:scale-95 data-closed:opacity-0"
                   >
                     <MenuItem>
-                      {({ active }) => (
-                        <button className={`${active ? 'bg-gray-50' : ''} group flex w-full items-center gap-3 px-4 py-3 text-sm font-medium transition-colors`}>
-                          <PencilIcon className="size-5 text-gray-600" />
-                          <span className='text-gray-700'>Rename</span>
-                        </button>
-                      )}
+                      <button className='group flex w-full items-center gap-3 px-4 py-3 text-sm font-medium transition-colors'>
+                        <PencilIcon className="size-5 text-gray-600" />
+                        <span className='text-gray-700'>Rename</span>
+                      </button>
                     </MenuItem>
-                    <MenuItem>
-                      {({ active }) => (
-                        <button className={`${active ? 'bg-gray-50' : ''} group flex w-full items-center gap-3 px-4 py-3 text-sm font-medium transition-colors`}>
-                          <TrashIcon className="size-5 text-gray-600" />
-                          <span className='text-gray-700'>Delete</span>
-                        </button>
-                      )}
-                    </MenuItem>
-                    <MenuItem>
-                      {({ active }) => (
-                        <button className={`${active ? 'bg-gray-50' : ''} group flex w-full items-center gap-3 px-4 py-3 text-sm font-medium transition-colors`}>
-                          <MinusCircleIcon className="size-5 text-gray-600" />
-                          <span className='text-gray-700'>Remove</span>
-                        </button>
-                      )}
-                    </MenuItem>
+                    {auth.user?.username === tune.tune.creator.username ?
+                      (
+                        <MenuItem>
+                            <button onClick={() => handleOpenDeleteModal(tune.tune.tune_id)}className='group flex w-full items-center gap-3 px-4 py-3 text-sm font-medium transition-colors'>
+                              <TrashIcon className="size-5 text-gray-600" />
+                              <span className='text-gray-700'>Delete</span>
+                            </button>
+                        </MenuItem>
+                      ) : (
+                        <MenuItem>
+                          <button onClick={() => handleOpenRemoveModal(tune.tune.tune_id)} className='group flex w-full items-center gap-3 px-4 py-3 text-sm font-medium transition-colors'>
+                            <MinusCircleIcon className="size-5 text-gray-600" />
+                            <span className='text-gray-700'>Remove</span>
+                          </button>
+                        </MenuItem>
+                      )
+                    }
                   </MenuItems>
                 </Menu>
               </div>
@@ -142,7 +170,7 @@ function RouteComponent() {
         
         <div className='flex justify-center'>
           <button
-            className='cursor-pointer border-black border p-2 mt-5'
+            className={`${hasNextPage ? 'border cursor-pointer' : 'border-0'} border-black border p-2 mt-5`}
             onClick={async() => await fetchNextPage()}
             disabled={!hasNextPage || isFetching}
           >

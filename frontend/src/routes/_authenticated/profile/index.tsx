@@ -10,6 +10,7 @@ import { RenameDialogModal } from '../../../components/profile/RenameDialogModal
 import {RemoveDialogModal} from '../../../components/profile/RemoveDialogModal';
 import {toast} from 'react-toastify';
 import ErrorToast from '../../../components/ErrorToast';
+import { useRemoveTune } from '../../../hooks/useRemoveTune';
 
 export const Route = createFileRoute('/_authenticated/profile/')({
     loader: async({context}) => await fetchProfile(context.auth),
@@ -28,10 +29,10 @@ const fetchProfile = async (auth: AuthState) => {
 }
 
 function RouteComponent() {
-    console.log("route mounted ");
     const {auth} = Route.useRouteContext();
     const recentTunes: RecentTunes[] = Route.useLoaderData();
     const router = useRouter();
+    const removeTune = useRemoveTune(auth);
     const [renameModalOpen, setRenameModalOpen] = useState<boolean>(false);
     const [removeModalOpen, setRemoveModalOpen] = useState<boolean>(false);
     const [selectedTuneId, setSelectedTuneId] = useState<number | null>(null);
@@ -78,26 +79,6 @@ function RouteComponent() {
         }
     });
 
-    const removeTune = useMutation({
-        mutationFn: async({tune_id}: {tune_id: number}) => {
-            await authFetch(`${BACKEND}/tune/${tune_id}/remove`,
-                {method: 'DELETE'},
-                auth
-            )
-        },
-        onSuccess: () => {
-            toast.success('Tune removed successfully!');
-            setTimeout(async() => {
-                setRemoveModalOpen(false);
-                removeTune.reset();
-                await router.invalidate();
-            }, 1500);
-        },
-        onError: (error) => {
-            toast.error(error?.message || 'There was a problem removing the tune');
-        }
-    })
-
     return (
         <div> 
             {/* <ErrorToast /> */}
@@ -114,7 +95,7 @@ function RouteComponent() {
                 removeTune.reset();
                 setRemoveModalOpen(false);
             }}
-            onSubmit={() => {removeTune.mutate({tune_id: selectedTuneId!});}}
+            onSubmit={() => {removeTune.mutate({tune_id: selectedTuneId!}); setRemoveModalOpen(false)}}
             mode={removeMode}
             isLoading={removeTune.isPending}
             />

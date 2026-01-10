@@ -112,9 +112,8 @@ const StatBar = ({
 
 const getRankColor = (rank: string): string => {
   const colors: Record<string, string> = {
-    'S2': "from-blue-800",
-    'S1': "from-purple-500",
-    'S': 'from-purple-500 to-pink-500',
+    'S2': "from-indigo-500 to-indigo-600",
+    'S1': "from-purple-500 to-purple-600",
     'A': 'from-rose-500 to-red-500',
     'B': 'from-orange-500 to-amber-500',
     'C': 'from-yellow-500 to-orange-400',
