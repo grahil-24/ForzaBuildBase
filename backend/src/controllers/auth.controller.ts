@@ -78,9 +78,7 @@ export const login = catchAsync(async(req: Request, res: Response, next: NextFun
     if (!em) {
         return next(new AppError("Entity manager not available", 500));
     }
-    if(!validateEmail(user.email) || !validatePassword(user.password)){
-        return next(new AppError("password or email dont match criteria", 401));
-    }
+    
     const userFromDB = await em.findOne(User, {email: {$eq: user.email}});
     if(!userFromDB){
         return next(new AppError("An account with this email does not exist! Please sign up", 401));
