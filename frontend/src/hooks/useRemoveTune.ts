@@ -1,13 +1,10 @@
-import { useRouter } from "@tanstack/react-router";
 import type { AuthState } from "../types/auth";
 import {authFetch}  from "../api/authFetch";
 import { useMutation } from "@tanstack/react-query";
 import { BACKEND } from "../config/env";
 import {toast} from 'react-toastify'
 
-export const useRemoveTune = (auth: AuthState) => {
-
-    const router = useRouter();
+export const useRemoveTune = (auth: AuthState, onSuccess: () => Promise<void>) => {
 
     return useMutation({
         mutationFn: async({tune_id}: {tune_id: number}) => {
@@ -16,12 +13,7 @@ export const useRemoveTune = (auth: AuthState) => {
                 auth
             )
         },
-        onSuccess: () => {
-            toast.success('Tune removed successfully!');
-            setTimeout(async() => {
-                await router.invalidate();
-            }, 1500);
-        },
+        onSuccess: async() => await onSuccess(),
         onError: (error) => {
             toast.error(error?.message || 'There was a problem removing the tune');
         }

@@ -91,7 +91,7 @@ const EmblaCarousel: React.FC<PropType> = (props) => {
 
                       {/* Menu Trigger */}
                       <Menu as="div" className="relative ml-2 shrink-0">
-                        <MenuButton className="rounded-md">
+                        <MenuButton>
                           <FontAwesomeIcon 
                             icon={faEllipsisVertical} 
                             className="text-gray-600 cursor-pointer" 
@@ -102,28 +102,28 @@ const EmblaCarousel: React.FC<PropType> = (props) => {
                           transition
                           modal={false}
                           anchor="bottom end"
-                          className="[--anchor-gap:--spacing(1)] data-closed:scale-95 data-closed:opacity-0 transition duration-100 ease-out z-9999 w-30 bg-white border border-gray-200 rounded-lg shadow-xl p-1 text-sm focus:outline-none mt-1"
+                          className="[--anchor-gap:--spacing(1)] data-closed:scale-95 data-closed:opacity-0 transition duration-100 ease-out z-9999 w-30 bg-white border border-gray-200 shadow-xl  text-sm focus:outline-none mt-1"
                         >
                           {user === tune.tune.creator.username &&
                             <MenuItem>
-                              <button onClick={() => onRenameClick(tune.tune.tune_id)} className="group flex w-full items-center gap-2 rounded-lg px-3 py-2 hover:bg-gray-100 text-gray-900">
-                                <PencilIcon className="size-4 text-gray-500" />
-                                Rename
+                              <button onClick={() => onRenameClick(tune.tune.tune_id)} className="group flex w-full items-center gap-2 px-3 py-2 hover:bg-blue-100/50 text-gray-900 transition-colors">
+                                <PencilIcon className="size-4 text-gray-500 group-hover:text-blue-600 transition-colors" />
+                                <span className='text-gray-700 transition-colors group-hover:text-blue-600'>Rename</span>
                               </button>
                             </MenuItem>
                           }
                           { user === tune.tune.creator.username ? 
                           (<MenuItem>
-                            <button onClick={() => onDeleteClick(tune.tune.tune_id)} className="group flex w-full items-center gap-2 rounded-lg px-3 py-2 hover:bg-gray-100 text-gray-900">
-                              <TrashIcon className="size-4 text-gray-500" />
-                              Delete
+                            <button onClick={() => onDeleteClick(tune.tune.tune_id)} className="group flex w-full items-center gap-2 px-3 py-2 hover:bg-red-100/50 text-gray-900 transition-colors">
+                              <TrashIcon className="size-4 text-gray-500 group-hover:text-red-600 transition-colors" />
+                              <span className='text-gray-700 transition-colors group-hover:text-red-600'>Delete</span>
                             </button>
                           </MenuItem>
                           ) : (
                             <MenuItem>
-                              <button onClick={() => onRemoveClick(tune.tune.tune_id)}className="group flex w-full items-center gap-2 rounded-lg px-3 py-2 hover:bg-gray-100 text-gray-900">
-                                <MinusCircleIcon className="size-4 text-gray-500" />
-                                Remove
+                              <button onClick={() => onRemoveClick(tune.tune.tune_id)}className="group flex w-full items-center gap-2 px-3 py-2 hover:bg-red-100/50 transition-colors text-gray-900">
+                                <MinusCircleIcon className="size-4 text-gray-500 group-hover:text-red-600 transition-colors" />
+                                <span className='text-gray-700 transition-colors group-hover:text-red-600'>Remove</span>
                               </button>
                             </MenuItem>
                           )

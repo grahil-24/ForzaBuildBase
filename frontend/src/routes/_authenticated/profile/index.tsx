@@ -4,13 +4,13 @@ import { authFetch } from '../../../api/authFetch';
 import { BACKEND } from '../../../config/env';
 import type { RecentTunes } from '../../../types/tune';
 import { Carousel } from '../../../components/profile/Carousel/CarouselIndex';
-import { useMutation } from '@tanstack/react-query';
 import { useState } from 'react';
 import { RenameDialogModal } from '../../../components/profile/RenameDialogModal';
 import {RemoveDialogModal} from '../../../components/profile/RemoveDialogModal';
 import {toast} from 'react-toastify';
 import ErrorToast from '../../../components/ErrorToast';
 import { useRemoveTune } from '../../../hooks/useRemoveTune';
+import { useRenameTune } from '../../../hooks/useRenameTune';
 
 export const Route = createFileRoute('/_authenticated/profile/')({
     loader: async({context}) => await fetchProfile(context.auth),
@@ -32,7 +32,7 @@ function RouteComponent() {
     const {auth} = Route.useRouteContext();
     const recentTunes: RecentTunes[] = Route.useLoaderData();
     const router = useRouter();
-    const removeTune = useRemoveTune(auth);
+
     const [renameModalOpen, setRenameModalOpen] = useState<boolean>(false);
     const [removeModalOpen, setRemoveModalOpen] = useState<boolean>(false);
     const [selectedTuneId, setSelectedTuneId] = useState<number | null>(null);
@@ -44,7 +44,6 @@ function RouteComponent() {
     };
 
     const handleCloseRenameModal = () => {
-        renameTune.reset();
         setRenameModalOpen(false);
         setSelectedTuneId(null);
     };
@@ -60,44 +59,49 @@ function RouteComponent() {
         setRemoveMode('delete');
         setRemoveModalOpen(true);
     }
+
+    const handleRemoveTuneSuccess = async() => {
+        toast.success('Tune removed successfully!');
+        await router.invalidate();
+    }
+
+    const handleRenameTuneSuccess = async() => {
+        toast.success('Tune renamed successfully!');
+        handleCloseRenameModal();
+        await router.invalidate();
+    }
     
-    const renameTune = useMutation({
-        mutationFn: async({newName, tune_id}: {newName: string, tune_id: number}) => {
-            await authFetch(`${BACKEND}/tune/${tune_id}/rename`, 
-            {method: 'PATCH', body: JSON.stringify({name: newName}), headers: {'Content-Type': 'application/json'}},
-            auth);
-        },
-        onSuccess: async () => {
-            toast.success('Tune renamed successfully!');
-            setTimeout(async () => {
-                handleCloseRenameModal();
-                await router.invalidate();
-            }, 1500);
-        },
-        onError: (error) => {
-            toast.error(error?.message || 'Failed to rename tune');
-        }
-    });
+    const removeTune = useRemoveTune(auth, handleRemoveTuneSuccess);
+
+    const renameTune = useRenameTune(auth);
 
     return (
         <div> 
             {/* <ErrorToast /> */}
             <RenameDialogModal 
-            openModal={renameModalOpen}
-            onClose={handleCloseRenameModal}
-            onSubmit={(newName) => {renameTune.mutate({newName, tune_id: selectedTuneId!});}}
-            isLoading={renameTune.isPending}
-            isSuccess={renameTune.isSuccess}
+                openModal={renameModalOpen}
+                onClose={handleCloseRenameModal}
+                onSubmit={(newName) => {renameTune.mutate({newName, tune_id: selectedTuneId!},
+                    {
+                        onSuccess: async () => {
+                            await handleRenameTuneSuccess();
+                            renameTune.reset();
+                        }
+
+                    }
+                );}}
+                isLoading={renameTune.isPending}
+                isSuccess={renameTune.isSuccess}
             />
             <RemoveDialogModal 
-            openModal={removeModalOpen}
-            onClose={() => {
-                removeTune.reset();
-                setRemoveModalOpen(false);
-            }}
-            onSubmit={() => {removeTune.mutate({tune_id: selectedTuneId!}); setRemoveModalOpen(false)}}
-            mode={removeMode}
-            isLoading={removeTune.isPending}
+                openModal={removeModalOpen}
+                onClose={() => {
+                    removeTune.reset();
+                    setRemoveModalOpen(false);
+                }}
+                onSubmit={() => {removeTune.mutate({tune_id: selectedTuneId!}); setRemoveModalOpen(false)}}
+                mode={removeMode}
+                isLoading={removeTune.isPending}
             />
             <div className='max-w-4/5 pt-10 min-w-sm'>
                 <div className='flex items-center justify-center'>

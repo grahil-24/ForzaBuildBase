@@ -4,7 +4,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faEllipsisH } from '@fortawesome/free-solid-svg-icons'
 import { PencilIcon, TrashIcon, MinusCircleIcon } from '@heroicons/react/24/outline'
 import { BACKEND } from '../../../config/env'
-import { useInfiniteQuery } from '@tanstack/react-query'
+import { useInfiniteQuery, useQueryClient } from '@tanstack/react-query'
 import { authFetch } from '../../../api/authFetch'
 import type { AuthState } from '../../../types/auth'
 import ErrorToast from '../../../components/ErrorToast'
@@ -12,7 +12,10 @@ import { formatS3BucketURL } from '../../../util/urlFormatter'
 import type { RankType } from '../../../types/car'
 import { useState } from 'react'
 import { useRemoveTune } from '../../../hooks/useRemoveTune'
+import { useRenameTune } from '../../../hooks/useRenameTune'
 import { RemoveDialogModal } from '../../../components/profile/RemoveDialogModal'
+import { RenameDialogModal } from '../../../components/profile/RenameDialogModal'
+import {toast} from 'react-toastify'
 
 export const Route = createFileRoute('/_authenticated/profile/tunes')({
   component: RouteComponent,
@@ -38,7 +41,9 @@ const rank_to_color: Record<RankType, string> = {
 
 function RouteComponent() {
   const {auth} = Route.useRouteContext();
-  const removeTune = useRemoveTune(auth);
+  const queryClient = useQueryClient();
+
+  const [renameModalOpen, setRenameModalOpen] = useState<boolean>(false);
   const [removeModalOpen, setRemoveModalOpen] = useState<boolean>(false);
   const [selectedTuneId, setSelectedTuneId] = useState<number | null>(null);
   const [removeMode, setRemoveMode] = useState<'delete' | 'remove'>('delete');
@@ -47,6 +52,7 @@ function RouteComponent() {
     queryFn: ({pageParam}) => fetchTunes({auth,pageParam}),
     initialPageParam: 0,
     getNextPageParam: (lastPage) => lastPage.nextCursor,
+    
   })
 
   const handleOpenRemoveModal = (tuneId: number) => {
@@ -61,6 +67,30 @@ function RouteComponent() {
       setRemoveModalOpen(true);
   }
 
+  const handleRemoveTuneSuccess = async() => {
+    toast.success('Tune removed successfully!');
+    await queryClient.invalidateQueries({queryKey: ['tunes']});
+  }
+
+  const handleCloseRenameModal = () => {
+      setRenameModalOpen(false);
+      setSelectedTuneId(null);
+  };
+
+  const handleRenameTuneSuccess = async() => {
+      toast.success('Tune renamed successfully!');
+      handleCloseRenameModal();
+      await queryClient.invalidateQueries({queryKey: ['tunes']});
+  }
+
+  const handleOpenRenameModal = (tuneId: number) => {
+      setSelectedTuneId(tuneId);
+      setRenameModalOpen(true);
+  };
+
+  const removeTune = useRemoveTune(auth, handleRemoveTuneSuccess);
+  const renameTune = useRenameTune(auth);
+  
   return (
   <div className='flex-col max-w-4xl mx-auto px-4 py-6 space-y-3'>
     {status === 'pending' ? (
@@ -71,6 +101,21 @@ function RouteComponent() {
       </div>
     ) : (
       <>
+        <RenameDialogModal 
+          openModal={renameModalOpen}
+          onClose={handleCloseRenameModal}
+          onSubmit={(newName) => {renameTune.mutate({newName, tune_id: selectedTuneId!},
+              {
+                  onSuccess: async () => {
+                      await handleRenameTuneSuccess();
+                      renameTune.reset();
+                  }
+
+              }
+          );}}
+          isLoading={renameTune.isPending}
+          isSuccess={renameTune.isSuccess}
+        />
         <RemoveDialogModal 
           openModal={removeModalOpen}
           onClose={() => {
@@ -139,24 +184,24 @@ function RouteComponent() {
                     className="absolute right-0 mt-2 w-48 bg-white border border-gray-200 shadow-xl overflow-hidden z-50 focus:outline-none transition duration-100 ease-out data-closed:scale-95 data-closed:opacity-0"
                   >
                     <MenuItem>
-                      <button className='group flex w-full items-center gap-3 px-4 py-3 text-sm font-medium transition-colors'>
-                        <PencilIcon className="size-5 text-gray-600" />
-                        <span className='text-gray-700'>Rename</span>
+                      <button onClick={() => handleOpenRenameModal(tune.tune.tune_id)} className='cursor-pointer group flex w-full items-center gap-3 px-4 py-3 text-sm font-medium transition-colors hover:bg-blue-100/50'>
+                        <PencilIcon className="size-5 text-gray-600 transition-colors group-hover:text-blue-600" />
+                        <span className='text-gray-700 transition-colors group-hover:text-blue-600'>Rename</span>
                       </button>
                     </MenuItem>
                     {auth.user?.username === tune.tune.creator.username ?
                       (
                         <MenuItem>
-                            <button onClick={() => handleOpenDeleteModal(tune.tune.tune_id)}className='group flex w-full items-center gap-3 px-4 py-3 text-sm font-medium transition-colors'>
-                              <TrashIcon className="size-5 text-gray-600" />
-                              <span className='text-gray-700'>Delete</span>
+                            <button onClick={() => handleOpenDeleteModal(tune.tune.tune_id)}className='cursor-pointer group flex w-full items-center gap-3 px-4 py-3 text-sm font-medium transition-colors hover:bg-red-100/50'>
+                              <TrashIcon className="transition-colors size-5 text-gray-600 group-hover:text-red-600" />
+                              <span className='transition-colors text-gray-700 group-hover:text-red-600'>Delete</span>
                             </button>
                         </MenuItem>
                       ) : (
                         <MenuItem>
-                          <button onClick={() => handleOpenRemoveModal(tune.tune.tune_id)} className='group flex w-full items-center gap-3 px-4 py-3 text-sm font-medium transition-colors'>
-                            <MinusCircleIcon className="size-5 text-gray-600" />
-                            <span className='text-gray-700'>Remove</span>
+                          <button onClick={() => handleOpenRemoveModal(tune.tune.tune_id)} className='cursor-pointer group flex w-full items-center gap-3 px-4 py-3 text-sm font-medium transition-colors hover:bg-red-100/50'>
+                            <MinusCircleIcon className="transition-colors size-5 text-gray-600 group-hover:text-red-600" />
+                            <span className='transition-colors text-gray-700 group-hover:text-red-600'>Remove</span>
                           </button>
                         </MenuItem>
                       )
