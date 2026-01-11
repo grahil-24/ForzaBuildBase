@@ -1,4 +1,3 @@
-// RecentTunesCarousel.tsx
 import { type EmblaOptionsType } from 'embla-carousel'
 import { PrevButton, NextButton, usePrevNextButtons } from './CarouselArrowButton'
 import useEmblaCarousel from 'embla-carousel-react'
@@ -6,12 +5,12 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faEllipsisVertical} from '@fortawesome/free-solid-svg-icons'
 import { Menu, MenuButton, MenuItem, MenuItems } from '@headlessui/react'
 import { PencilIcon, MinusCircleIcon, TrashIcon} from '@heroicons/react/16/solid'
-import type { RecentTunes } from '../../../types/tune'
+import type { Tune } from '../../../types/tune'
 import { formatS3BucketURL } from '../../../util/urlFormatter'
 import type { RankType } from '../../../types/car'
 
 type PropType = {
-  slides: RecentTunes[],
+  slides: Tune[],
   options?: EmblaOptionsType,
   user: string,
   onRenameClick: (tuneid: number) => void,

@@ -2,7 +2,7 @@ import { createFileRoute, useRouter, Link } from '@tanstack/react-router'
 import type { AuthState } from '../../../types/auth';
 import { authFetch } from '../../../api/authFetch';
 import { BACKEND } from '../../../config/env';
-import type { RecentTunes } from '../../../types/tune';
+import type { Tune } from '../../../types/tune';
 import { Carousel } from '../../../components/profile/Carousel/CarouselIndex';
 import { useState } from 'react';
 import { RenameDialogModal } from '../../../components/profile/RenameDialogModal';
@@ -24,13 +24,13 @@ const fetchProfile = async (auth: AuthState) => {
         {method: 'GET'},
         auth
     );
-    const recentTunes: RecentTunes[] = await res.json();
+    const recentTunes: Tune[] = await res.json();
     return recentTunes;
 }
 
 function RouteComponent() {
     const {auth} = Route.useRouteContext();
-    const recentTunes: RecentTunes[] = Route.useLoaderData();
+    const recentTunes: Tune[] = Route.useLoaderData();
     const router = useRouter();
 
     const [renameModalOpen, setRenameModalOpen] = useState<boolean>(false);

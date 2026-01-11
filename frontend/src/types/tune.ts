@@ -1,6 +1,6 @@
 import type { RankType } from "./car"
 
-interface RecentTunes {
+interface Tune {
     saved_on: string,
     tune: {
         creator: {
@@ -11,10 +11,11 @@ interface RecentTunes {
         car: {
             id: number
             image_filename: string
-            Manufacturer: string
+            Manufacturer: string,
+            Model?:string
         },
         resultant_rank: RankType
     }
 }
 
-export type {RecentTunes};
+export type {Tune};

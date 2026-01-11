@@ -1,11 +1,11 @@
 import EmblaCarousel from './RecentTunesCarousel'
 import { type EmblaOptionsType } from 'embla-carousel'
-import type { RecentTunes } from '../../../types/tune'
+import type { Tune } from '../../../types/tune'
 
 const OPTIONS: EmblaOptionsType = { align: 'start' }
 
 type CarouselProps = {
-  recentTunes: RecentTunes[],
+  recentTunes: Tune[],
   user: string,
   onRenameClick: (tuneid: number) => void,
   onRemoveClick: (tuneid: number) => void,
