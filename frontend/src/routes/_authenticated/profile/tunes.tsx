@@ -10,13 +10,15 @@ import type { AuthState } from '../../../types/auth'
 import ErrorToast from '../../../components/ErrorToast'
 import { formatS3BucketURL } from '../../../util/urlFormatter'
 import type { RankType } from '../../../types/car'
-import { useState } from 'react'
+import { useMemo, useState, useCallback } from 'react'
 import { useRemoveTune } from '../../../hooks/useRemoveTune'
 import { useRenameTune } from '../../../hooks/useRenameTune'
 import { RemoveDialogModal } from '../../../components/profile/RemoveDialogModal'
 import { RenameDialogModal } from '../../../components/profile/RenameDialogModal'
 import {toast} from 'react-toastify'
 import type { Tune } from '../../../types/tune'
+import { SearchBar } from '../../../components/profile/tunes/SearchBar'
+import Fuse from 'fuse.js'
 
 interface InfiniteQueryPageType {
   hasNextPage: boolean, 
@@ -24,6 +26,16 @@ interface InfiniteQueryPageType {
   pages: Tune[],
   totalCount: number
 }
+
+const fuseOptions = {
+  keys: [
+    "tune.tune_name",
+    "tune.car.Manufacturer",
+    "tune.car.Model",
+    "tune.creator.username"
+  ]
+}
+
 
 export const Route = createFileRoute('/_authenticated/profile/tunes')({
   component: RouteComponent,
@@ -54,6 +66,7 @@ function RouteComponent() {
   const queryClient = useQueryClient();
 
   const [renameModalOpen, setRenameModalOpen] = useState<boolean>(false);
+  const [search, setSearch] = useState<string>("");
   const [removeModalOpen, setRemoveModalOpen] = useState<boolean>(false);
   const [selectedTuneId, setSelectedTuneId] = useState<number | null>(null);
   const [removeMode, setRemoveMode] = useState<'delete' | 'remove'>('delete');
@@ -110,7 +123,7 @@ function RouteComponent() {
     }
   };
 
-  const sortTunes = (tunes: Tune[]) => {
+  const sortTunes = useCallback((tunes: Tune[]) => {
     const sorted = [...tunes];
     switch(sortBy) {
       case 'newest':
@@ -124,7 +137,24 @@ function RouteComponent() {
       default:
         return sorted;
     }
-  };
+  }, [sortBy]);
+
+
+  const processedTunes = useMemo(() => {
+    if (!data?.pages) return [];
+    
+    let allTunes = data.pages.flatMap((page) => page.pages);
+    
+    // Apply search filter
+    if (search.trim()) {
+      const fuse = new Fuse(allTunes, fuseOptions);
+      allTunes = fuse.search(search).map((result) => result.item);
+    }
+    
+    // Apply sorting
+    return sortTunes(allTunes);
+  }, [data, search, sortTunes]);
+
   
   return (
     <div className='flex-col max-w-4xl mx-auto px-4 py-6 space-y-3'>
@@ -142,15 +172,17 @@ function RouteComponent() {
         <>
           {/* Sort Menu */}
           <div className='flex justify-end mb-4'>
-            <Menu as="div" className="relative inline-block text-left">
-              <MenuButton className="group inline-flex justify-center text-sm font-medium text-gray-700 hover:text-gray-900">
-                Sort: {getSortLabel(sortBy)}
-                <ChevronDownIcon 
-                  className="-mr-1 ml-1 h-5 w-5 shrink-0 text-gray-400 group-hover:text-gray-500" 
-                  aria-hidden="true"
-                />
-              </MenuButton>
-              
+            <Menu as="div" className="w-full relative inline-block text-left">
+              <div className='flex items-center justify-between'>
+                <SearchBar onChange={(e: React.ChangeEvent<HTMLInputElement>) => {setSearch(e.currentTarget.value)}}/>
+                <MenuButton className="group inline-flex text-sm font-medium text-gray-700 hover:text-gray-900">
+                  Sort: {getSortLabel(sortBy)}
+                  <ChevronDownIcon 
+                    className="-mr-1 ml-1 h-5 w-5 shrink-0 text-gray-400 group-hover:text-gray-500" 
+                    aria-hidden="true"
+                  />
+                </MenuButton>
+              </div>
               <MenuItems
                 transition
                 anchor="bottom end"
@@ -223,7 +255,7 @@ function RouteComponent() {
             mode={removeMode}
             isLoading={removeTune.isPending}
           />
-          {data && sortTunes(data.pages.flatMap((page) => page.pages)).map((tune, index) => {
+          {processedTunes.map((tune, index) => {
             const image_url = formatS3BucketURL({manufacturer: tune.tune.car.Manufacturer, image_filename: tune.tune.car.image_filename});
             return (
               <div key={index} className='cursor-pointer relative flex items-center border border-gray-200 bg-white hover:shadow-lg transition-shadow duration-200 overflow-hidden'>
@@ -254,7 +286,7 @@ function RouteComponent() {
                   <div className='flex flex-wrap items-center gap-x-4 gap-y-2 text-xs md:text-sm text-gray-600'>
                     <span>Creator: <span className='font-semibold text-gray-800'>{tune.tune.creator.username}</span></span>
                     <span className='hidden sm:inline text-gray-400'>•</span>
-                    <span>Created: {tune.saved_on}</span>
+                    <span>Created: {new Date(tune.saved_on).toLocaleString()}</span>
                   </div>
                 </div>
                 
