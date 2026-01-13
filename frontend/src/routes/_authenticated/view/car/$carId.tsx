@@ -136,7 +136,7 @@ const getRankBg = (rank: string):string => {
 function RouteComponent() {
   const car: Car = Route.useLoaderData();
   const [unit, setUnit] = useState<Unit>('imperial');
-  const imageUrl = formatS3BucketURL({manufacturer: car.Manufacturer, image_filename: car.image_filename});
+  const imageUrl = formatS3BucketURL({manufacturer: car.Manufacturer, image_filename: car.image_filename, size: 'medium'});
   const displayTorque = unit === 'imperial' 
     ? car.Torque
     : car.Torque! * 1.36;

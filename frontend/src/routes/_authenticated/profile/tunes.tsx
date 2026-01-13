@@ -29,11 +29,24 @@ interface InfiniteQueryPageType {
 
 const fuseOptions = {
   keys: [
-    "tune.tune_name",
-    "tune.car.Manufacturer",
-    "tune.car.Model",
-    "tune.creator.username"
-  ]
+    {
+      name: "tune.tune_name",
+      weight: 0.5
+    },
+    {
+      name: "tune.car.Manufacturer",
+      weight: 0.2
+    },
+    {
+      name: "tune.car.Model",
+      weight: 0.1
+    },
+    {
+      name: "tune.creator.username",
+      weight: 0.2
+    }
+  ], 
+  threshold: 0.4
 }
 
 
@@ -149,6 +162,7 @@ function RouteComponent() {
     if (search.trim()) {
       const fuse = new Fuse(allTunes, fuseOptions);
       allTunes = fuse.search(search).map((result) => result.item);
+      console.log("alltunes ", allTunes);
     }
     
     // Apply sorting
@@ -170,11 +184,9 @@ function RouteComponent() {
         </div>
       ) : (
         <>
-          {/* Sort Menu */}
-          <div className='flex justify-end mb-4'>
-            <Menu as="div" className="w-full relative inline-block text-left">
-              <div className='flex items-center justify-between'>
-                <SearchBar onChange={(e: React.ChangeEvent<HTMLInputElement>) => {setSearch(e.currentTarget.value)}}/>
+          <div className='flex-row flex-wrap justify-between items-center md:flex'>
+            <SearchBar onChange={(input: string) => {setSearch(input)}}/>
+            <Menu as="div" className="pt-3 md:pt-0 relative inline-block text-left">
                 <MenuButton className="group inline-flex text-sm font-medium text-gray-700 hover:text-gray-900">
                   Sort: {getSortLabel(sortBy)}
                   <ChevronDownIcon 
@@ -182,11 +194,11 @@ function RouteComponent() {
                     aria-hidden="true"
                   />
                 </MenuButton>
-              </div>
+              
               <MenuItems
                 transition
                 anchor="bottom end"
-                className="absolute right-0 z-10 mt-2 w-56 origin-top-right rounded-md bg-white shadow-2xl ring-1 ring-black/5 focus:outline-none transition duration-100 ease-out data-closed:scale-95 data-closed:opacity-0"
+                className="absolute right-0 z-10 mt-2 w-30 origin-top-right rounded-md bg-white shadow-2xl ring-1 ring-black/5 focus:outline-none transition flex justify-center duration-100 ease-out data-closed:scale-95 data-closed:opacity-0"
               >
                 <div className="py-1">
                   <MenuItem>

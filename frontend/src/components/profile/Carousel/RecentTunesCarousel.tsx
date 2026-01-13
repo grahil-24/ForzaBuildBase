@@ -4,7 +4,7 @@ import useEmblaCarousel from 'embla-carousel-react'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faEllipsisVertical} from '@fortawesome/free-solid-svg-icons'
 import { Menu, MenuButton, MenuItem, MenuItems } from '@headlessui/react'
-import { PencilIcon, MinusCircleIcon, TrashIcon} from '@heroicons/react/16/solid'
+import { PencilIcon, TrashIcon, MinusCircleIcon } from '@heroicons/react/24/outline'
 import type { Tune } from '../../../types/tune'
 import { formatS3BucketURL } from '../../../util/urlFormatter'
 import type { RankType } from '../../../types/car'
@@ -89,7 +89,7 @@ const EmblaCarousel: React.FC<PropType> = (props) => {
                       </div>
 
                       {/* Menu Trigger */}
-                      <Menu as="div" className="relative ml-2 shrink-0">
+                      <Menu as="div" className="relative ml-2 shrink-0 focus:outline-none">
                         <MenuButton>
                           <FontAwesomeIcon 
                             icon={faEllipsisVertical} 
@@ -101,12 +101,12 @@ const EmblaCarousel: React.FC<PropType> = (props) => {
                           transition
                           modal={false}
                           anchor="bottom end"
-                          className="[--anchor-gap:--spacing(1)] data-closed:scale-95 data-closed:opacity-0 transition duration-100 ease-out z-9999 w-30 bg-white border border-gray-200 shadow-xl  text-sm focus:outline-none mt-1"
+                          className="[--anchor-gap:--spacing(1)] data-closed:scale-95 data-closed:opacity-0 transition duration-100 ease-out z-9999 w-30 bg-white border border-gray-200 shadow-xl  text-sm mt-1"
                         >
                           {user === tune.tune.creator.username &&
                             <MenuItem>
                               <button onClick={() => onRenameClick(tune.tune.tune_id)} className="group flex w-full items-center gap-2 px-3 py-2 hover:bg-blue-100/50 text-gray-900 transition-colors">
-                                <PencilIcon className="size-4 text-gray-500 group-hover:text-blue-600 transition-colors" />
+                                <PencilIcon className="size-4 sm:size-5 text-gray-600 transition-colors group-hover:text-blue-600" />
                                 <span className='text-gray-700 transition-colors group-hover:text-blue-600'>Rename</span>
                               </button>
                             </MenuItem>
