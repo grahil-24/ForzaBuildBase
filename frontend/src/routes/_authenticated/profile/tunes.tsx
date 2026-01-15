@@ -1,7 +1,7 @@
 import { createFileRoute } from '@tanstack/react-router'
 import { Menu, MenuButton, MenuItem, MenuItems } from '@headlessui/react'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faEllipsisH } from '@fortawesome/free-solid-svg-icons'
+import { faEllipsisH, faAngleUp } from '@fortawesome/free-solid-svg-icons'
 import { PencilIcon, TrashIcon, MinusCircleIcon, ChevronDownIcon } from '@heroicons/react/24/outline'
 import { BACKEND } from '../../../config/env'
 import { useInfiniteQuery, useQueryClient } from '@tanstack/react-query'
@@ -10,7 +10,7 @@ import type { AuthState } from '../../../types/auth'
 import ErrorToast from '../../../components/ErrorToast'
 import { formatS3BucketURL } from '../../../util/urlFormatter'
 import type { RankType } from '../../../types/car'
-import { useMemo, useState, useCallback } from 'react'
+import { useMemo, useState, useCallback, useEffect} from 'react'
 import { useRemoveTune } from '../../../hooks/useRemoveTune'
 import { useRenameTune } from '../../../hooks/useRenameTune'
 import { RemoveDialogModal } from '../../../components/profile/RemoveDialogModal'
@@ -78,13 +78,15 @@ function RouteComponent() {
   const {auth} = Route.useRouteContext();
   const queryClient = useQueryClient();
 
+
   const [renameModalOpen, setRenameModalOpen] = useState<boolean>(false);
   const [search, setSearch] = useState<string>("");
   const [removeModalOpen, setRemoveModalOpen] = useState<boolean>(false);
   const [selectedTuneId, setSelectedTuneId] = useState<number | null>(null);
   const [removeMode, setRemoveMode] = useState<'delete' | 'remove'>('delete');
   const [sortBy, setSortBy] = useState<SortOption>('newest');
-  
+  const [scrollPosition, setScrollPosition] = useState<number>(0);
+
   const {data, error, fetchNextPage, hasNextPage, isFetching, isFetchingNextPage, status} = useInfiniteQuery({
     queryKey: ['tunes'],
     queryFn: ({pageParam}) => fetchTunes({auth, pageParam}),
@@ -166,7 +168,26 @@ function RouteComponent() {
     return sortTunes(allTunes);
   }, [data, search, sortTunes]);
 
-  
+  const handleScroll = useCallback(() => {
+    const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+    const scrollHeight = document.documentElement.scrollHeight;
+    const clientHeight = window.innerHeight;
+    const position = Math.ceil(
+      (scrollTop / (scrollHeight - clientHeight)) * 100
+    );
+    setScrollPosition(position);
+  }, []);
+
+
+  const scrollToTop = useCallback(() => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }, []);
+
+  useEffect(() => {
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, [handleScroll]);
+
   return (
     <div>
       {/* Improved Header */}
@@ -405,6 +426,14 @@ function RouteComponent() {
           </>
         )}
       </div>
+      {scrollPosition > 30 && (
+        <div 
+          className='cursor-pointer shadow-xl bg-gray-200 rounded-full p-3 mb-10 fixed bottom-0 right-30'
+          onClick={scrollToTop}
+        >
+          <FontAwesomeIcon size='xl' icon={faAngleUp} />
+        </div>
+      )}
     </div>
   )
 }
