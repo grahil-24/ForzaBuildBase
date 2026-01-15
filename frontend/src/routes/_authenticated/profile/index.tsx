@@ -104,9 +104,12 @@ function RouteComponent() {
                 isLoading={removeTune.isPending}
             />
             <div className='max-w-4/5 pt-10 min-w-sm'>
-                <div className='flex items-center justify-center'>
+                <div className='flex justify-between'>
                     <div className='text-2xl ml-10'>Recent Tunes</div>
-                    <div className='ml-auto'><Link to={'/profile/tunes'}>View all</Link></div>
+                    <div className='group inline-block'>
+                        <div><Link to={'/profile/tunes'}>View all</Link></div>
+                        <div className='w-0 h-0.5 duration-300 group-hover:w-full bg-black'></div>
+                    </div>
                 </div>
                 {recentTunes.length > 0 ? (
                         <Carousel user={auth.user!.username} recentTunes={recentTunes} onRenameClick={handleOpenRenameModal} onRemoveClick={handleOpenRemoveModal} onDeleteClick={handleOpenDeleteModal}/>   

@@ -125,6 +125,10 @@ function RouteComponent() {
       setRenameModalOpen(true);
   };
 
+  // const handleError = (error: Error) => {
+  //   toast(error.message);
+  // }
+
   const removeTune = useRemoveTune(auth, handleRemoveTuneSuccess);
   const renameTune = useRenameTune(auth);
 
@@ -137,21 +141,15 @@ function RouteComponent() {
   };
 
   const sortTunes = useCallback((tunes: Tune[]) => {
-    const sorted = [...tunes];
-    switch(sortBy) {
-      case 'newest':
-        return sorted.sort((a, b) => new Date(b.saved_on).getTime() - new Date(a.saved_on).getTime());
-      case 'oldest':
-        return sorted.sort((a, b) => new Date(a.saved_on).getTime() - new Date(b.saved_on).getTime());
+    switch(sortBy){
+      case 'newest': 
+        return tunes.sort((a, b) => new Date(b.saved_on).getTime() - new Date(a.saved_on).getTime());
+      case 'oldest': 
+        return tunes.sort((a, b) => new Date(a.saved_on).getTime() - new Date(b.saved_on).getTime());
       case 'alphabetical':
-        return sorted.sort((a, b) => 
-          `${a.tune.car.Manufacturer} ${a.tune.car.Model}`.localeCompare(`${b.tune.car.Manufacturer} ${b.tune.car.Model}`)
-        );
-      default:
-        return sorted;
+        return tunes.sort((a, b) => `${a.tune.car.Manufacturer}${a.tune.car.Model}`.localeCompare(`${b.tune.car.Manufacturer}${b.tune.car.Model}`))
     }
-  }, [sortBy]);
-
+  }, [sortBy])
 
   const processedTunes = useMemo(() => {
     if (!data?.pages) return [];
@@ -162,7 +160,6 @@ function RouteComponent() {
     if (search.trim()) {
       const fuse = new Fuse(allTunes, fuseOptions);
       allTunes = fuse.search(search).map((result) => result.item);
-      console.log("alltunes ", allTunes);
     }
     
     // Apply sorting
@@ -254,12 +251,16 @@ function RouteComponent() {
               <path fill="currentColor" d="M10.72,19.9a8,8,0,0,1-6.5-9.79A7.77,7.77,0,0,1,10.4,4.16a8,8,0,0,1,9.49,6.52A1.54,1.54,0,0,0,21.38,12h.13a1.37,1.37,0,0,0,1.38-1.54,11,11,0,1,0-12.7,12.39A1.54,1.54,0,0,0,12,21.34h0A1.47,1.47,0,0,0,10.72,19.9Z"></path>
             </svg>  
           </div>
-        ) : status === 'error' ? (
-          <div className='flex justify-center text-red-600'>
-            Error loading tunes
-          </div>
-        ) : (
+        )  : (
           <>
+          {status === 'error' && (
+          // <div className='flex justify-center text-red-600'>
+          //   Error loading tunes
+          // </div>
+            
+            <ErrorToast error={error} />
+          )
+          }
             <RenameDialogModal 
               openModal={renameModalOpen}
               onClose={handleCloseRenameModal}

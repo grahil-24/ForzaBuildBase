@@ -5,11 +5,9 @@ import { Route } from "../routes/__root";
 
 function Nav() {
   const authContext = Route.useRouteContext().auth;
-  // const navigate = useNavigate();
   const handleLogout = async() => {
     //set accesstoken, user, isauth to false  
     await authContext.logout();
-    // navigate({to: '/'});
   };
   const [isOpen, setIsOpen] = useState(false);
   return (

@@ -52,7 +52,7 @@ export const RemoveDialogModal = ({openModal, onClose,onSubmit,isLoading, mode}:
                             </svg>  
                             {mode === 'delete' ? 'deleting...' : 'removing...'}
                         </>
-                    ) : <>{mode === 'delete' ? 'delete' : 'remove'}</>
+                    ) : <>{mode === 'delete' ? 'Delete' : 'Remove'}</>
                 }
                 </Button>
               </div>
