@@ -17,6 +17,7 @@ import { Route as AuthenticatedBrowseRouteImport } from './routes/_authenticated
 import { Route as AuthenticatedProfileIndexRouteImport } from './routes/_authenticated/profile/index'
 import { Route as AuthenticatedProfileTunesRouteImport } from './routes/_authenticated/profile/tunes'
 import { Route as AuthenticatedViewCarCarIdRouteImport } from './routes/_authenticated/view/car/$carId'
+import { Route as AuthenticatedTuneCarCarIdRouteImport } from './routes/_authenticated/tune/car/$carId'
 
 const SignUpRoute = SignUpRouteImport.update({
   id: '/sign-up',
@@ -60,6 +61,12 @@ const AuthenticatedViewCarCarIdRoute =
     path: '/view/car/$carId',
     getParentRoute: () => AuthenticatedRoute,
   } as any)
+const AuthenticatedTuneCarCarIdRoute =
+  AuthenticatedTuneCarCarIdRouteImport.update({
+    id: '/tune/car/$carId',
+    path: '/tune/car/$carId',
+    getParentRoute: () => AuthenticatedRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -68,6 +75,7 @@ export interface FileRoutesByFullPath {
   '/browse': typeof AuthenticatedBrowseRoute
   '/profile/tunes': typeof AuthenticatedProfileTunesRoute
   '/profile': typeof AuthenticatedProfileIndexRoute
+  '/tune/car/$carId': typeof AuthenticatedTuneCarCarIdRoute
   '/view/car/$carId': typeof AuthenticatedViewCarCarIdRoute
 }
 export interface FileRoutesByTo {
@@ -77,6 +85,7 @@ export interface FileRoutesByTo {
   '/browse': typeof AuthenticatedBrowseRoute
   '/profile/tunes': typeof AuthenticatedProfileTunesRoute
   '/profile': typeof AuthenticatedProfileIndexRoute
+  '/tune/car/$carId': typeof AuthenticatedTuneCarCarIdRoute
   '/view/car/$carId': typeof AuthenticatedViewCarCarIdRoute
 }
 export interface FileRoutesById {
@@ -88,6 +97,7 @@ export interface FileRoutesById {
   '/_authenticated/browse': typeof AuthenticatedBrowseRoute
   '/_authenticated/profile/tunes': typeof AuthenticatedProfileTunesRoute
   '/_authenticated/profile/': typeof AuthenticatedProfileIndexRoute
+  '/_authenticated/tune/car/$carId': typeof AuthenticatedTuneCarCarIdRoute
   '/_authenticated/view/car/$carId': typeof AuthenticatedViewCarCarIdRoute
 }
 export interface FileRouteTypes {
@@ -99,6 +109,7 @@ export interface FileRouteTypes {
     | '/browse'
     | '/profile/tunes'
     | '/profile'
+    | '/tune/car/$carId'
     | '/view/car/$carId'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -108,6 +119,7 @@ export interface FileRouteTypes {
     | '/browse'
     | '/profile/tunes'
     | '/profile'
+    | '/tune/car/$carId'
     | '/view/car/$carId'
   id:
     | '__root__'
@@ -118,6 +130,7 @@ export interface FileRouteTypes {
     | '/_authenticated/browse'
     | '/_authenticated/profile/tunes'
     | '/_authenticated/profile/'
+    | '/_authenticated/tune/car/$carId'
     | '/_authenticated/view/car/$carId'
   fileRoutesById: FileRoutesById
 }
@@ -186,6 +199,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedViewCarCarIdRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
+    '/_authenticated/tune/car/$carId': {
+      id: '/_authenticated/tune/car/$carId'
+      path: '/tune/car/$carId'
+      fullPath: '/tune/car/$carId'
+      preLoaderRoute: typeof AuthenticatedTuneCarCarIdRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
   }
 }
 
@@ -193,6 +213,7 @@ interface AuthenticatedRouteChildren {
   AuthenticatedBrowseRoute: typeof AuthenticatedBrowseRoute
   AuthenticatedProfileTunesRoute: typeof AuthenticatedProfileTunesRoute
   AuthenticatedProfileIndexRoute: typeof AuthenticatedProfileIndexRoute
+  AuthenticatedTuneCarCarIdRoute: typeof AuthenticatedTuneCarCarIdRoute
   AuthenticatedViewCarCarIdRoute: typeof AuthenticatedViewCarCarIdRoute
 }
 
@@ -200,6 +221,7 @@ const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
   AuthenticatedBrowseRoute: AuthenticatedBrowseRoute,
   AuthenticatedProfileTunesRoute: AuthenticatedProfileTunesRoute,
   AuthenticatedProfileIndexRoute: AuthenticatedProfileIndexRoute,
+  AuthenticatedTuneCarCarIdRoute: AuthenticatedTuneCarCarIdRoute,
   AuthenticatedViewCarCarIdRoute: AuthenticatedViewCarCarIdRoute,
 }
 

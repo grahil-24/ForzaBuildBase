@@ -11,6 +11,7 @@ import type { IconDefinition } from '@fortawesome/free-solid-svg-icons';
 import {useState, useEffect, type  ReactElement, type JSX} from 'react';
 import { formatS3BucketURL } from '../../../../util/urlFormatter';
 import type { Car } from '../../../../types/car';
+import { Link } from '@tanstack/react-router';
 
 const faSteeringWheel: ReactElement =
     <svg stroke="currentColor" fill="currentColor" strokeWidth="0" viewBox="0 0 512 512" height="15px" width="15px" xmlns="http://www.w3.org/2000/svg">
@@ -143,7 +144,7 @@ function RouteComponent() {
   const displayWeight = unit === 'imperial' ? car.Weight : car.Weight! * 0.45
   
   return (
-   <div className="min-h-screen bg-linear-to-br from-slate-50 via-white to-slate-100 p-7">
+   <div className="flex-row items-center justify-center min-h-screen bg-linear-to-br from-slate-50 via-white to-slate-100 px-7 py-2">
       <div className="max-w-6xl mx-auto">
         {/* Main Card with Image */}
         <div className="flex flex-col md:flex-row items-center justify-between bg-white rounded-2xl shadow-lg border border-slate-200 overflow-hidden mb-6">
@@ -260,6 +261,15 @@ function RouteComponent() {
             </div>
           </div>
         </div>
+      </div>
+      <div className='flex'>
+        <Link className='mx-auto' to={`/tune/car/${car.id}`}>
+        <button className='mt-5 bg-white font-black text-[18px] px-[1.3em] py-[0.6em]
+    border-[3px] border-black rounded-[0.4em] shadow-[0.1em_0.1em_0_#000] cursor-pointer
+    transition-all hover:-translate-x-[0.05em] hover:-translate-y-[0.05em] hover:shadow-[0.15em_0.15em_0_#000]
+    active:translate-x-[0.05em] active:translate-y-[0.05em] active:shadow-[0.05em_0.05em_0_#000]'>
+      Tune</button>
+      </Link>
       </div>
     </div>
   );
