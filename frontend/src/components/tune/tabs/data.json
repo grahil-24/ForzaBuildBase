@@ -1,0 +1,145 @@
+{
+    "Tyre pressure": {
+        "header": "Tyre Pressure",
+        "info": "You can't transmit your car's power and handling potential to the road without the right tire setup because tire pressure affects a tire's peak grip, responsiveness, and wear. Adjust front tire pressure when the tires are cold so they reach peak grip once they have heated up to race temperatures. Setting tire pressure lower causes the tires to heat faster, but it can reduce overall responsiveness. Setting tire pressure higher can increase speed and responsiveness, but it makes the tires more prone to sudden loss of grip.",
+        "sliders": [
+            {
+                "default": [
+                    {
+                        "label": "Front",
+                        "startLabel": "low",
+                        "endLabel": "high",
+                        "min": 1.0,
+                        "max": 3.8,
+                        "defaultValue": 2.2,
+                        "step": 0.1,
+                        "unit": "bar"
+                    },
+                    {
+                        "label": "Rear",
+                        "startLabel": "low",
+                        "endLabel": "high",
+                        "min": 1.0,
+                        "max": 3.8,
+                        "defaultValue": 2.2,
+                        "step": 0.1,
+                        "unit": "bar"
+                    }
+                ]
+            }
+        ]
+    },
+    "Gearing": {
+        "header": "Gearing",
+        "info": " Final drive ratio determines how engine power is delivered to the wheels, affecting acceleration versus top speed across all gears. This setting multiplies the effect of your transmission ratios, fundamentally changing your vehicle's performance characteristics. Higher Final Drive Ratios (numerically higher, such as 4.10 or 4.50) provide shorter gearing that delivers quicker acceleration at the cost of lower top speed. Each gear feels more responsive and pulls harder from lower RPMs, making the car feel more eager and athletic in everyday driving. However, your engine reaches redline sooner in each gear, requiring more frequent shifting, and your maximum speed in top gear decreases. Lower Final Drive Ratios (numerically lower, such as 3.23 or 2.90) provide taller gearing that sacrifices acceleration for higher top speed potential. Each gear feels longer and less aggressive, requiring more throttle input to achieve the same acceleration. The engine runs at lower RPMs at any given speed, improving fuel efficiency and reducing mechanical stress, while your maximum achievable speed increases significantly.",
+        "sliders": [
+            {
+                "default": [
+                    {
+                        "label": "Final Drive",
+                        "min": 2.20,
+                        "max": 6.10,
+                        "defaultValue": 3.50,
+                        "step": 0.01
+                    }
+                ]
+            }
+        ]
+    },
+    "Alignment": {
+        "header": "Alignment",
+        "info": "Alignment settings determine how your tires make contact with the road surface, directly affecting handling characteristics and tire wear patterns. Camber controls the inward or outward tilt of your tires when viewed from the front—negative camber improves cornering grip but reduces straight-line stability, while positive camber does the opposite. Toe adjusts whether your tires point inward or outward when viewed from above—toe-in increases stability but reduces turn-in response, while toe-out improves initial turn response but can make the car feel nervous. Caster angle affects steering feel and self-centering—higher caster increases high-speed stability and steering weight, while lower caster makes the steering lighter and more responsive at low speeds.",
+        "sliders": [
+            {
+                "Camber": [
+                    {
+                        "label": "Front",
+                        "startLabel": "neg",
+                        "endLabel": "pos",
+                        "min": -5,
+                        "max": 5,
+                        "defaultValue": 0,
+                        "step": 0.1,
+                        "unit": "degree"
+                    },
+                    {
+                        "label": "Rear",
+                        "startLabel": "neg",
+                        "endLabel": "pos",
+                        "min": -5,
+                        "max": 5,
+                        "defaultValue": 0,
+                        "step": 0.1,
+                        "unit": "degree"
+                    }
+                ]
+            },
+            {
+                "Toe": [
+                    {
+                        "label": "Front",
+                        "startLabel": "in",
+                        "endLabel": "out",
+                        "min": -5,
+                        "max": 5,
+                        "defaultValue": 0,
+                        "step": 0.1,
+                        "unit": "degree"
+                    },
+                    {
+                        "label": "Rear",
+                        "startLabel": "in",
+                        "endLabel": "out",
+                        "min": -5,
+                        "max": 5,
+                        "defaultValue": 0,
+                        "step": 0.1,
+                        "unit": "degree"
+                    }
+                ]
+            },
+            {
+                "Front Caster": [
+                    {
+                        "label": "",
+                        "startLabel": "low",
+                        "endLabel": "high",
+                        "min": 1,
+                        "max": 7,
+                        "defaultValue": 3,
+                        "step": 0.1,
+                        "unit": "degree"
+                    }
+                ]
+            }
+        ]
+    },
+    "Antiroll bars": {
+        "header": "Antiroll bars",
+        "info": "Anti-roll bar settings control how your vehicle resists body roll during cornering, directly affecting weight transfer and handling balance. Front and rear bars can be independently adjusted from 1 (softest) to 65 (stiffest). Front Anti-Roll Bar determines front-end roll resistance—stiffer settings (higher values) reduce body roll and sharpen turn-in response but increase understeer by transferring more weight to the outside tire. Softer settings (lower values) allow more roll but distribute grip more evenly across both front tires, improving mechanical traction while sacrificing immediate steering response. Rear Anti-Roll Bar controls rear roll resistance—stiffer settings reduce body movement and stabilize the rear but can induce oversteer. Softer settings maintain rear grip and reduce oversteer tendency but allow more weight shift. Balance between front and rear determines handling character—stiffer front relative to rear creates understeer and stability, while stiffer rear relative to front induces oversteer and rotation.",
+        "sliders": [
+            {
+                "default": [
+                    {
+                        "label": "Front",
+                        "startLabel": "soft",
+                        "endLabel": "stiff",
+                        "min": 1.00,
+                        "max": 65.00,
+                        "defaultValue": 30.00,
+                        "step": 0.01
+                    },
+                    {
+                        "label": "Rear",
+                        "startLabel": "low",
+                        "endLabel": "high",
+                        "min": 1.00,
+                        "max": 65.00,
+                        "defaultValue": 30.00,
+                        "step": 0.01
+                    }
+                ]
+            }
+        ]
+    }
+}

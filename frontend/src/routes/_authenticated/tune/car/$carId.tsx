@@ -1,38 +1,16 @@
 import { createFileRoute } from '@tanstack/react-router'
 import { Tab, TabGroup, TabList, TabPanel, TabPanels } from '@headlessui/react'
 import { useLayoutEffect, useState, useRef } from 'react'
-import { TirePressureTab } from '../../../../components/tune/tabs/TirepressureTab'
-import { AlignmentTab } from '../../../../components/tune/tabs/AlignmentTab'
+// import { TirePressureTab } from '../../../../components/tune/tabs/TirepressureTab'
+// import { AlignmentTab } from '../../../../components/tune/tabs/AlignmentTab'
+// import { AntirollbarTab } from '../../../../components/tune/tabs/AntirollbarTab'
+// import { GearingTab } from '../../../../components/tune/tabs/GearingTab'
+import { TabForm } from '../../../../components/tune/tabs/TabForm'
+import data from '../../../../components/tune/tabs/data.json'
 
-const categories = [
-  {
-    name: 'Tires pressure',
-  },
-  {
-    name: 'Gearing',
-  },
-  {
-    name: 'Alignment',
-  },
-  {
-    name: 'Antiroll bars',
-  },
-  {
-    name: 'Springs',
-  },
-  {
-    name: 'Damping',
-  },
-  {
-    name: 'Aero',
-  },
-  {
-    name: 'Brake',
-  },
-  {
-    name: 'Differential',
-  },
-]
+
+const categories = Object.keys(data);
+console.log("categories ", categories);
 
 
 export const Route = createFileRoute('/_authenticated/tune/car/$carId')({
@@ -84,13 +62,13 @@ function RouteComponent (){
 
             <TabList className="overflow-hidden relative flex justify-center gap-1">
               <button onClick={handlePreviousTab} className='p-2 border-black bg-gray-200'>&lt;</button>
-              {categories.map(({ name }, index) => (
+              {categories.map((name , index) => (
                 <Tab
                   key={name}
                   ref={(el) => {
                     if (el) tabRefs.current[index] = el
                   }}
-                  className="relative hover:bg-gray-200 z-10 px-3 py-1 text-sm/6 font-semibold text-black focus:outline-none"
+                  className={`relative ${activeIndex !== index ? 'hover:bg-gray-200/70' : ''} z-10 px-3 py-1 text-sm/6 font-semibold text-black focus:outline-none transition-colors duration-200`}
                 >
                   {name}
                 </Tab>
@@ -101,22 +79,29 @@ function RouteComponent (){
 
           {/* PANELS */}
           <TabPanels className="mt-3">
-            {categories.map(({ name }, index) => (
+            {categories.map((name, index) => {
+              console.log("name ", name);
+              return (
               <TabPanel
                 key={name}
                 className="rounded-xl bg-black/5 p-3"
               >
-                {index === 0 ? (
+                {/* {index === 0 ? (
                   <TirePressureTab />
+                ) : index == 1 ? (
+                  <GearingTab />
                 ) : index == 2 ? (
                   <AlignmentTab />
-                ):(
+                ): index == 3 ? (
+                  <AntirollbarTab />
+                ) : (
                   <div className="p-4">
                     <p className="text-gray-500">Content for {name} coming soon...</p>
                   </div>
-                )}
+                )} */}
+                <TabForm data={data[name]} />
               </TabPanel>
-            ))}
+            )})}
           </TabPanels>
         </TabGroup>
       </div>
