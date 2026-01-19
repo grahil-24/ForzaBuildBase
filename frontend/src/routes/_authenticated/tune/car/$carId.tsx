@@ -1,4 +1,4 @@
-import { createFileRoute } from '@tanstack/react-router'
+import { createFileRoute, useBlocker } from '@tanstack/react-router'
 import { Tab, TabGroup, TabList, TabPanel, TabPanels } from '@headlessui/react'
 import { useLayoutEffect, useState, useRef } from 'react'
 import { TabForm } from '../../../../components/tune/tabs/TabForm'
@@ -35,6 +35,13 @@ function RouteComponent (){
     return initialData;
   });
 
+  const [formIsDirty, setFormIsDirty] = useState<boolean>(false);
+
+  const {proceed, reset, status } = useBlocker({
+    shouldBlockFn: () => formIsDirty,
+    withResolver: true
+  });
+
   useLayoutEffect(() => {
     const tab = tabRefs.current[activeIndex]
     if (!tab) return
@@ -44,6 +51,20 @@ function RouteComponent (){
       left: tab.offsetLeft,
     })
   }, [activeIndex])
+
+  useLayoutEffect(() => {
+  if (status === 'blocked') {
+    const shouldLeave = window.confirm(
+      'Are you sure you want to leave? Information you\'ve entered may not be saved.'
+    );
+    
+    if (shouldLeave) {
+      proceed();
+    } else {
+      reset();
+    }
+  }
+}, [status, proceed, reset]);
 
   const handlePreviousTab = () => {
     setActiveIndex((prev) => Math.max(0, (prev - 1)));
@@ -58,9 +79,14 @@ function RouteComponent (){
       ...prev,
       [sliderId]: value
     }));
+    if(!formIsDirty){
+      setFormIsDirty(true);
+    }
   }
 
   return (
+    <>
+    
     <div className="flex h-screen w-full justify-center px-4 pt-24">
       <div className="w-9/10">
         <TabGroup selectedIndex={activeIndex} onChange={setActiveIndex}>
@@ -104,5 +130,6 @@ function RouteComponent (){
         </TabGroup>
       </div>
     </div>
+    </>
   )
 }

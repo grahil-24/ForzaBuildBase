@@ -151,5 +151,153 @@
                 ]
             }
         ]
+    },
+    "Springs": {
+        "header": "Springs",
+        "info": "Spring settings control your car's suspension compliance and body movement, directly affecting ride quality, handling balance, and weight transfer. Stiffer springs reduce body roll and improve responsiveness but can make the car skittish over bumps, while softer springs provide better mechanical grip and comfort but allow more body movement and slower weight transfer. Front-to-rear spring balance determines handling characteristics—stiffer fronts reduce understeer and improve turn-in, while stiffer rears increase rear grip but can promote oversteer. Ride height affects aerodynamics and center of gravity—lower ride height improves stability and cornering speed through reduced weight transfer but increases bottoming risk, while higher ride height provides more suspension travel and ground clearance at the cost of handling precision and aerodynamic efficiency.",
+        "sliders": [
+            {
+                "Springs": [
+                    {
+                        "label": "Front",
+                        "sliderId": "front_spring",
+                        "startLabel": "soft",
+                        "endLabel": "stiff",
+                        "min": 30.2,
+                        "max": 297,
+                        "defaultValue": 100.0,
+                        "step": 0.1,
+                        "unit": "kgf/mm"
+                    },
+                    {
+                        "label": "Rear",
+                        "sliderId": "rear_spring",
+                        "startLabel": "soft",
+                        "endLabel": "stiff",
+                        "min": 30.2,
+                        "max": 297,
+                        "defaultValue": 100.0,
+                        "step": 0.1,
+                        "unit": "kgf/mm"
+                    }
+                ]
+            },
+            {
+                "Ride Height": [
+                    {
+                        "label": "Front",
+                        "sliderId": "front_ride_height",
+                        "startLabel": "low",
+                        "endLabel": "high",
+                        "min": 6.6,
+                        "max": 68,
+                        "defaultValue": 15,
+                        "step": 0.1,
+                        "unit": "cm"
+                    },
+                    {
+                        "label": "Rear",
+                        "sliderId": "rear_ride_height",
+                        "startLabel": "low",
+                        "endLabel": "high",
+                        "min": 9.8,
+                        "max": 68,
+                        "defaultValue": 15,
+                        "step": 0.1,
+                        "unit": "cm"
+                    }
+                ]
+            }
+        ]
+    },
+    "Damping": {
+        "header": "Damping",
+        "info":"Damping settings control how quickly your suspension compresses and extends, directly affecting stability, grip, and weight transfer speed. Rebound stiffness regulates how fast the suspension extends after compression—stiffer rebound slows weight transfer and reduces body oscillation but can prevent tires from maintaining road contact over bumps, while softer rebound allows quicker weight transfer and better bump absorption but may cause excessive body movement. Bump stiffness controls compression speed when hitting obstacles—stiffer bump resists initial body roll and improves responsiveness but can make the car skip over surface irregularities, while softer bump provides better mechanical grip and compliance over rough surfaces but allows more body dive and squat. Front-to-rear damping balance fine-tunes handling—stiffer front damping reduces understeer and sharpens turn-in, while stiffer rear damping increases rear stability but can promote oversteer during aggressive maneuvers.",
+        "sliders": [
+            {
+                "Rebound Stiffness": [
+                    {
+                        "label": "Front",
+                        "sliderId": "front_rebound",
+                        "startLabel": "soft",
+                        "endLabel": "stiff",
+                        "min": 1.0,
+                        "max": 20.0,
+                        "defaultValue": 10.0,
+                        "step": 0.1,
+                        "unit": ""
+                    },
+                    {
+                        "label": "Rear",
+                        "sliderId": "rear_rebound",
+                        "startLabel": "soft",
+                        "endLabel": "stiff",
+                        "min": 1.0,
+                        "max": 20.0,
+                        "defaultValue": 10.0,
+                        "step": 0.1,
+                        "unit": ""
+                    }
+                ]
+            },
+            {
+                "Bump Stiffness": [
+                    {
+                        "label": "Front",
+                        "sliderId": "front_bump",
+                        "startLabel": "soft",
+                        "endLabel": "stiff",
+                        "min": 1.0,
+                        "max": 20.0,
+                        "defaultValue": 10.0,
+                        "step": 0.1,
+                        "unit": ""
+                    },
+                    {
+                        "label": "Rear",
+                        "sliderId": "rear_bump",
+                        "startLabel": "soft",
+                        "endLabel": "stiff",
+                        "min": 1.0,
+                        "max": 20.0,
+                        "defaultValue": 10.0,
+                        "step": 0.1,
+                        "unit": ""
+                    }
+                ]
+            }
+        ]
+    },
+    "Aero": {
+        "header": "Aero",
+        "info": "Aerodynamic settings control downforce generation, directly affecting grip levels, top speed, and handling balance. Higher downforce increases cornering speed and braking performance by pressing the car onto the track, but creates more drag that reduces straight-line speed and acceleration. Lower downforce minimizes drag for higher top speeds and better acceleration but reduces mechanical grip in corners and under braking. Front-to-rear aero balance determines handling characteristics—more front downforce reduces understeer and improves turn-in stability but can overload front tires, while more rear downforce increases rear grip and high-speed stability but can promote understeer and reduce rotation. The aero balance also affects how the car behaves at different speeds—higher downforce setups become more stable and predictable as speed increases, while low-downforce setups maintain consistent handling but sacrifice ultimate cornering potential.",
+        "sliders": [
+            {
+                "default": [
+                    {
+                        "label": "Front",
+                        "sliderId": "front_aero",
+                        "startLabel": "speed",
+                        "endLabel": "cornering",
+                        "min": 40,
+                        "max": 207,
+                        "defaultValue": 90,
+                        "step": 1,
+                        "unit": "kgf"
+                    },
+                    {
+                        "label": "Rear",
+                        "sliderId": "rear_aero",
+                        "startLabel": "speed",
+                        "endLabel": "cornering",
+                        "min": 67,
+                        "max": 376,
+                        "defaultValue": 200,
+                        "step": 1,
+                        "unit": "kgf"
+                    }
+                ]
+            }
+        ]
     }
 }

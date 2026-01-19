@@ -32,7 +32,7 @@ export const TuneSlider = ({
   return (
     <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 py-3 border-b border-purple-900/30 last:border-b-0">
       {/* Label */}
-      <div className="w-full sm:w-16 md:w-24 text-pink-500 font-bold text-xs md:text-sm uppercase">
+      <div className="w-full sm:w-10 md:w-15 text-pink-500 font-bold text-xs md:text-sm uppercase">
         {label}
       </div>
       
@@ -60,11 +60,11 @@ export const TuneSlider = ({
         </span>
         
         {/* Value Display */}
-        <div className="w-16 sm:w-20 text-right">
+        <div className="w-20 sm:w-24 md:w-28 text-right flex-shrink-0">
           <span className="text-white font-bold text-sm sm:text-base md:text-lg">
             {value.toFixed(numOfDecimals)}
           </span>
-          <span className="text-gray-400 text-[10px] sm:text-xs md:text-sm ml-1">
+          <span className="text-gray-400 text-[10px] sm:text-xs md:text-sm ml-1 whitespace-nowrap">
             {unit}
           </span>
         </div>

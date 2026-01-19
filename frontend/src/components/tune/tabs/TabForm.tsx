@@ -35,9 +35,9 @@ export const TabForm = ({ data, onSliderChange, sliderData }: { data: dataType, 
         {data.sliders.map((sliderConfig, configIndex) => (
           <div key={configIndex}>
             {Object.entries(sliderConfig).map(([key, sliderArray]) => (
-              <div className='mb-2 bg-black/30 rounded-lg p-4' key={key}>
+              <div className='mb-2 bg-black/30 rounded-lg p-3' key={key}>
                 {key !== 'default' && 
-                <p className="text-white text-xl">{key}</p>
+                <p className="font-bold text-white text-xl">{key}</p>
                 }
                 {sliderArray.map((slider, index) => (
                   <TuneSlider
