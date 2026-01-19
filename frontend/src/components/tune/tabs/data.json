@@ -7,6 +7,7 @@
                 "default": [
                     {
                         "label": "Front",
+                        "sliderId": "front_tire_pressure",
                         "startLabel": "low",
                         "endLabel": "high",
                         "min": 1.0,
@@ -17,6 +18,7 @@
                     },
                     {
                         "label": "Rear",
+                        "sliderId": "rear_tire_pressure",
                         "startLabel": "low",
                         "endLabel": "high",
                         "min": 1.0,
@@ -37,6 +39,7 @@
                 "default": [
                     {
                         "label": "Final Drive",
+                        "sliderId": "final_drive",
                         "min": 2.20,
                         "max": 6.10,
                         "defaultValue": 3.50,
@@ -54,6 +57,7 @@
                 "Camber": [
                     {
                         "label": "Front",
+                        "sliderId": "front_camber",
                         "startLabel": "neg",
                         "endLabel": "pos",
                         "min": -5,
@@ -64,6 +68,7 @@
                     },
                     {
                         "label": "Rear",
+                        "sliderId": "rear_camber",
                         "startLabel": "neg",
                         "endLabel": "pos",
                         "min": -5,
@@ -78,6 +83,7 @@
                 "Toe": [
                     {
                         "label": "Front",
+                        "sliderId": "front_toe",
                         "startLabel": "in",
                         "endLabel": "out",
                         "min": -5,
@@ -88,6 +94,7 @@
                     },
                     {
                         "label": "Rear",
+                        "sliderId": "rear_toe",
                         "startLabel": "in",
                         "endLabel": "out",
                         "min": -5,
@@ -102,6 +109,7 @@
                 "Front Caster": [
                     {
                         "label": "",
+                        "sliderId": "front_caster",
                         "startLabel": "low",
                         "endLabel": "high",
                         "min": 1,
@@ -122,6 +130,7 @@
                 "default": [
                     {
                         "label": "Front",
+                        "sliderId": "front_arb",
                         "startLabel": "soft",
                         "endLabel": "stiff",
                         "min": 1.00,
@@ -131,6 +140,7 @@
                     },
                     {
                         "label": "Rear",
+                        "sliderId": "rear_arb",
                         "startLabel": "low",
                         "endLabel": "high",
                         "min": 1.00,

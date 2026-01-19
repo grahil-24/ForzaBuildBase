@@ -2,6 +2,7 @@ import { TuneSlider } from "../TuneSlider";
 
 type Slider = {
   label: string;
+  sliderId: string;
   startLabel?: string;
   endLabel?: string;
   min: number;
@@ -20,7 +21,7 @@ interface dataType {
   sliders: SliderConfig[];
 }
 
-export const TabForm = ({ data }: { data: dataType }) => {
+export const TabForm = ({ data, onSliderChange, sliderData }: { data: dataType, onSliderChange: (sliderId: string, value: number) => void,  sliderData: Record<string, number> }) => {
   return (
     <div className="bg-linear-to-br from-purple-900/40 to-purple-950/60 rounded-lg p-6 backdrop-blur-sm">
       <div className="mb-6">
@@ -48,6 +49,8 @@ export const TabForm = ({ data }: { data: dataType }) => {
                     max={slider.max}
                     step={slider.step}
                     unit={slider.unit}
+                    value={sliderData[slider.sliderId]}
+                    onChange={(value) => onSliderChange(slider.sliderId, value)}
                   />
                 ))}
               </div>

@@ -2,8 +2,8 @@ interface SliderInterface {
   label: string;
   startLabel?: string;
   endLabel?: string;
-  value?: number;
-  onChange?: (arg: number) => void;
+  value: number;
+  onChange: (arg: number) => void;
   min: number;
   max: number;
   step: number;
@@ -47,8 +47,8 @@ export const TuneSlider = ({
           min={min}
           max={max}
           step={step}
-          // value={value}
-          // onChange={(e) => onChange(parseFloat(e.target.value))}
+          value={value}
+          onChange={(e) => onChange(parseFloat(e.target.value))}
           className="flex-1 h-2 bg-gray-600 rounded-lg appearance-none cursor-pointer slider"
           style={{
             background: `linear-gradient(to right, #ec4899 0%, #ec4899 ${((value - min) / (max - min)) * 100}%, #4b5563 ${((value - min) / (max - min)) * 100}%, #4b5563 100%)`
@@ -62,7 +62,7 @@ export const TuneSlider = ({
         {/* Value Display */}
         <div className="w-16 sm:w-20 text-right">
           <span className="text-white font-bold text-sm sm:text-base md:text-lg">
-            {/* {value.toFixed(numOfDecimals)} */}
+            {value.toFixed(numOfDecimals)}
           </span>
           <span className="text-gray-400 text-[10px] sm:text-xs md:text-sm ml-1">
             {unit}
