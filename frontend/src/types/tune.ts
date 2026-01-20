@@ -18,4 +18,26 @@ interface Tune {
     }
 }
 
-export type {Tune};
+type Slider = {
+  label: string;
+  sliderId: string;
+  startLabel?: string;
+  endLabel?: string;
+  defaultValue: number;
+  min: number;
+  max: number;
+  step: number;
+  unit?: string;
+};
+
+type SliderConfig = {
+  [key: string]: Slider[];
+};
+
+interface TuneData {
+  header: string;
+  info: string;
+  sliders: SliderConfig[];
+}
+
+export type {Tune, Slider, TuneData};

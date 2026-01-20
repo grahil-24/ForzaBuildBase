@@ -1,27 +1,8 @@
 import { TuneSlider } from "../TuneSlider";
+import type {TuneData } from "../../../types/tune";
 
-type Slider = {
-  label: string;
-  sliderId: string;
-  startLabel?: string;
-  endLabel?: string;
-  min: number;
-  max: number;
-  step: number;
-  unit?: string;
-};
 
-type SliderConfig = {
-  [key: string]: Slider[];
-};
-
-interface dataType {
-  header: string;
-  info: string;
-  sliders: SliderConfig[];
-}
-
-export const TabForm = ({ data, onSliderChange, sliderData }: { data: dataType, onSliderChange: (sliderId: string, value: number) => void,  sliderData: Record<string, number> }) => {
+export const TabForm = ({ data, onSliderChange, sliderData }: { data: TuneData, onSliderChange: (sliderId: string, value: number) => void,  sliderData: Record<string, number> }) => {
   return (
     <div className="bg-linear-to-br from-purple-900/40 to-purple-950/60 rounded-lg p-6 backdrop-blur-sm">
       <div className="mb-6">
