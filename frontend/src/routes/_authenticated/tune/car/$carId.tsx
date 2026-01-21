@@ -1,6 +1,6 @@
 import { createFileRoute, useBlocker } from '@tanstack/react-router'
 import { Tab, TabGroup, TabList, TabPanel, TabPanels } from '@headlessui/react'
-import { useLayoutEffect, useState, useRef, useEffect } from 'react'
+import { useLayoutEffect, useState, useRef } from 'react'
 import { TabForm } from '../../../../components/tune/tabs/TabForm'
 import type { Slider, TuneData } from '../../../../types/tune'
 import data from '../../../../components/tune/tabs/data.json'
@@ -15,9 +15,14 @@ export const Route = createFileRoute('/_authenticated/tune/car/$carId')({
 function RouteComponent() {
   const numOfTabs = categories.length;
   const [activeIndex, setActiveIndex] = useState(0);
+
+  /* These refs allow direct DOM access for measuring positions, and controlling scroll behaviour*/
+  //holds reference to the div wrapping tablist
   const tabListRef = useRef<HTMLDivElement | null>(null);
+  //an array that stores references to each individual tab button element
   const tabRefs = useRef<(HTMLElement | null)[]>([]);
   
+  /* initialize slider data with the defaultValue */
   const [sliderData, setSliderData] = useState<Record<string, number>>(() => {
     const initialData: Record<string, number> = {};
     Object.values(tuneData).forEach((section) => {
@@ -32,6 +37,8 @@ function RouteComponent() {
     return initialData;
   });
 
+  /* flag which is set when a value in slider is changed, this flag is used to throw the warning modal when
+  user tries to leave the page*/
   const [formIsDirty, setFormIsDirty] = useState<boolean>(false);
   const { proceed, reset, status } = useBlocker({
     shouldBlockFn: () => formIsDirty,
@@ -51,37 +58,21 @@ function RouteComponent() {
     }
   }, [status, proceed, reset]);
 
-  // Scroll active tab into view
-  useEffect(() => {
-    if (tabRefs.current[activeIndex] && tabListRef.current) {
-      const tabElement = tabRefs.current[activeIndex];
-      const containerElement = tabListRef.current;
-      
-      const tabLeft = tabElement.offsetLeft;
-      const tabWidth = tabElement.offsetWidth;
-      const containerWidth = containerElement.offsetWidth;
-      const scrollLeft = containerElement.scrollLeft;
-      
-      // Calculate if we need to scroll
-      const tabRight = tabLeft + tabWidth;
-      const visibleLeft = scrollLeft;
-      const visibleRight = scrollLeft + containerWidth;
-      
-      if (tabLeft < visibleLeft) {
-        // Tab is to the left of visible area
-        containerElement.scrollTo({
-          left: tabLeft - 20,
-          behavior: 'smooth'
-        });
-      } else if (tabRight > visibleRight) {
-        // Tab is to the right of visible area
-        containerElement.scrollTo({
-          left: tabRight - containerWidth + 20,
-          behavior: 'smooth'
-        });
-      }
-    }
-  }, [activeIndex]);
+  // runs when activeTab is changed. Scroll active tab into view
+ useLayoutEffect(() => {
+  const tabElement = tabRefs.current[activeIndex];
+  if (tabElement) {
+    // requestAnimationFrame ensures the browser has finished 
+    // any internal layout shifts before we move the scrollbar
+    requestAnimationFrame(() => {
+      tabElement.scrollIntoView({
+        behavior: 'smooth',
+        block: 'nearest',
+        inline: 'center'
+      });
+    });
+  }
+}, [activeIndex]);
 
   const handlePreviousTab = () => {
     setActiveIndex((prev) => Math.max(0, prev - 1));
@@ -106,7 +97,7 @@ function RouteComponent() {
       <div className="w-full max-w-6xl">
         <TabGroup selectedIndex={activeIndex} onChange={setActiveIndex}>
           <div className="relative mb-6">
-            <div className="flex mx-auto w-full md:w-9/10 items-center gap-2">
+            <div className="flex mx-auto w-9/10 gap-2 items-center">
               {/* Previous Button */}
               <button
                 onClick={handlePreviousTab}
@@ -126,18 +117,18 @@ function RouteComponent() {
                   msOverflowStyle: 'none',
                 }}
               >
-                <TabList className="flex gap-2 min-w-min">
+                <TabList className="flex justify-center items-center gap-2 min-w-min">
                   {categories.map((name, index) => (
                     <Tab
                       key={name}
-                      ref={(el) => (tabRefs.current[index] = el)}
+                      ref={(el) => {tabRefs.current[index]= el}}
                       className={`
                         shrink-0 px-4 py-2 text-sm font-semibold rounded-lg
                         transition-all duration-200 whitespace-nowrap
                         focus:outline-none  
                         ${
                           activeIndex === index
-                            ? 'bg-blue-600 text-white shadow-md'
+                            ? 'bg-black text-white shadow-md'
                             : 'bg-gray-200 text-gray-800 hover:bg-gray-300'
                         }
                       `}
@@ -158,20 +149,6 @@ function RouteComponent() {
                 &gt;
               </button>
             </div>
-
-            {/* Tab Position Indicator */}
-            {/* <div className="flex justify-center gap-1 mt-3">
-              {categories.map((_, index) => (
-                <div
-                  key={index}
-                  className={`h-1.5 rounded-full transition-all duration-200 ${
-                    index === activeIndex
-                      ? 'w-8 bg-blue-600'
-                      : 'w-1.5 bg-gray-300'
-                  }`}
-                />
-              ))}
-            </div> */}
           </div>
 
           <TabPanels>
