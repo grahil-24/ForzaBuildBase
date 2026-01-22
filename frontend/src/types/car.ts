@@ -7,8 +7,8 @@ interface Car {
   image_filename: string
   Model: string
   Manufacturer: string
-  Rank: RankType
-  Drivetrain: DrivetrainType
+  Rank?: RankType
+  Drivetrain?: DrivetrainType
   Torque?:number
   Weight?:number
   Vehicle?:string

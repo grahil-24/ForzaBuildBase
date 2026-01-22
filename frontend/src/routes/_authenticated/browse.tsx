@@ -24,6 +24,7 @@ interface LoaderData {
 }
 
 export const Route = createFileRoute('/_authenticated/browse')({
+  //validate and normalize URL search parameters for the browse page
   validateSearch: (search: Record<string, unknown>): BrowseSearch => {
     const parseArrayParam = (param: unknown): string[] | undefined => {
       if (!param) return undefined;
@@ -59,21 +60,6 @@ const fetchCars = async (location: ParsedLocation, auth: AuthState): Promise<Loa
   });
 
   const queryString = params.toString();
-  // try {
-  //   const res = await authFetch(`${BACKEND}/browse?${queryString}`,
-  //     { method: 'GET' },
-  //     auth
-  //   );
-  //   if (!res.ok) throw new Error('Failed to fetch cars');
-  //   const data = await res.json();
-  //   return data as LoaderData;
-  // } catch(err: unknown) {
-  //   if(err instanceof SessionExpiredError){
-  //     await auth.logout();
-  //     throw redirect({to: '/', replace: true})
-  //   }
-  //   throw err;
-  // }
   const res = await authFetch(`${BACKEND}/browse?${queryString}`,
       { method: 'GET' },
       auth

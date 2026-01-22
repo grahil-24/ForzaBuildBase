@@ -62,12 +62,14 @@ function RouteComponent() {
 
     const handleRemoveTuneSuccess = async() => {
         toast.success('Tune removed successfully!');
+        // as loader data is stale, force router to reload matching routes
         await router.invalidate();
     }
 
     const handleRenameTuneSuccess = async() => {
         toast.success('Tune renamed successfully!');
         handleCloseRenameModal();
+        // as loader data is stale, force router to reload matching routes
         await router.invalidate();
     }
     
@@ -85,6 +87,7 @@ function RouteComponent() {
                     {
                         onSuccess: async () => {
                             await handleRenameTuneSuccess();
+                            //reset mutations state before closing the modal
                             renameTune.reset();
                         }
 
@@ -96,6 +99,7 @@ function RouteComponent() {
             <RemoveDialogModal 
                 openModal={removeModalOpen}
                 onClose={() => {
+                    //reset mutations state before closing the modal
                     removeTune.reset();
                     setRemoveModalOpen(false);
                 }}

@@ -16,6 +16,7 @@ export const TabForm = ({ data, onSliderChange, sliderData }: { data: TuneData, 
         <p className="hidden md:block text-gray-300 text-sm leading-relaxed">
           {data.info}
         </p>
+        {/* hide guide in mobile screen. instead show a pop up*/} 
         <button onClick={() => setGuideOpen(true)} className="md:hidden flex gap-1 items-center bg-pink-200 border-black border-2 rounded-lg p-2"><BookOpenIcon className="size-5 group-not-data-open:hidden"/> Guide</button>
         <Dialog open={guideOpen} as="div" className="relative z-10 focus:outline-none" onClose={() => setGuideOpen(false)}>
   <div className="fixed inset-0 z-10 w-screen overflow-y-auto bg-black/40 backdrop-blur-sm">

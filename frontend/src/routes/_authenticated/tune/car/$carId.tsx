@@ -1,18 +1,52 @@
-import { createFileRoute, useBlocker } from '@tanstack/react-router'
+import { createFileRoute, useBlocker, notFound} from '@tanstack/react-router'
 import { Tab, TabGroup, TabList, TabPanel, TabPanels } from '@headlessui/react'
 import { useLayoutEffect, useState, useRef } from 'react'
 import { TabForm } from '../../../../components/tune/tabs/TabForm'
 import type { Slider, TuneData } from '../../../../types/tune'
 import data from '../../../../components/tune/tabs/data.json'
+import type { Car } from '../../../../types/car'
+import { authFetch } from '../../../../api/authFetch'
+import type { AuthState } from '../../../../types/auth'
+import { BACKEND } from '../../../../config/env'
+import NotFoundComponent from '../../../../components/NotFoundComponent';
+import { formatS3BucketURL } from '../../../../util/urlFormatter'
 
 const tuneData = data as unknown as Record<string, TuneData>;
 const categories = Object.keys(tuneData);
 
+interface PathParams {
+  carId: string 
+}
+
 export const Route = createFileRoute('/_authenticated/tune/car/$carId')({
+  loader: async({context, params, location}) => {
+    let carData: Car | undefined = location.state?.carData
+    if(carData === undefined) {
+      carData = await fetchCar(params, context.auth)
+    }
+    return carData;
+  },
+  notFoundComponent: NotFoundComponent,
   component: RouteComponent,
 })
 
+const fetchCar = async(params: PathParams, authContext: AuthState): Promise<Car> => {
+    const car = await authFetch(`${BACKEND}/view/car/${params.carId}`,
+        {method: 'GET'},
+        authContext
+    )
+    if(car.status === 404){
+      throw notFound();
+    }
+    if(!car.ok){
+      throw new Error();
+    }
+    return (await car.json()).car;
+}
+
 function RouteComponent() {
+  const car: Car = Route.useLoaderData();
+  const imageURL = formatS3BucketURL({manufacturer: car.Manufacturer, image_filename: car.image_filename, size: "medium"})
   const numOfTabs = categories.length;
   const [activeIndex, setActiveIndex] = useState(0);
 
@@ -87,6 +121,7 @@ function RouteComponent() {
       ...prev,
       [sliderId]: value
     }));
+    console.log("slider data ", sliderData);
     if (!formIsDirty) {
       setFormIsDirty(true);
     }
@@ -95,6 +130,25 @@ function RouteComponent() {
   return (
     <div className="flex h-screen w-full justify-center px-4 pt-24">
       <div className="w-full max-w-6xl">
+        {/* Car Info Header */}
+        <div className="bg-white rounded-xl shadow-md border border-slate-200 p-4 mb-6 flex items-center gap-4">
+          <img 
+            src={imageURL} 
+            alt={`${car.Manufacturer} ${car.Model}`}
+            className="w-32 h-auto object-contain"
+          />
+          <div>
+            <div className="text-blue-600 text-sm font-bold uppercase tracking-wider">
+              {car.Manufacturer}
+            </div>
+            <h1 className="text-2xl font-bold text-slate-900">
+              {car.Model}
+            </h1>
+            <div className="text-slate-600 text-lg font-medium">
+              {car.Year}
+            </div>
+          </div>
+        </div>
         <TabGroup selectedIndex={activeIndex} onChange={setActiveIndex}>
           <div className="relative mb-6">
             <div className="flex mx-auto w-9/10 gap-2 items-center">

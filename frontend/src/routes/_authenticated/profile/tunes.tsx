@@ -27,6 +27,7 @@ interface InfiniteQueryPageType {
   totalCount: number
 }
 
+//weights for the different search parameters
 const fuseOptions = {
   keys: [
     {
@@ -83,6 +84,7 @@ function RouteComponent() {
   const [search, setSearch] = useState<string>("");
   const [removeModalOpen, setRemoveModalOpen] = useState<boolean>(false);
   const [selectedTuneId, setSelectedTuneId] = useState<number | null>(null);
+  //if the creator of tune is the current user, he is allowed to delete the tune or else just remove it
   const [removeMode, setRemoveMode] = useState<'delete' | 'remove'>('delete');
   const [sortBy, setSortBy] = useState<SortOption>('newest');
   const [scrollPosition, setScrollPosition] = useState<number>(0);
@@ -108,6 +110,7 @@ function RouteComponent() {
 
   const handleRemoveTuneSuccess = async() => {
     toast.success('Tune removed successfully!');
+    //when data has been deleted, need to refresh data
     await queryClient.invalidateQueries({queryKey: ['tunes']});
   }
 
@@ -119,6 +122,7 @@ function RouteComponent() {
   const handleRenameTuneSuccess = async() => {
       toast.success('Tune renamed successfully!');
       handleCloseRenameModal();
+      //when data has been modified, need to refresh data
       await queryClient.invalidateQueries({queryKey: ['tunes']});
   }
 
@@ -190,7 +194,6 @@ function RouteComponent() {
 
   return (
     <div>
-      {/* Improved Header */}
       <div className='sticky top-0 z-10 bg-white border-b border-gray-200 shadow-sm'>
         <div className='max-w-4xl mx-auto px-4 py-6'>
           <div className='flex items-center justify-between flex-wrap gap-4'>
@@ -200,8 +203,7 @@ function RouteComponent() {
                 {data?.pages[0]?.totalCount || 0} {(data?.pages[0]?.totalCount || 0) === 1 ? 'tune' : 'tunes'} in your collection
               </p>
             </div>
-            
-            {/* Search and Sort in Header */}
+    
             <div className='flex items-center gap-4'>
               <SearchBar onChange={(input: string) => {setSearch(input)}}/>
               <Menu as="div" className="relative inline-block text-left">

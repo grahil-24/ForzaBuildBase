@@ -1,5 +1,6 @@
 import { createRouter } from '@tanstack/react-router'
 import { routeTree } from './routeTree.gen'
+import type { Car } from './types/car';
 
 // config();
 //create a new router instance
@@ -14,5 +15,9 @@ export const router = createRouter({
 declare module "@tanstack/react-router" {
   interface Register {
     router: typeof router;
+  }
+  
+  interface HistoryState {
+    carData?: Car
   }
 }

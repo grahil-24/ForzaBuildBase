@@ -1,4 +1,4 @@
-import { createFileRoute, notFound} from '@tanstack/react-router'
+import { createFileRoute, notFound, Link} from '@tanstack/react-router'
 import type { AuthState } from '../../../../types/auth'
 import { authFetch } from '../../../../api/authFetch';
 import { BACKEND } from '../../../../config/env';
@@ -11,7 +11,6 @@ import type { IconDefinition } from '@fortawesome/free-solid-svg-icons';
 import {useState, useEffect, type  ReactElement, type JSX} from 'react';
 import { formatS3BucketURL } from '../../../../util/urlFormatter';
 import type { Car } from '../../../../types/car';
-import { Link } from '@tanstack/react-router';
 
 const faSteeringWheel: ReactElement =
     <svg stroke="currentColor" fill="currentColor" strokeWidth="0" viewBox="0 0 512 512" height="15px" width="15px" xmlns="http://www.w3.org/2000/svg">
@@ -33,25 +32,6 @@ export const Route = createFileRoute('/_authenticated/view/car/$carId')({
 });
 
 const fetchCar = async(params: PathParams, authContext: AuthState): Promise<Car> => {
-    // try{
-    //   const car = await authFetch(`${BACKEND}/view/car/${params.carId}`,
-    //       {method: 'GET'},
-    //       authContext
-    //   )
-    //   if(car.status === 404){
-    //     throw notFound();
-    //   }
-    //   if(!car.ok){
-    //     throw new Error();
-    //   }
-    //   return (await car.json()).car;
-    // }catch(err: unknown){
-    //   // if(err instanceof SessionExpiredError){
-    //   //   await authContext.logout();
-    //   //   throw redirect({to: '/'});
-    //   // }
-    //   throw err;
-    // }
     const car = await authFetch(`${BACKEND}/view/car/${params.carId}`,
         {method: 'GET'},
         authContext
@@ -142,7 +122,7 @@ function RouteComponent() {
     ? car.Torque
     : car.Torque! * 1.36;
   const displayWeight = unit === 'imperial' ? car.Weight : car.Weight! * 0.45
-  
+
   return (
    <div className="flex-row items-center justify-center min-h-screen bg-linear-to-br from-slate-50 via-white to-slate-100 px-7 py-2">
       <div className="max-w-6xl mx-auto">
@@ -182,7 +162,7 @@ function RouteComponent() {
                   <h1 className="text-2xl sm:text-3xl font-bold text-slate-900 mb-2">
                     {car.Model}
                   </h1>
-                  <div className={`bg-linear-to-br ${getRankColor(car.Rank)} text-white text-xl sm:text-2xl font-bold w-10 h-10 rounded-xl flex items-center justify-center shadow-md shrink-0`}>
+                  <div className={`bg-linear-to-br ${getRankColor(car.Rank!)} text-white text-xl sm:text-2xl font-bold w-10 h-10 rounded-xl flex items-center justify-center shadow-md shrink-0`}>
                     {car.Rank}
                   </div>
                 </div>
@@ -192,19 +172,19 @@ function RouteComponent() {
 
             {/* Key Specs Grid */}
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
-              <div className={`${getRankBg(car.Rank)} rounded-xl p-3 border`}>
+              <div className={`${getRankBg(car.Rank!)} rounded-xl p-3 border`}>
                 <div className="text-slate-600 text-xs uppercase tracking-wide font-semibold mb-1">Horsepower</div>
                 <div className="text-lg sm:text-xl font-bold text-slate-900">{car.Horsepower} HP</div>
               </div>
-              <div className={`${getRankBg(car.Rank)} rounded-xl p-3 border`}>
+              <div className={`${getRankBg(car.Rank!)} rounded-xl p-3 border`}>
                 <div className="text-slate-600 text-xs uppercase tracking-wide font-semibold mb-1">Torque</div>
                 <div className="text-lg sm:text-xl font-bold text-slate-900">{displayTorque!.toFixed(0)} {unit === 'imperial' ? 'lb-ft':'N-m'}</div>
               </div>
-              <div className={`${getRankBg(car.Rank)} rounded-xl p-3 border`}>
+              <div className={`${getRankBg(car.Rank!)} rounded-xl p-3 border`}>
                 <div className="text-slate-600 text-xs uppercase tracking-wide font-semibold mb-1">Weight</div>
                 <div className="text-lg sm:text-xl font-bold text-slate-900">{displayWeight!.toFixed(0).toLocaleString()} {unit === 'imperial' ? 'lbs' : 'kgs'}</div>
               </div>
-              <div className={`${getRankBg(car.Rank)} rounded-xl p-3 border`}>
+              <div className={`${getRankBg(car.Rank!)} rounded-xl p-3 border`}>
                 <div className="text-slate-600 text-xs uppercase tracking-wide font-semibold mb-1">Drivetrain</div>
                 <div className="text-lg sm:text-xl font-bold text-slate-900">{car.Drivetrain}</div>
               </div>
@@ -263,7 +243,15 @@ function RouteComponent() {
         </div>
       </div>
       <div className='flex'>
-        <Link className='mx-auto' to={`/tune/car/${car.id}`}>
+        <Link className='mx-auto' to={`/tune/car/${car.id}`} state={{
+          carData: {
+            id: car.id,
+            image_filename: car.image_filename,
+            Manufacturer: car.Manufacturer,
+            Year: car.Year,
+            Model: car.Model
+          }
+        }}>
         <button className='mt-5 bg-white font-black text-[18px] px-[1.3em] py-[0.6em]
     border-[3px] border-black rounded-[0.4em] shadow-[0.1em_0.1em_0_#000] cursor-pointer
     transition-all hover:-translate-x-[0.05em] hover:-translate-y-[0.05em] hover:shadow-[0.15em_0.15em_0_#000]
