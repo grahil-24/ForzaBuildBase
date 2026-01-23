@@ -43,13 +43,12 @@ export const Route = createFileRoute('/_authenticated/browse')({
   },
   preload: true,
   loaderDeps: ({search: {page, rank, drivetrain, fuel_type, manufacturer, search}}) => ({page, rank, drivetrain, fuel_type, manufacturer, search}),
-  loader: async({ context, location }) => await fetchCars(location, context.auth),
+  loader: async({ context, location }) => {const res = await fetchCars(location, context.auth); window.scrollTo(0, 0); return res},
   staleTime: Infinity,
   component: BrowseComponent,
 })
 
 const fetchCars = async (location: ParsedLocation, auth: AuthState): Promise<LoaderData> => {
-  window.scrollTo(0, 0);
   const params = new URLSearchParams();
   Object.entries(location.search).forEach(([key, value] ) => {
     if (Array.isArray(value) && value.length > 0) {
