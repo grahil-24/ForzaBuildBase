@@ -9,6 +9,7 @@ import { authFetch } from '../../../../api/authFetch'
 import type { AuthState } from '../../../../types/auth'
 import { BACKEND } from '../../../../config/env'
 import NotFoundComponent from '../../../../components/NotFoundComponent';
+import { PencilIcon } from '@heroicons/react/24/outline'
 import { formatS3BucketURL } from '../../../../util/urlFormatter'
 
 const tuneData = data as unknown as Record<string, TuneData>;
@@ -50,19 +51,13 @@ function RouteComponent() {
   const numOfTabs = categories.length;
   const [activeIndex, setActiveIndex] = useState(0);
   
-  /* Tune name state */
   const [tuneName, setTuneName] = useState(`${car.Manufacturer} ${car.Model} Tune`);
   const [isEditingName, setIsEditingName] = useState(false);
   const nameInputRef = useRef<HTMLInputElement | null>(null);
 
-  
-  /* These refs allow direct DOM access for measuring positions, and controlling scroll behaviour*/
-  //holds reference to the div wrapping tablist
   const tabListRef = useRef<HTMLDivElement | null>(null);
-  //an array that stores references to each individual tab button element
   const tabRefs = useRef<(HTMLElement | null)[]>([]);
   
-  /* initialize slider data with the defaultValue */
   const [sliderData, setSliderData] = useState<Record<string, number>>(() => {
     const initialData: Record<string, number> = {};
     Object.values(tuneData).forEach((section) => {
@@ -77,8 +72,6 @@ function RouteComponent() {
     return initialData;
   });
   
-  /* flag which is set when a value in slider is changed, this flag is used to throw the warning modal when
-    user tries to leave the page*/
   const [formIsDirty, setFormIsDirty] = useState<boolean>(false);
   
   const { proceed, reset, status } = useBlocker({
@@ -99,138 +92,72 @@ function RouteComponent() {
     }
   }, [status, proceed, reset]);
   
-  // Focus input when editing mode is enabled
   useLayoutEffect(() => {
-    if(isEditingName && nameInputRef.current){
-      nameInputRef.current.focus();
-      nameInputRef.current.select();
-    }
+    if(isEditingName && nameInputRef.current) nameInputRef.current.select();
   }, [isEditingName])
   
-  // runs when activeTab is changed. Scroll active tab into view
   useLayoutEffect(() => {
     const tabElement = tabRefs.current[activeIndex];
     if (tabElement) {
-      // requestAnimationFrame ensures the browser has finished 
-      // any internal layout shifts before we move the scrollbar
       requestAnimationFrame(() => {
-        tabElement.scrollIntoView({
-          behavior: 'smooth',
-          block: 'nearest',
-          inline: 'center'
-        });
+        tabElement.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
       });
     }
   }, [activeIndex]);
   
-  const handlePreviousTab = () => {
-    setActiveIndex((prev) => Math.max(0, prev - 1));
-  }
-  
-  const handleNextTab = () => {
-    setActiveIndex((prev) => Math.min(prev + 1, numOfTabs - 1));
-  }
+  const handlePreviousTab = () => setActiveIndex((prev) => Math.max(0, prev - 1));
+  const handleNextTab = () => setActiveIndex((prev) => Math.min(prev + 1, numOfTabs - 1));
   
   const handleSliderChange = (sliderId: string, value: number) => {
-    setSliderData((prev) => ({
-      ...prev,
-      [sliderId]: value
-    }));
-    console.log("slider data ", sliderData);
-    if (!formIsDirty) {
-      setFormIsDirty(true);
-    }
+    setSliderData((prev) => ({ ...prev, [sliderId]: value }));
+    if (!formIsDirty) setFormIsDirty(true);
   }
-  
-  const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setTuneName(e.target.value);
-    if (!formIsDirty) {
-      setFormIsDirty(true);
-    }
-  }
-  
-  const handleEditClick = () => {
-    setIsEditingName(true);
-  }
-  
-  const handleNameBlur = () => {
-    setIsEditingName(false);
-    // Ensure name is not empty
-    if (tuneName.trim() === '') {
-      setTuneName(`${car.Manufacturer} ${car.Model} Tune`);
-    }
-  }
-  
-  const handleNameKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'Enter') {
-      setIsEditingName(false);
-    } else if (e.key === 'Escape') {
-      setTuneName(`${car.Manufacturer} ${car.Model} Tune`);
-      setIsEditingName(false);
-    }
-  }
-  
+
   return (
-    <div className="flex h-screen w-full justify-center px-4">
+    <div className="min-h-screen w-full flex justify-center px-2 sm:px-4 py-4 md:py-8 bg-slate-50">
       <div className="w-full max-w-6xl">
-        {/* Car Info Header with Tune Name */}
-        <div className="flex justify-between bg-white rounded-xl shadow-md border border-slate-200 p-4 mb-6">
-          <div className="flex items-start gap-4">
+        
+        <div className="flex flex-col md:flex-row items-center md:items-start bg-white rounded-xl shadow-md border border-slate-200 p-4 mb-6 gap-4">
+          <div className="w-full md:w-auto flex flex-col sm:flex-row items-center md:items-start gap-4 flex-1">
             <img 
               src={imageURL} 
               alt={`${car.Manufacturer} ${car.Model}`}
-              className="w-60 -mt-5 h-auto object-contain"
+              className="w-48 sm:w-56 md:w-60 md:-mt-8 h-auto object-contain drop-shadow-lg"
             />
-            <div className="flex-1 min-w-0">
-              {/* Car Info */}
-              <div className="mb-3">
-                <div className="text-blue-600 text-sm font-bold uppercase tracking-wider">
-                  {car.Manufacturer}
-                </div>
-                <h1 className="text-2xl font-bold text-slate-900">
-                  {car.Model}
-                </h1>
-                <div className="text-slate-600 text-lg font-medium">
-                  {car.Year}
-                </div>
+            <div className="text-center sm:text-left flex-1 min-w-0">
+              <div className="text-blue-600 text-xs md:text-sm font-bold uppercase tracking-wider">
+                {car.Manufacturer}
+              </div>
+              <h1 className="text-xl md:text-2xl font-bold text-slate-900 leading-tight">
+                {car.Model}
+              </h1>
+              <div className="text-slate-500 text-base md:text-lg font-medium">
+                {car.Year}
               </div>
             </div>
           </div>
-         {/* Tune Name Input */}
-          <div className="flex top-0 items-start gap-2 pt-3">
-            <label className="text-sm font-semibold text-slate-700 whitespace-nowrap">
-              Tune:
-            </label>
-            <div className="flex-1 flex items-start gap-1 min-w-0">
+
+          <div className="w-full md:w-auto flex items-center gap-2 pt-4 md:pt-0 border-t md:border-t-0 border-slate-100">
+            <label className="text-sm font-bold text-slate-700">Tune:</label>
+            <div className="flex-1 flex items-center gap-2 min-w-0 bg-slate-50 md:bg-transparent p-2 md:p-0 rounded-lg">
               {isEditingName ? (
                 <input
                   ref={nameInputRef}
                   type="text"
                   value={tuneName}
-                  onChange={handleNameChange}
-                  onBlur={handleNameBlur}
-                  onKeyDown={handleNameKeyDown}
-                    className="flex-1 px-3  border border-blue-400 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-slate-900 font-medium text-sm"
-                  maxLength={100}
+                  onChange={(e) => { setTuneName(e.target.value); setFormIsDirty(true); }}
+                  onBlur={() => { setIsEditingName(false); if (!tuneName.trim()) setTuneName(`${car.Manufacturer} Tune`); }}
+                  onKeyDown={(e) => e.key === 'Enter' && setIsEditingName(false)}
+                  className="w-full outline-0 border-b border-blue-500 bg-transparent text-slate-900 font-medium"
+                  maxLength={50}
                 />
               ) : (
                 <>
-                  <span className="flex-1 px-3 text-slate-900 font-medium text-sm truncate">
+                  <span className="flex-1 text-slate-900 font-medium truncate max-w-[200px] md:max-w-xs">
                     {tuneName}
                   </span>
-                  <button
-                    onClick={handleEditClick}
-                    className="cursor-pointer hover:bg-slate-100 rounded-lg transition-colors duration-200 group shrink-0"
-                    aria-label="Edit tune name"
-                  >
-                    <svg 
-                      xmlns="http://www.w3.org/2000/svg" 
-                      className="h-4 w-4 text-slate-600 group-hover:text-blue-600 transition-colors duration-200" 
-                      viewBox="0 0 20 20" 
-                      fill="currentColor"
-                    >
-                      <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
-                    </svg>
+                  <button onClick={() => setIsEditingName(true)} className="p-1 hover:bg-slate-200 rounded-full transition-colors">
+                    <PencilIcon className='size-4 text-slate-500'/>
                   </button>
                 </>
               )}
@@ -239,41 +166,32 @@ function RouteComponent() {
         </div>
         
         <TabGroup selectedIndex={activeIndex} onChange={setActiveIndex}>
-          <div className="relative mb-6">
-            <div className="flex mx-auto w-9/10 gap-2 items-center">
-              {/* Previous Button */}
+          <div className="mx-auto xl:w-9/10 w-full top-2 mb-4 bg-slate-50/80 backdrop-blur-sm py-2">
+            <div className="flex items-center gap-1 sm:gap-2">
               <button
                 onClick={handlePreviousTab}
                 disabled={activeIndex === 0}
-                className="shrink-0 p-2 bg-gray-200 hover:bg-gray-300 disabled:bg-gray-100 disabled:text-gray-400 disabled:cursor-not-allowed rounded transition-colors duration-200 font-bold text-lg"
-                aria-label="Previous tab"
+                className="cursor-pointer shrink-0 h-10 w-8 flex items-center justify-center bg-white border border-slate-200 shadow-sm rounded-lg disabled:opacity-30"
               >
                 &lt;
               </button>
               
-              {/* Scrollable Tab List */}
-              <div
-                ref={tabListRef}
-                className="flex-1 overflow-x-auto scrollbar-hide"
-                style={{
+              <div ref={tabListRef} className="flex-1 overflow-x-auto"
+              style={{
                   scrollbarWidth: 'none',
                   msOverflowStyle: 'none',
                 }}
               >
-                <TabList className="flex justify-center items-center gap-2 min-w-min">
+                <TabList className="flex gap-2 min-w-max px-1">
                   {categories.map((name, index) => (
                     <Tab
                       key={name}
                       ref={(el) => {tabRefs.current[index]= el}}
-                      className={`
-                        shrink-0 px-4 py-2 text-sm font-semibold rounded-lg
-                        transition-all duration-200 whitespace-nowrap
-                        focus:outline-none  
-                        ${
-                          activeIndex === index
-                            ? 'bg-black text-white shadow-md'
-                            : 'bg-gray-200 text-gray-800 hover:bg-gray-300'
-                        }
+                      className={({ selected }) => `
+                        cursor-pointer px-4 py-2 text-xs sm:text-sm font-bold rounded-lg transition-colors
+                        ${selected 
+                          ? 'bg-slate-900 text-white' 
+                          : 'bg-white text-slate-600 border border-slate-200 hover:bg-slate-100'}
                       `}
                     >
                       {name}
@@ -282,12 +200,10 @@ function RouteComponent() {
                 </TabList>
               </div>
               
-              {/* Next Button */}
               <button
                 onClick={handleNextTab}
                 disabled={activeIndex === numOfTabs - 1}
-                className="shrink-0 p-2 bg-gray-200 hover:bg-gray-300 disabled:bg-gray-100 disabled:text-gray-400 disabled:cursor-not-allowed rounded transition-colors duration-200 font-bold text-lg"
-                aria-label="Next tab"
+                className="shrink-0 h-10 w-8 flex items-center justify-center bg-white border border-slate-200 shadow-sm rounded-lg disabled:opacity-30"
               >
                 &gt;
               </button>
@@ -296,25 +212,19 @@ function RouteComponent() {
           
           <TabPanels>
             {categories.map((name) => (
-              <TabPanel
-                key={name}
-                className="rounded-xl bg-gray-50 p-4 shadow-sm"
-              >
-                <TabForm
-                  data={tuneData[name]}
-                  onSliderChange={handleSliderChange}
-                  sliderData={sliderData}
-                />
+              <TabPanel key={name} className="focus:outline-none">
+                <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-3 sm:p-6 min-h-[400px]">
+                  <TabForm
+                    data={tuneData[name]}
+                    onSliderChange={handleSliderChange}
+                    sliderData={sliderData}
+                  />
+                </div>
               </TabPanel>
             ))}
           </TabPanels>
         </TabGroup>
       </div>
-      <style>{`
-        .scrollbar-hide::-webkit-scrollbar {
-          display: none;
-        }
-      `}</style>
     </div>
   )
 }
