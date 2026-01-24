@@ -32,13 +32,13 @@ export const TuneSlider = ({
   return (
     <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 py-3 border-b border-purple-900/30 last:border-b-0">
       {/* Label */}
-      <div className="w-full sm:w-10 md:w-15 text-pink-500 font-bold text-xs md:text-sm uppercase">
+      <div className="w-full sm:w-32 md:w-36 lg:w-40 text-pink-500 font-bold text-[11px] md:text-sm uppercase wrap-break-word">
         {label}
       </div>
       
       {/* Slider Container */}
-      <div className="flex-1 flex items-center gap-2 sm:gap-3 md:gap-4">
-        <span className="text-[10px] sm:text-xs text-gray-400 uppercase w-8 sm:w-auto">
+      <div className="flex-1 flex items-center gap-1.5 sm:gap-3">
+        <span className="text-[9px] sm:text-xs text-gray-400 uppercase w-7 sm:w-10 shrink-0 text-left">
           {startLabel}
         </span>
         
@@ -49,22 +49,22 @@ export const TuneSlider = ({
           step={step}
           value={value}
           onChange={(e) => onChange(parseFloat(e.target.value))}
-          className="flex-1 h-2 bg-gray-600 rounded-lg appearance-none cursor-pointer slider"
+          className="flex-1 h-2 bg-gray-600 rounded-lg appearance-none cursor-pointer slider min-w-20"
           style={{
             background: `linear-gradient(to right, #ec4899 0%, #ec4899 ${((value - min) / (max - min)) * 100}%, #4b5563 ${((value - min) / (max - min)) * 100}%, #4b5563 100%)`
           }}
         />
         
-        <span className="text-[10px] sm:text-xs text-gray-400 uppercase w-8 sm:w-auto">
+        <span className="text-[9px] sm:text-xs text-gray-400 uppercase w-7 sm:w-10 shrink-0 text-right">
           {endLabel}
         </span>
         
         {/* Value Display */}
-        <div className="w-20 sm:w-24 md:w-28 text-right flex-shrink-0">
-          <span className="text-white font-bold text-sm sm:text-base md:text-lg">
+        <div className="w-20 sm:w-24 md:w-28 text-right shrink-0 flex items-baseline justify-end gap-1">
+          <span className="text-white font-bold text-xs sm:text-sm md:text-base">
             {value.toFixed(numOfDecimals)}
           </span>
-          <span className="text-gray-400 text-[10px] sm:text-xs md:text-sm ml-1 whitespace-nowrap">
+          <span className="text-gray-400 text-[9px] sm:text-[10px] md:text-sm whitespace-nowrap overflow-hidden text-ellipsis">
             {unit}
           </span>
         </div>

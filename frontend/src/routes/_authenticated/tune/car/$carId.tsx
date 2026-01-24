@@ -11,6 +11,7 @@ import { BACKEND } from '../../../../config/env'
 import NotFoundComponent from '../../../../components/NotFoundComponent';
 import { PencilIcon } from '@heroicons/react/24/outline'
 import { formatS3BucketURL } from '../../../../util/urlFormatter'
+import { Menu, MenuItem } from "@spaceymonk/react-radial-menu";
 
 const tuneData = data as unknown as Record<string, TuneData>;
 const categories = Object.keys(tuneData);
@@ -45,8 +46,21 @@ const fetchCar = async(params: PathParams, authContext: AuthState): Promise<Car>
   return (await car.json()).car;
 }
 
+const classColors = {
+  'S2': 'bg-pink-600',
+  'S1': 'bg-purple-600',
+  'A': 'bg-blue-600',
+  'B': 'bg-orange-600',
+  'C': 'bg-yellow-500',
+  'D': 'bg-green-600'
+};
+
 function RouteComponent() {
   const car: Car = Route.useLoaderData();
+  const [carClass, setCarClass] = useState('S1');
+  const [position, setPosition] = useState({ x: 0, y: 0 });
+  const [openClassMenu, setOpenClassMenu] = useState(false);
+  const classButtonRef = useRef<HTMLButtonElement>(null);
   const imageURL = formatS3BucketURL({manufacturer: car.Manufacturer, image_filename: car.image_filename, size: "medium"})
   const numOfTabs = categories.length;
   const [activeIndex, setActiveIndex] = useState(0);
@@ -113,12 +127,29 @@ function RouteComponent() {
     if (!formIsDirty) setFormIsDirty(true);
   }
 
+  const handleClassSelect = (event, index, classId) => {
+    setCarClass(classId);
+    setOpenClassMenu(false);
+    setFormIsDirty(true);
+  };
+
+  const handleClassButtonClick = (e: React.MouseEvent<HTMLButtonElement>) => {
+    if (classButtonRef.current) {
+      const rect = classButtonRef.current.getBoundingClientRect();
+      // Position menu centered on the button
+      setPosition({ 
+        x: rect.left + rect.width / 2, 
+        y: rect.top + rect.height / 2 
+      });
+      setOpenClassMenu(true);
+    }
+  };
+
   return (
     <div className="min-h-screen w-full flex justify-center px-2 sm:px-4 py-4 md:py-8 bg-slate-50">
       <div className="w-full max-w-6xl">
-        
         <div className="flex flex-col md:flex-row items-center md:items-start bg-white rounded-xl shadow-md border border-slate-200 p-4 mb-6 gap-4">
-          <div className="w-full md:w-auto flex flex-col sm:flex-row items-center md:items-start gap-4 flex-1">
+          <div className="w-full md:w-auto flex items-center gap-4">
             <img 
               src={imageURL} 
               alt={`${car.Manufacturer} ${car.Model}`}
@@ -137,33 +168,78 @@ function RouteComponent() {
             </div>
           </div>
 
-          <div className="w-full md:w-auto flex items-center gap-2 pt-4 md:pt-0 border-t md:border-t-0 border-slate-100">
-            <label className="text-sm font-bold text-slate-700">Tune:</label>
-            <div className="flex-1 flex items-center gap-2 min-w-0 bg-slate-50 md:bg-transparent p-2 md:p-0 rounded-lg">
-              {isEditingName ? (
-                <input
-                  ref={nameInputRef}
-                  type="text"
-                  value={tuneName}
-                  onChange={(e) => { setTuneName(e.target.value); setFormIsDirty(true); }}
-                  onBlur={() => { setIsEditingName(false); if (!tuneName.trim()) setTuneName(`${car.Manufacturer} Tune`); }}
-                  onKeyDown={(e) => e.key === 'Enter' && setIsEditingName(false)}
-                  className="w-full outline-0 border-b border-blue-500 bg-transparent text-slate-900 font-medium"
-                  maxLength={50}
-                />
-              ) : (
-                <>
-                  <span className="flex-1 text-slate-900 font-medium truncate max-w-[200px] md:max-w-xs">
-                    {tuneName}
-                  </span>
-                  <button onClick={() => setIsEditingName(true)} className="p-1 hover:bg-slate-200 rounded-full transition-colors">
-                    <PencilIcon className='size-4 text-slate-500'/>
-                  </button>
-                </>
-              )}
+          <div className="w-full md:w-auto flex flex-col gap-3 pt-4 md:pt-0 border-t md:border-t-0 border-slate-100">
+            {/* Class Selection */}
+            <div className="flex items-center gap-2">
+              <label className="text-sm font-bold text-slate-700">Class:</label>
+              <button
+                ref={classButtonRef}
+                onClick={handleClassButtonClick}
+                className={`${classColors[carClass]} px-4 py-2 rounded-lg text-white font-black italic shadow-lg border-2 border-white transition-all hover:scale-105 active:scale-95`}
+              >
+                {carClass}
+              </button>
+            </div>
+
+            {/* Tune Name */}
+            <div className="flex items-center gap-2">
+              <label className="text-sm font-bold text-slate-700">Tune:</label>
+              <div className="flex-1 flex items-center gap-2 min-w-0 bg-slate-50 md:bg-transparent p-2 md:p-0 rounded-lg">
+                {isEditingName ? (
+                  <input
+                    ref={nameInputRef}
+                    type="text"
+                    value={tuneName}
+                    onChange={(e) => { setTuneName(e.target.value); setFormIsDirty(true); }}
+                    onBlur={() => { setIsEditingName(false); if (!tuneName.trim()) setTuneName(`${car.Manufacturer} Tune`); }}
+                    onKeyDown={(e) => e.key === 'Enter' && setIsEditingName(false)}
+                    className="w-full outline-0 border-b border-blue-500 bg-transparent text-slate-900 font-medium"
+                    maxLength={50}
+                  />
+                ) : (
+                  <>
+                    <span className="flex-1 text-slate-900 font-medium truncate max-w-[200px] md:max-w-xs">
+                      {tuneName}
+                    </span>
+                    <button onClick={() => setIsEditingName(true)} className="p-1 hover:bg-slate-200 rounded-full transition-colors">
+                      <PencilIcon className='size-4 text-slate-500'/>
+                    </button>
+                  </>
+                )}
+              </div>
             </div>
           </div>
         </div>
+
+        {/* Radial Menu */}
+        {openClassMenu && (
+          <div 
+            className="fixed inset-0 z-50"
+            onClick={() => setOpenClassMenu(false)}
+          >
+            <Menu
+              centerX={position.x}
+              centerY={position.y}
+              innerRadius={60}
+              outerRadius={120}
+              show={openClassMenu}
+              animation={["fade", "scale"]}
+              animationTimeout={200}
+            >
+              {Object.keys(classColors).map((classId) => (
+                <MenuItem 
+                  key={classId}
+                  onItemClick={handleClassSelect} 
+                  data={classId}
+                >
+                  <div className={`${classColors[classId]} w-12 h-12 rounded-full flex items-center justify-center text-white font-black italic text-lg border-3 border-white shadow-lg`}>
+                    {classId}
+                  </div>
+                </MenuItem>
+              ))}
+            </Menu>
+          </div>
+        )}
         
         <TabGroup selectedIndex={activeIndex} onChange={setActiveIndex}>
           <div className="mx-auto xl:w-9/10 w-full top-2 mb-4 bg-slate-50/80 backdrop-blur-sm py-2">
