@@ -65,18 +65,15 @@ const classFontColors: Record<RankType, string> = {
   'D': 'text-green-600'
 };
 
-const getColorForClass = (classId: RankType): string => {
-  const colorMap: Record<RankType, string> = {
-    'S2': '#db2777',  // bg-pink-600
-    'S1': '#9333ea',  // bg-purple-600
-    'A': '#2563eb',   // bg-blue-600
-    'B': '#ea580c',   // bg-orange-600
-    'C': '#eab308',   // bg-yellow-500
-    'D': '#16a34a'    // bg-green-600
-  };
-  return colorMap[classId] || '#6b7280'; // default gray-500
+const cssColors: Record<RankType, string> = {
+  'S2': '#db2777',  // bg-pink-600
+  'S1': '#9333ea',  // bg-purple-600
+  'A': '#2563eb',   // bg-blue-600
+  'B': '#ea580c',   // bg-orange-600
+  'C': '#eab308',   // bg-yellow-500
+  'D': '#16a34a'    // bg-green-600
 };
-
+  
 function RouteComponent() {
   const car: Car = Route.useLoaderData();
   const [carClass, setCarClass] = useState<RankType>('S1');
@@ -158,10 +155,10 @@ function RouteComponent() {
   const handleClassButtonClick = () => {
     if (classButtonRef.current) {
       const rect = classButtonRef.current.getBoundingClientRect();
-      // Position menu centered on the button
+      // Add scroll offsets to position menu correctly when page is scrolled
       setPosition({ 
-        x: rect.left + rect.width / 2, 
-        y: rect.top + rect.height / 2 
+        x: rect.left + rect.width / 2 + window.scrollX, 
+        y: rect.top + rect.height / 2 + window.scrollY 
       });
       setOpenClassMenu(true);
     }
@@ -241,6 +238,7 @@ function RouteComponent() {
           show={openClassMenu}
           animation={["rotate", "scale", "fade"]}
           animationTimeout={200}
+          style={{'--__reactRadialMenu__zIndex': 1} as React.CSSProperties}
         >
           {(Object.keys(classColors) as RankType[]).map((classId: RankType) => (
             <MenuItem 
@@ -248,7 +246,8 @@ function RouteComponent() {
               onItemClick={handleClassSelect} 
               data={classId}
               className='group'
-              style={{'--__reactRadialMenu__activeItem-bgColor': getColorForClass(classId)} as React.CSSProperties}
+              style={{'--__reactRadialMenu__activeItem-bgColor': cssColors[classId]
+              } as React.CSSProperties}
             >
               <div className={`${classFontColors[classId]} group-hover:text-white`}>
                 {classId}
