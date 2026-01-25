@@ -12,6 +12,7 @@ import NotFoundComponent from '../../../../components/NotFoundComponent';
 import { PencilIcon } from '@heroicons/react/24/outline'
 import { formatS3BucketURL } from '../../../../util/urlFormatter'
 import { Menu, MenuItem } from "@spaceymonk/react-radial-menu";
+import type { RankType } from '../../../../types/car'
 
 const tuneData = data as unknown as Record<string, TuneData>;
 const categories = Object.keys(tuneData);
@@ -46,7 +47,7 @@ const fetchCar = async(params: PathParams, authContext: AuthState): Promise<Car>
   return (await car.json()).car;
 }
 
-const classColors = {
+const classColors: Record<RankType, string> = {
   'S2': 'bg-pink-600',
   'S1': 'bg-purple-600',
   'A': 'bg-blue-600',
@@ -55,11 +56,32 @@ const classColors = {
   'D': 'bg-green-600'
 };
 
+const classFontColors: Record<RankType, string> = {
+  'S2': 'text-pink-600',
+  'S1': 'text-purple-600',
+  'A': 'text-blue-600',
+  'B': 'text-orange-600',
+  'C': 'text-yellow-500',
+  'D': 'text-green-600'
+};
+
+const getColorForClass = (classId: RankType): string => {
+  const colorMap: Record<RankType, string> = {
+    'S2': '#db2777',  // bg-pink-600
+    'S1': '#9333ea',  // bg-purple-600
+    'A': '#2563eb',   // bg-blue-600
+    'B': '#ea580c',   // bg-orange-600
+    'C': '#eab308',   // bg-yellow-500
+    'D': '#16a34a'    // bg-green-600
+  };
+  return colorMap[classId] || '#6b7280'; // default gray-500
+};
+
 function RouteComponent() {
   const car: Car = Route.useLoaderData();
-  const [carClass, setCarClass] = useState('S1');
+  const [carClass, setCarClass] = useState<RankType>('S1');
   const [position, setPosition] = useState({ x: 0, y: 0 });
-  const [openClassMenu, setOpenClassMenu] = useState(false);
+  const [openClassMenu, setOpenClassMenu] = useState<boolean>(false);
   const classButtonRef = useRef<HTMLButtonElement>(null);
   const imageURL = formatS3BucketURL({manufacturer: car.Manufacturer, image_filename: car.image_filename, size: "medium"})
   const numOfTabs = categories.length;
@@ -127,13 +149,13 @@ function RouteComponent() {
     if (!formIsDirty) setFormIsDirty(true);
   }
 
-  const handleClassSelect = (event, index, classId) => {
+  const handleClassSelect = (_event: React.MouseEvent<SVGGElement, MouseEvent>, _index: number, classId: RankType) => {
     setCarClass(classId);
     setOpenClassMenu(false);
     setFormIsDirty(true);
   };
 
-  const handleClassButtonClick = (e: React.MouseEvent<HTMLButtonElement>) => {
+  const handleClassButtonClick = () => {
     if (classButtonRef.current) {
       const rect = classButtonRef.current.getBoundingClientRect();
       // Position menu centered on the button
@@ -169,18 +191,6 @@ function RouteComponent() {
           </div>
 
           <div className="w-full md:w-auto flex flex-col gap-3 pt-4 md:pt-0 border-t md:border-t-0 border-slate-100">
-            {/* Class Selection */}
-            <div className="flex items-center gap-2">
-              <label className="text-sm font-bold text-slate-700">Class:</label>
-              <button
-                ref={classButtonRef}
-                onClick={handleClassButtonClick}
-                className={`${classColors[carClass]} px-4 py-2 rounded-lg text-white font-black italic shadow-lg border-2 border-white transition-all hover:scale-105 active:scale-95`}
-              >
-                {carClass}
-              </button>
-            </div>
-
             {/* Tune Name */}
             <div className="flex items-center gap-2">
               <label className="text-sm font-bold text-slate-700">Tune:</label>
@@ -208,39 +218,45 @@ function RouteComponent() {
                 )}
               </div>
             </div>
+            {/* Class Selection */}
+            <div className="flex items-center gap-2">
+              <label className="text-sm font-bold text-slate-700">Class:</label>
+              <button
+                ref={classButtonRef}
+                onClick={handleClassButtonClick}
+                className={`${classColors[carClass]} w-12 h-12 px-3 py-2 rounded-full text-white font-black italic shadow-lg border-2 border-white transition-all hover:scale-105 active:scale-95`}
+              >
+                {carClass}
+              </button>
+            </div>
           </div>
         </div>
 
         {/* Radial Menu */}
-        {openClassMenu && (
-          <div 
-            className="fixed inset-0 z-50"
-            onClick={() => setOpenClassMenu(false)}
-          >
-            <Menu
-              centerX={position.x}
-              centerY={position.y}
-              innerRadius={60}
-              outerRadius={120}
-              show={openClassMenu}
-              animation={["fade", "scale"]}
-              animationTimeout={200}
+        <Menu
+          centerX={position.x}
+          centerY={position.y}
+          innerRadius={50}
+          outerRadius={90}
+          show={openClassMenu}
+          animation={["rotate", "scale", "fade"]}
+          animationTimeout={200}
+        >
+          {(Object.keys(classColors) as RankType[]).map((classId: RankType) => (
+            <MenuItem 
+              key={classId}
+              onItemClick={handleClassSelect} 
+              data={classId}
+              className='group'
+              style={{'--__reactRadialMenu__activeItem-bgColor': getColorForClass(classId)} as React.CSSProperties}
             >
-              {Object.keys(classColors).map((classId) => (
-                <MenuItem 
-                  key={classId}
-                  onItemClick={handleClassSelect} 
-                  data={classId}
-                >
-                  <div className={`${classColors[classId]} w-12 h-12 rounded-full flex items-center justify-center text-white font-black italic text-lg border-3 border-white shadow-lg`}>
-                    {classId}
-                  </div>
-                </MenuItem>
-              ))}
-            </Menu>
-          </div>
-        )}
-        
+              <div className={`${classFontColors[classId]} group-hover:text-white`}>
+                {classId}
+              </div>
+            </MenuItem>
+          ))}
+        </Menu>
+      
         <TabGroup selectedIndex={activeIndex} onChange={setActiveIndex}>
           <div className="mx-auto xl:w-9/10 w-full top-2 mb-4 bg-slate-50/80 backdrop-blur-sm py-2">
             <div className="flex items-center gap-1 sm:gap-2">
