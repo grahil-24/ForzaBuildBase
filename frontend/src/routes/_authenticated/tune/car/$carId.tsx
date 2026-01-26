@@ -1,6 +1,6 @@
 import { createFileRoute, useBlocker, notFound} from '@tanstack/react-router'
 import { Tab, TabGroup, TabList, TabPanel, TabPanels } from '@headlessui/react'
-import { useLayoutEffect, useState, useRef } from 'react'
+import { useLayoutEffect, useState, useRef} from 'react'
 import { TabForm } from '../../../../components/tune/tabs/TabForm'
 import type { Slider, TuneData } from '../../../../types/tune'
 import data from '../../../../components/tune/tabs/data.json'
@@ -9,10 +9,15 @@ import { authFetch } from '../../../../api/authFetch'
 import type { AuthState } from '../../../../types/auth'
 import { BACKEND } from '../../../../config/env'
 import NotFoundComponent from '../../../../components/NotFoundComponent';
-import { PencilIcon } from '@heroicons/react/24/outline'
+import { PencilIcon} from '@heroicons/react/24/outline'
 import { formatS3BucketURL } from '../../../../util/urlFormatter'
 import { Menu, MenuItem } from "@spaceymonk/react-radial-menu";
 import type { RankType } from '../../../../types/car'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faFloppyDisk } from '@fortawesome/free-solid-svg-icons'
+import { useMutation } from '@tanstack/react-query'
+import { toast } from 'react-toastify'
+
 
 const tuneData = data as unknown as Record<string, TuneData>;
 const categories = Object.keys(tuneData);
@@ -76,6 +81,7 @@ const cssColors: Record<RankType, string> = {
   
 function RouteComponent() {
   const car: Car = Route.useLoaderData();
+  const {auth} = Route.useRouteContext();
   const [carClass, setCarClass] = useState<RankType>('S1');
   const [position, setPosition] = useState({ x: 0, y: 0 });
   const [openClassMenu, setOpenClassMenu] = useState<boolean>(false);
@@ -164,6 +170,20 @@ function RouteComponent() {
     }
   };
 
+  const createTune = useMutation({
+    mutationFn: (newTune: string) => {
+      return authFetch(`${BACKEND}/tune/create`, {method: 'POST', headers: {'Content-Type': 'application/json'}, body: newTune}, auth);
+    },
+    onError: (error) => {
+      toast.error(error?.message || 'There was a problem removing the tune');
+      createTune.reset();
+    },
+    onSuccess: () => {
+      toast.success('Tune created successfully!');
+      createTune.reset();
+    }
+  })
+
   return (
     <div className="min-h-screen w-full flex justify-center px-2 sm:px-4 py-4 md:py-8 bg-slate-50">
       <div className="w-full max-w-6xl">
@@ -216,7 +236,8 @@ function RouteComponent() {
               </div>
             </div>
             {/* Class Selection */}
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-5">
+              <div>
               <label className="text-sm font-bold text-slate-700">Class:</label>
               <button
                 ref={classButtonRef}
@@ -224,6 +245,30 @@ function RouteComponent() {
                 className={`${classColors[carClass]} w-12 h-12 px-3 py-2 rounded-full text-white font-black italic shadow-lg border-2 border-white transition-all hover:scale-105 active:scale-95`}
               >
                 {carClass}
+              </button>
+              </div>
+              <button onClick={() => {
+                // Convert all numeric tune settings to strings for MikroORM decimal types
+                const tuneSettingsAsStrings = Object.entries(sliderData).reduce((acc, [key, value]) => {
+                  // Keep resultant_rank as is (it's already a string), convert numbers to strings
+                  acc[key] = typeof value === 'number' ? value.toString() : value;
+                  return acc;
+                }, {} as Record<string, string | number>);
+
+                createTune.mutate(JSON.stringify({
+                  tune_name: tuneName, 
+                  car_id: car.id, 
+                  tuneSettings: {
+                    ...tuneSettingsAsStrings, 
+                    resultant_rank: carClass
+                  }
+                }))
+              }} className='border-2 border-black px-2 py-2 rounded-sm hover:bg-black hover:text-white duration-200 cursor-pointer'>
+                {createTune.isPending ? ( 
+                  <p>Saving...</p>
+                ) : (
+                  <><FontAwesomeIcon icon={faFloppyDisk}/> Save</>
+                )}
               </button>
             </div>
           </div>
@@ -249,7 +294,7 @@ function RouteComponent() {
               style={{'--__reactRadialMenu__activeItem-bgColor': cssColors[classId]
               } as React.CSSProperties}
             >
-              <div className={`${classFontColors[classId]} group-hover:text-white`}>
+              <div className={`${classFontColors[classId]} group-hover:text-white font-extrabold`}>
                 {classId}
               </div>
             </MenuItem>

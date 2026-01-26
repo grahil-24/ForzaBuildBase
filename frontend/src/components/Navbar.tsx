@@ -11,7 +11,7 @@ function Nav() {
   };
   const [isOpen, setIsOpen] = useState(false);
   return (
-    <nav className="fixed bg-white w-full shadow-sm z-1">
+    <nav className="fixed bg-white w-full shadow-sm z-10">
       <div className="h-16 flex items-center justify-between px-4 sm:px-6 lg:px-10">
         {/* Logo */}
         <div className="shrink-0 min-w-40 max-w-1/5 h-full flex items-center">
@@ -52,7 +52,7 @@ function Nav() {
 
               <MenuItems
                 transition
-                className="absolute right-0 z-10 mt-2 w-48 origin-top-right rounded-md bg-white border border-gray-200 shadow-lg py-1 transition data-closed:scale-95 data-closed:transform data-closed:opacity-0 data-enter:duration-100 data-enter:ease-out data-leave:duration-75 data-leave:ease-in"
+                className="absolute right-0 z-20 mt-2 w-48 origin-top-right rounded-md bg-white border border-gray-200 shadow-lg py-1 transition data-closed:scale-95 data-closed:transform data-closed:opacity-0 data-enter:duration-100 data-enter:ease-out data-leave:duration-75 data-leave:ease-in"
               >
                 <MenuItem>
                   <a

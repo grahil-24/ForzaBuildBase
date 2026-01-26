@@ -3,7 +3,7 @@ import { Entity, PrimaryKey, Property, Index, SmallIntType, IntegerType, TinyInt
 @Entity({ tableName: 'cars' })
 export class Car {
   @PrimaryKey({type: "int"})
-  id!: IntegerType;
+  id!: number;
 
   @Property({type: "smallint"})
   Year!: SmallIntType;
@@ -68,4 +68,8 @@ export class Car {
   @Index({type: 'fulltext'})
   @Property({length: 200, nullable: false, type: "varchar"})
   Vehicle!: string;
+
+  constructor(car_id: number){
+    this.id = car_id;
+  }
 }

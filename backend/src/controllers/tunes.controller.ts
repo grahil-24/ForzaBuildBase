@@ -1,11 +1,86 @@
 import {NextFunction, Request, Response} from 'express';
 import { catchAsync } from "../utils/catchAsync";
-import { RequestContext, SmallIntType } from '@mikro-orm/mysql';
+import { RawQueryFragment, RequestContext, SmallIntType } from '@mikro-orm/mysql';
 import { AppError } from '../utils/AppError';
 import { Tune } from '../entities/Tunes';
 import { User } from '../entities/User';
+import {Car} from '../entities/Car';
 import { validateTuneName } from '../utils/Validator';
 import { SavedTunes } from '../entities/SavedTunes';
+
+const create = catchAsync(async(req: Request, res: Response, next: NextFunction) => {
+    const {user_id} = req;
+    const {tune_name, car_id, tuneSettings} = req.body;
+    console.log("tuneSettings ", tuneSettings);
+    if(!tune_name || !car_id || !tuneSettings) {
+        return next(new AppError('Missing required fields: tune_name, car_id, tuneSettings', 400));
+    }
+
+    if(!validateTuneName(tune_name)) {
+        res.status(422).json({status: 'error', message: 'Tune name needs to be between 3 and 50 characters'});
+        return;
+    }
+
+    const em = RequestContext.getEntityManager();
+    if (!em) {
+        return next(new AppError("Entity manager not available", 500));
+    }
+
+    const creator = em.getReference(User, {user_id});
+    const car = em.getReference(Car, car_id);
+    // Create new tune
+    const tune = new Tune();
+    tune.tune_name = tune_name;
+    tune.creator = creator;
+    tune.car = car;
+    tune.created_on = new Date();
+    tune.updated_on = new Date();
+
+    // Assign tune settings from request body
+    em.assign(tune, {
+        front_tire_pressure: tuneSettings.front_tire_pressure,
+        rear_tire_pressure: tuneSettings.rear_tire_pressure,
+        final_drive: tuneSettings.final_drive,
+        front_camber: tuneSettings.front_camber,
+        rear_camber: tuneSettings.rear_camber,
+        front_toe: tuneSettings.front_toe,
+        rear_toe: tuneSettings.rear_toe,
+        front_caster: tuneSettings.front_caster,
+        front_arb: tuneSettings.front_arb,
+        rear_arb: tuneSettings.rear_arb,
+        front_spring: tuneSettings.front_spring,
+        rear_spring: tuneSettings.rear_spring,
+        front_ride_height: tuneSettings.front_ride_height,
+        rear_ride_height: tuneSettings.rear_ride_height,
+        front_rebound: tuneSettings.front_rebound,
+        rear_rebound: tuneSettings.rear_rebound,
+        front_bump: tuneSettings.front_bump,
+        rear_bump: tuneSettings.rear_bump,
+        front_aero: tuneSettings.front_aero,
+        rear_aero: tuneSettings.rear_aero,
+        brake_balance: tuneSettings.brake_balance,
+        brake_pressure: tuneSettings.brake_pressure,
+        front_diff_accel: tuneSettings.front_diff_accel,
+        front_diff_decel: tuneSettings.front_diff_decel,
+        rear_diff_accel: tuneSettings.rear_diff_accel,
+        rear_diff_decel: tuneSettings.rear_diff_decel,
+        center_diff_balance: tuneSettings.center_diff_balance,
+        resultant_rank: tuneSettings.resultant_rank
+    });
+
+    await em.persistAndFlush(tune);
+
+    res.status(201).json({
+        status: "success", 
+        message: "Tune created successfully",
+        tune: {
+            tune_id: tune.tune_id,
+            tune_name: tune.tune_name,
+            car_id: car.id,
+            created_on: tune.created_on
+        }
+    });
+});
 
 const rename = catchAsync(async(req: Request, res: Response, next: NextFunction) => {
     const {user_id} = req;
@@ -67,4 +142,4 @@ const remove = catchAsync(async(req: Request, res: Response, next: NextFunction)
 });
 
 
-export {rename, remove};
+export {rename, remove, create};
