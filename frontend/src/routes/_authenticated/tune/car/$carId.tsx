@@ -18,7 +18,6 @@ import { faFloppyDisk } from '@fortawesome/free-solid-svg-icons'
 import { useMutation } from '@tanstack/react-query'
 import { toast } from 'react-toastify'
 
-
 const tuneData = data as unknown as Record<string, TuneData>;
 const categories = Object.keys(tuneData);
 
@@ -218,8 +217,14 @@ function RouteComponent() {
                     type="text"
                     value={tuneName}
                     onChange={(e) => { setTuneName(e.target.value); setFormIsDirty(true); }}
-                    onBlur={() => { setIsEditingName(false); if (!tuneName.trim()) setTuneName(`${car.Manufacturer} Tune`); }}
-                    onKeyDown={(e) => e.key === 'Enter' && setIsEditingName(false)}
+                    onBlur={() => { setIsEditingName(false); if (!tuneName.trim()) setTuneName(`${car.Manufacturer} ${car.Model} Tune`); }}
+                    onKeyDown={(e) => {
+                        if(e.key === 'Enter') {
+                          if(!tuneName.trim()) setTuneName(`${car.Manufacturer} ${car.Model} Tune`);
+                          setIsEditingName(false);
+                        }
+                      }
+                    }
                     className="w-full outline-0 border-b border-blue-500 bg-transparent text-slate-900 font-medium"
                     maxLength={50}
                   />

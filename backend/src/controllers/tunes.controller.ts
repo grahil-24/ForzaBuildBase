@@ -1,6 +1,6 @@
 import {NextFunction, Request, Response} from 'express';
 import { catchAsync } from "../utils/catchAsync";
-import { RawQueryFragment, RequestContext, SmallIntType, UniqueConstraintViolationException } from '@mikro-orm/mysql';
+import { RequestContext } from '@mikro-orm/mysql';
 import { AppError } from '../utils/AppError';
 import { Tune } from '../entities/Tunes';
 import { User } from '../entities/User';
@@ -11,7 +11,7 @@ import { SavedTunes } from '../entities/SavedTunes';
 const create = catchAsync(async(req: Request, res: Response, next: NextFunction) => {
     const {user_id} = req;
     const {tune_name, car_id, tuneSettings} = req.body;
-    console.log("tuneSettings ", tuneSettings);
+    const created_on = new Date();
     if(!tune_name || !car_id || !tuneSettings) {
         return next(new AppError('Missing required fields: tune_name, car_id, tuneSettings', 400));
     }
@@ -33,8 +33,8 @@ const create = catchAsync(async(req: Request, res: Response, next: NextFunction)
     tune.tune_name = tune_name;
     tune.creator = creator;
     tune.car = car;
-    tune.created_on = new Date();
-    tune.updated_on = new Date();
+    tune.created_on = created_on;
+    tune.updated_on = created_on;
 
     // Assign tune settings from request body
     em.assign(tune, {
@@ -69,6 +69,10 @@ const create = catchAsync(async(req: Request, res: Response, next: NextFunction)
     });
 
     try {
+        // Add the creator as the first person to save this tune
+        const savedTune = new SavedTunes(tune, creator);
+        savedTune.saved_on = created_on;
+        tune.savedBy.add(savedTune);
         await em.persistAndFlush(tune);
     }catch(error: any){
         if(error.errno == 1062){
@@ -78,7 +82,6 @@ const create = catchAsync(async(req: Request, res: Response, next: NextFunction)
         return next(error);
     }
     
-
     res.status(201).json({
         status: "success", 
         message: "Tune created successfully",

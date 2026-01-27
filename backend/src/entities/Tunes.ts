@@ -1,6 +1,7 @@
-import { Entity, PrimaryKey, Property, ManyToOne, SmallIntType, TinyIntType, Unique } from '@mikro-orm/core';
+import { Entity, PrimaryKey, Property, ManyToOne, SmallIntType, TinyIntType, Unique, OneToMany, Cascade, Collection } from '@mikro-orm/core';
 import { Car } from './Car';
 import { User } from './User';
+import { SavedTunes } from './SavedTunes';
 
 
 @Entity({tableName: 'tunes'})
@@ -17,6 +18,9 @@ export class Tune {
 
     @ManyToOne(() => Car, {fieldName: 'car_id', nullable: false})
     car?: Car
+
+    @OneToMany(() => SavedTunes, savedTune => savedTune.tune, {cascade: [Cascade.PERSIST]})
+    savedBy = new Collection<SavedTunes>(this);
 
     @Property({type: "datetime", nullable: false})
     created_on?: Date
