@@ -7,6 +7,7 @@ import {queryClient} from './queryClient.ts';
 import { QueryClientProvider } from '@tanstack/react-query';
 import { ToastContainer, Slide } from 'react-toastify';
 import { LoadingBarProvider } from './contexts/LoadingBarProvider.tsx';
+import './toast.style.css';
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>

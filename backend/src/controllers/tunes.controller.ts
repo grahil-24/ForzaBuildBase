@@ -1,6 +1,6 @@
 import {NextFunction, Request, Response} from 'express';
 import { catchAsync } from "../utils/catchAsync";
-import { RawQueryFragment, RequestContext, SmallIntType } from '@mikro-orm/mysql';
+import { RawQueryFragment, RequestContext, SmallIntType, UniqueConstraintViolationException } from '@mikro-orm/mysql';
 import { AppError } from '../utils/AppError';
 import { Tune } from '../entities/Tunes';
 import { User } from '../entities/User';
@@ -68,7 +68,16 @@ const create = catchAsync(async(req: Request, res: Response, next: NextFunction)
         resultant_rank: tuneSettings.resultant_rank
     });
 
-    await em.persistAndFlush(tune);
+    try {
+        await em.persistAndFlush(tune);
+    }catch(error: any){
+        if(error.errno == 1062){
+            res.status(409).json({status: "error", message: "You have already created a tune with this name"});
+            return;
+        }
+        return next(error);
+    }
+    
 
     res.status(201).json({
         status: "success", 
