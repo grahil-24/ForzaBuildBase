@@ -250,7 +250,7 @@ function RouteComponent() {
         </div>
       </div>
       <div className='flex'>
-        <Link className='mx-auto' to={`/tune/car/${car.id}`} state={{
+        <Link className='mx-auto' to="/tune/car/$carId" params={{carId: car.id.toString()}} state={{
           carData: {
             id: car.id,
             image_filename: car.image_filename,

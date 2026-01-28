@@ -1,4 +1,4 @@
-import { createFileRoute, useBlocker, notFound} from '@tanstack/react-router'
+import { createFileRoute, useBlocker, notFound, useNavigate} from '@tanstack/react-router'
 import { Tab, TabGroup, TabList, TabPanel, TabPanels } from '@headlessui/react'
 import { useLayoutEffect, useState, useRef} from 'react'
 import { TabForm } from '../../../../components/tune/tabs/TabForm'
@@ -86,6 +86,7 @@ const cssColors: Record<RankType, string> = {
 };
   
 function RouteComponent() {
+  const navigate = useNavigate();
   const car: Car = Route.useLoaderData();
   const {auth} = Route.useRouteContext();
   const [carClass, setCarClass] = useState<RankType>('S1');
@@ -177,16 +178,22 @@ function RouteComponent() {
   };
 
   const createTune = useMutation({
-    mutationFn: (newTune: string) => {
-      return authFetch(`${BACKEND}/tune/create`, {method: 'POST', headers: {'Content-Type': 'application/json'}, body: newTune}, auth);
+    mutationFn: async(newTune: string) => {
+      const res = await authFetch(`${BACKEND}/tune/create`, {method: 'POST', headers: {'Content-Type': 'application/json'}, body: newTune}, auth);
+      return await res.json();
     },
     onError: (error) => {
       toast.error(error?.message || 'There was a problem removing the tune');
       createTune.reset();
     },
-    onSuccess: () => {
-      toast.success('Tune created successfully!');
+    onSuccess: (data: any) => {
+      console.log("response from mutate ", data)
+      toast.success('Tune created successfully!', {autoClose: 2000});
       createTune.reset();
+      setTimeout(() => {
+        navigate({to: '/view/tune/$tuneId', params: {tuneId: data.tune.tune_id}, state: {tuneDetails: {created_on: data.tune.created_on, tune_id: data.tune.tune_id, tune_name: data.tune.tune_name, creator: auth.user!.username, car: car, class: carClass, tune_details: sliderData}}})
+      }, 2000);
+      
     }
   })
 

@@ -19,5 +19,14 @@ declare module "@tanstack/react-router" {
   
   interface HistoryState {
     carData?: Car
+    tuneDetails?: {
+      created_on: Date,
+      tune_id: number, 
+      tune_name: string, 
+      creator: string,
+      car: Car,
+      tune_details: Record<string, number>,
+      class: string
+    } 
   }
 }

@@ -16,6 +16,7 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthenticatedBrowseRouteImport } from './routes/_authenticated/browse'
 import { Route as AuthenticatedProfileIndexRouteImport } from './routes/_authenticated/profile/index'
 import { Route as AuthenticatedProfileTunesRouteImport } from './routes/_authenticated/profile/tunes'
+import { Route as AuthenticatedViewTuneTuneIdRouteImport } from './routes/_authenticated/view/tune/$tuneId'
 import { Route as AuthenticatedViewCarCarIdRouteImport } from './routes/_authenticated/view/car/$carId'
 import { Route as AuthenticatedTuneCarCarIdRouteImport } from './routes/_authenticated/tune/car/$carId'
 
@@ -55,6 +56,12 @@ const AuthenticatedProfileTunesRoute =
     path: '/profile/tunes',
     getParentRoute: () => AuthenticatedRoute,
   } as any)
+const AuthenticatedViewTuneTuneIdRoute =
+  AuthenticatedViewTuneTuneIdRouteImport.update({
+    id: '/view/tune/$tuneId',
+    path: '/view/tune/$tuneId',
+    getParentRoute: () => AuthenticatedRoute,
+  } as any)
 const AuthenticatedViewCarCarIdRoute =
   AuthenticatedViewCarCarIdRouteImport.update({
     id: '/view/car/$carId',
@@ -77,6 +84,7 @@ export interface FileRoutesByFullPath {
   '/profile': typeof AuthenticatedProfileIndexRoute
   '/tune/car/$carId': typeof AuthenticatedTuneCarCarIdRoute
   '/view/car/$carId': typeof AuthenticatedViewCarCarIdRoute
+  '/view/tune/$tuneId': typeof AuthenticatedViewTuneTuneIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -87,6 +95,7 @@ export interface FileRoutesByTo {
   '/profile': typeof AuthenticatedProfileIndexRoute
   '/tune/car/$carId': typeof AuthenticatedTuneCarCarIdRoute
   '/view/car/$carId': typeof AuthenticatedViewCarCarIdRoute
+  '/view/tune/$tuneId': typeof AuthenticatedViewTuneTuneIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -99,6 +108,7 @@ export interface FileRoutesById {
   '/_authenticated/profile/': typeof AuthenticatedProfileIndexRoute
   '/_authenticated/tune/car/$carId': typeof AuthenticatedTuneCarCarIdRoute
   '/_authenticated/view/car/$carId': typeof AuthenticatedViewCarCarIdRoute
+  '/_authenticated/view/tune/$tuneId': typeof AuthenticatedViewTuneTuneIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -111,6 +121,7 @@ export interface FileRouteTypes {
     | '/profile'
     | '/tune/car/$carId'
     | '/view/car/$carId'
+    | '/view/tune/$tuneId'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -121,6 +132,7 @@ export interface FileRouteTypes {
     | '/profile'
     | '/tune/car/$carId'
     | '/view/car/$carId'
+    | '/view/tune/$tuneId'
   id:
     | '__root__'
     | '/'
@@ -132,6 +144,7 @@ export interface FileRouteTypes {
     | '/_authenticated/profile/'
     | '/_authenticated/tune/car/$carId'
     | '/_authenticated/view/car/$carId'
+    | '/_authenticated/view/tune/$tuneId'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -192,6 +205,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedProfileTunesRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
+    '/_authenticated/view/tune/$tuneId': {
+      id: '/_authenticated/view/tune/$tuneId'
+      path: '/view/tune/$tuneId'
+      fullPath: '/view/tune/$tuneId'
+      preLoaderRoute: typeof AuthenticatedViewTuneTuneIdRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
     '/_authenticated/view/car/$carId': {
       id: '/_authenticated/view/car/$carId'
       path: '/view/car/$carId'
@@ -215,6 +235,7 @@ interface AuthenticatedRouteChildren {
   AuthenticatedProfileIndexRoute: typeof AuthenticatedProfileIndexRoute
   AuthenticatedTuneCarCarIdRoute: typeof AuthenticatedTuneCarCarIdRoute
   AuthenticatedViewCarCarIdRoute: typeof AuthenticatedViewCarCarIdRoute
+  AuthenticatedViewTuneTuneIdRoute: typeof AuthenticatedViewTuneTuneIdRoute
 }
 
 const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
@@ -223,6 +244,7 @@ const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
   AuthenticatedProfileIndexRoute: AuthenticatedProfileIndexRoute,
   AuthenticatedTuneCarCarIdRoute: AuthenticatedTuneCarCarIdRoute,
   AuthenticatedViewCarCarIdRoute: AuthenticatedViewCarCarIdRoute,
+  AuthenticatedViewTuneTuneIdRoute: AuthenticatedViewTuneTuneIdRoute,
 }
 
 const AuthenticatedRouteWithChildren = AuthenticatedRoute._addFileChildren(
