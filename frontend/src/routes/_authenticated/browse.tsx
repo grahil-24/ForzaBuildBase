@@ -41,6 +41,13 @@ export const Route = createFileRoute('/_authenticated/browse')({
       search: search.search ? search.search as string : undefined
     };
   },
+  head: () => ({
+    meta: [
+      {
+        title: 'Browse Cars'
+      }
+    ]
+  }),
   preload: true,
   loaderDeps: ({search: {page, rank, drivetrain, fuel_type, manufacturer, search}}) => ({page, rank, drivetrain, fuel_type, manufacturer, search}),
   loader: async({ context, location }) => {const res = await fetchCars(location, context.auth); window.scrollTo(0, 0); return res},

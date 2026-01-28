@@ -29,6 +29,13 @@ export const Route = createFileRoute('/_authenticated/view/car/$carId')({
   notFoundComponent: NotFoundComponent,
   errorComponent: ErrorComponent,
   component: RouteComponent,
+  head: () => ({
+    meta: [
+      {
+        title: 'View Car'
+      }
+    ]
+  }),
 });
 
 const fetchCar = async(params: PathParams, authContext: AuthState): Promise<Car> => {

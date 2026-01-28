@@ -33,6 +33,13 @@ export const Route = createFileRoute('/_authenticated/tune/car/$carId')({
     }
     return carData;
   },
+  head: () => ({
+    meta: [
+      {
+        title: 'Tune'
+      }
+    ]
+  }),
   notFoundComponent: NotFoundComponent,
   component: RouteComponent,
 })

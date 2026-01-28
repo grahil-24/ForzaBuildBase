@@ -53,6 +53,13 @@ const fuseOptions = {
 
 export const Route = createFileRoute('/_authenticated/profile/tunes')({
   component: RouteComponent,
+  head: () => ({
+    meta: [
+      {
+        title: 'Saved Tunes'
+      }
+    ]
+  }),
   errorComponent: ErrorToast
 })
 

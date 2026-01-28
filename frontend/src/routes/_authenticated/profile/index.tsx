@@ -17,6 +17,13 @@ export const Route = createFileRoute('/_authenticated/profile/')({
     preload: true,
     component: RouteComponent,
     errorComponent: ErrorToast,
+    head: () => ({
+        meta: [
+        {
+            title: 'Profile'
+        }
+        ]
+    }),
 })
 
 const fetchProfile = async (auth: AuthState) => {

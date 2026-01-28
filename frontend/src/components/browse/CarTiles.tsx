@@ -54,8 +54,8 @@ const drivetrainSVG = (drivetrain: DrivetrainType): React.ReactElement => {
 
 
 const CarTile = ({car}: {car: Car}): React.ReactElement => {
-    const imageUrl = formatS3BucketURL({manufacturer: car.Manufacturer, image_filename: car.image_filename});
-    const rank_color: string = rank_to_color[car.Rank];
+    const imageUrl = formatS3BucketURL({manufacturer: car.Manufacturer, image_filename: car.image_filename, size: "medium"});
+    const rank_color: string = rank_to_color[car.Rank!];
 
     return (
         <Link to="/view/car/$carId" params={{carId: car.id.toString()}}>
@@ -64,7 +64,7 @@ const CarTile = ({car}: {car: Car}): React.ReactElement => {
           className="cursor-pointer hover:scale-103 duration-100 relative w-full h-60 bg-gray-200 rounded-lg shadow overflow-hidden flex flex-col justify-end"
           style={{ minWidth: '220px', maxWidth: '300px' }}
         >
-            <div className="absolute top-5 left-5">{drivetrainSVG(car.Drivetrain)}</div>
+            <div className="absolute top-5 left-5">{drivetrainSVG(car.Drivetrain!)}</div>
             <div className={`bg-white pl-3 pr-3 pt-1 pb-1 rounded-md absolute top-5 right-5 text-lg ${rank_color} text-center font-bold`}>{car.Rank}</div>
             <img loading="eager" src={imageUrl} alt={car.Model} className="-mt-2 absolute inset-0 w-full h-full object-contain p-2"/>
             <div className="absolute inset-0 bg-linear-to-t from-black/10 via-black/30 to-transparent" />
