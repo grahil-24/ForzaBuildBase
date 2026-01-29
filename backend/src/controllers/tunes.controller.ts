@@ -94,6 +94,89 @@ const create = catchAsync(async(req: Request, res: Response, next: NextFunction)
     });
 });
 
+const getTune = catchAsync(async(req: Request, res: Response, next: NextFunction) => {
+    const {user_id} = req;
+    const tune_id = Number(req.params.tuneid);
+    if(isNaN(tune_id)){
+        return next(new AppError('Invalid tune id', 400));
+    }
+
+    const em = RequestContext.getEntityManager();
+    if (!em) {
+        return next(new AppError("Entity manager not available", 500));
+    }
+    
+    const tuneRef = new Tune(tune_id);
+    const userRef = em.getReference(User, {user_id});
+
+    const savedTune = await em.findOne(SavedTunes, {tune: tuneRef, user: userRef}, {
+        populate: ['tune.creator', 'tune.car'],
+        fields: [
+            'tune.tune_id', 'tune.tune_name', 'tune.created_on', 'tune.resultant_rank',
+            'tune.front_tire_pressure', 'tune.rear_tire_pressure', 'tune.final_drive',
+            'tune.front_camber', 'tune.rear_camber', 'tune.front_toe', 'tune.rear_toe', 'tune.front_caster',
+            'tune.front_arb', 'tune.rear_arb', 'tune.front_spring', 'tune.rear_spring',
+            'tune.front_ride_height', 'tune.rear_ride_height', 'tune.front_rebound', 'tune.rear_rebound',
+            'tune.front_bump', 'tune.rear_bump', 'tune.front_aero', 'tune.rear_aero',
+            'tune.brake_balance', 'tune.brake_pressure',
+            'tune.front_diff_accel', 'tune.front_diff_decel', 'tune.rear_diff_accel', 'tune.rear_diff_decel',
+            'tune.center_diff_balance',
+            'tune.creator.user_id', 'tune.creator.username',
+            'tune.car.id', 'tune.car.Year', 'tune.car.image_filename', 'tune.car.Model', 'tune.car.Manufacturer'
+        ]
+    });
+
+    if (!savedTune) {
+        return next(new AppError('Tune not found', 404));
+    }
+
+    const tune = savedTune.tune;
+    res.status(200).json({
+        status: 'success',
+        car: {
+            id: tune.car?.id,
+            Year: tune.car?.Year,
+            image_filename: tune.car?.image_filename,
+            Model: tune.car?.Model,
+            Manufacturer: tune.car?.Manufacturer
+        },
+        tune_name: tune.tune_name,
+        created_on: tune.created_on,
+        creator: tune.creator?.username,
+        class: tune.resultant_rank,
+        tune_id: tune.tune_id,
+        tune_details: {
+            front_tire_pressure: tune.front_tire_pressure,
+            rear_tire_pressure: tune.rear_tire_pressure,
+            final_drive: tune.final_drive,
+            front_camber: tune.front_camber,
+            rear_camber: tune.rear_camber,
+            front_toe: tune.front_toe,
+            rear_toe: tune.rear_toe,
+            front_caster: tune.front_caster,
+            front_arb: tune.front_arb,
+            rear_arb: tune.rear_arb,
+            front_spring: tune.front_spring,
+            rear_spring: tune.rear_spring,
+            front_ride_height: tune.front_ride_height,
+            rear_ride_height: tune.rear_ride_height,
+            front_rebound: tune.front_rebound,
+            rear_rebound: tune.rear_rebound,
+            front_bump: tune.front_bump,
+            rear_bump: tune.rear_bump,
+            front_aero: tune.front_aero,
+            rear_aero: tune.rear_aero,
+            brake_balance: tune.brake_balance,
+            brake_pressure: tune.brake_pressure,
+            front_diff_accel: tune.front_diff_accel,
+            front_diff_decel: tune.front_diff_decel,
+            rear_diff_accel: tune.rear_diff_accel,
+            rear_diff_decel: tune.rear_diff_decel,
+            center_diff_balance: tune.center_diff_balance
+        }
+    });
+});
+
 const rename = catchAsync(async(req: Request, res: Response, next: NextFunction) => {
     const {user_id} = req;
     const tuneid = Number(req.params.tuneid);
@@ -154,4 +237,4 @@ const remove = catchAsync(async(req: Request, res: Response, next: NextFunction)
 });
 
 
-export {rename, remove, create};
+export {rename, remove, create, getTune};

@@ -187,9 +187,9 @@ function RouteComponent() {
       createTune.reset();
     },
     onSuccess: (data: any) => {
-      console.log("response from mutate ", data)
       toast.success('Tune created successfully!', {autoClose: 2000});
       createTune.reset();
+      setFormIsDirty(false);
       setTimeout(() => {
         navigate({to: '/view/tune/$tuneId', params: {tuneId: data.tune.tune_id}, state: {tuneDetails: {created_on: data.tune.created_on, tune_id: data.tune.tune_id, tune_name: data.tune.tune_name, creator: auth.user!.username, car: car, class: carClass, tune_details: sliderData}}})
       }, 2000);

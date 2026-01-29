@@ -41,13 +41,9 @@ export const Route = createRootRouteWithContext<MyRouterContext>()({
 function RootComponent() {
   useRouterLoadingBar();
   return (
-    <html>
-      <head>
-        <HeadContent />
-      </head>
-      <body>
-        <Outlet />
-      </body>
-    </html>
+    <>
+      <HeadContent />
+      <Outlet />
+    </>
   )
 }

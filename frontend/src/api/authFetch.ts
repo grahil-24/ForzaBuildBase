@@ -34,9 +34,6 @@ export async function authFetch(url: string, options: RequestInit = {},
                 auth.setAccessToken(data.access_token);
                 // retry original request
                 res = await doFetch(data.access_token);
-            }else{
-                const error = await res.json();
-                throw Error(error.message);
             }
         }
         return res;
