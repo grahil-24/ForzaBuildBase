@@ -8,10 +8,10 @@ import {Car} from '../entities/Car';
 import { validateTuneName } from '../utils/Validator';
 import { SavedTunes } from '../entities/SavedTunes';
 
-const create = catchAsync(async(req: Request, res: Response, next: NextFunction) => {
+const createAndUpdate = catchAsync(async(req: Request, res: Response, next: NextFunction) => {
     const {user_id} = req;
-    const {tune_name, car_id, tuneSettings} = req.body;
-    const created_on = new Date();
+    const {tune_name, car_id, tuneSettings, tune_id} = req.body;
+    
     if(!tune_name || !car_id || !tuneSettings) {
         return next(new AppError('Missing required fields: tune_name, car_id, tuneSettings', 400));
     }
@@ -28,13 +28,25 @@ const create = catchAsync(async(req: Request, res: Response, next: NextFunction)
 
     const creator = em.getReference(User, {user_id});
     const car = em.getReference(Car, car_id);
-    // Create new tune
-    const tune = new Tune();
-    tune.tune_name = tune_name;
-    tune.creator = creator;
-    tune.car = car;
-    tune.created_on = created_on;
-    tune.updated_on = created_on;
+
+    let tune
+    const isUpdate = tune_id ? true : false;
+    const created_on = new Date();
+    if(isUpdate){
+        tune = await em.findOne(Tune, {tune_id, creator});
+        if(!tune){
+            res.status(404).json({status: "error", message: "Tune doesnt exist!"});
+            return;
+        }
+        tune.updated_on = new Date();
+    }else{
+        tune = new Tune();
+        tune.tune_name = tune_name;
+        tune.creator = creator;
+        tune.car = car;
+        tune.created_on = created_on;
+        tune.updated_on = created_on;
+    }
 
     // Assign tune settings from request body
     em.assign(tune, {
@@ -69,12 +81,15 @@ const create = catchAsync(async(req: Request, res: Response, next: NextFunction)
     });
 
     try {
-        // Add the creator as the first person to save this tune
-        const savedTune = new SavedTunes(tune, creator);
-        savedTune.saved_on = created_on;
-        tune.savedBy.add(savedTune);
+        if(!isUpdate){
+            // Add the creator as the first person to save this tune
+            const savedTune = new SavedTunes(tune, creator);
+            savedTune.saved_on = created_on;
+            tune.savedBy.add(savedTune);
+        }
         await em.persistAndFlush(tune);
     }catch(error: any){
+        console.log("caught error ", error);
         if(error.errno == 1062){
             res.status(409).json({status: "error", message: "You have already created a tune with this name"});
             return;
@@ -82,14 +97,15 @@ const create = catchAsync(async(req: Request, res: Response, next: NextFunction)
         return next(error);
     }
     
-    res.status(201).json({
+    res.status(isUpdate ? 200: 201).json({
         status: "success", 
-        message: "Tune created successfully",
+        message: isUpdate ? "Tune updated successfully" : "Tune created successfully",
         tune: {
             tune_id: tune.tune_id,
             tune_name: tune.tune_name,
             car_id: car.id,
-            created_on: tune.created_on
+            created_on: tune.created_on,
+            updated_on: tune.updated_on
         }
     });
 });
@@ -237,4 +253,4 @@ const remove = catchAsync(async(req: Request, res: Response, next: NextFunction)
 });
 
 
-export {rename, remove, create, getTune};
+export {rename, remove, createAndUpdate, getTune};

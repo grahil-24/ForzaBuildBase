@@ -180,10 +180,16 @@ function RouteComponent() {
   const createTune = useMutation({
     mutationFn: async(newTune: string) => {
       const res = await authFetch(`${BACKEND}/tune/create`, {method: 'POST', headers: {'Content-Type': 'application/json'}, body: newTune}, auth);
+      if(res.status === 409){
+        throw new Error('You have already created a tune with this name');
+      }
+      if(!res.ok){
+        throw new Error();
+      }
       return await res.json();
     },
     onError: (error) => {
-      toast.error(error?.message || 'There was a problem removing the tune');
+      toast.error(error?.message || 'There was a problem saving the tune');
       createTune.reset();
     },
     onSuccess: (data: any) => {
