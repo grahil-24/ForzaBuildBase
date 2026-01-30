@@ -1,4 +1,4 @@
-import { createFileRoute } from '@tanstack/react-router'
+import { createFileRoute, Link } from '@tanstack/react-router'
 import { Menu, MenuButton, MenuItem, MenuItems } from '@headlessui/react'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faEllipsisH, faAngleUp } from '@fortawesome/free-solid-svg-icons'
@@ -330,89 +330,93 @@ function RouteComponent() {
               processedTunes.map((tune, index) => {
                 const image_url = formatS3BucketURL({manufacturer: tune.tune.car.Manufacturer, image_filename: tune.tune.car.image_filename});
                 return (
-                  <div key={index} className='cursor-pointer relative flex items-center border border-gray-200 bg-white hover:shadow-lg transition-shadow duration-200 overflow-hidden rounded-lg'>
-                    {/* Rank Badge */}
-                    <div className='hidden sm:flex items-center justify-center w-16 md:w-20 text-black'>
-                      <span className='text-2xl md:text-3xl font-bold opacity-50'>#{index+1}</span>
-                    </div>
+                  <Link className='block' to='/view/tune/$tuneId' params={{tuneId: tune.tune.tune_id.toString()}}>
+                    <div key={index} className='cursor-pointer relative flex items-center border border-gray-200 bg-white hover:shadow-lg transition-shadow duration-200 overflow-hidden rounded-lg'>
                     
-                    {/* Car Image */}
-                    <div className='w-32 sm:w-40 md:w-48 lg:w-56 shrink-0 flex items-center justify-center from-gray-50 to-gray-100'>
-                      <img 
-                        className='w-full h-auto object-contain' 
-                        src={image_url}
-                        alt={`${tune.tune.car.Manufacturer} ${tune.tune.car.Model}`}
-                      />
-                    </div>
-                    
-                    {/* Content */}
-                    <div className='flex-1 px-4 py-2 md:px-6 flex flex-col justify-center min-w-0'>
-                      <h2 className='overflow-hidden text-xs sm:text-sm md:text-xl font-bold text-gray-900 mb-1 truncate'>
-                        {tune.tune.car.Manufacturer} {tune.tune.car.Model}
-                      </h2>
+                      {/* Rank Badge */}
+                      <div className='hidden sm:flex items-center justify-center w-16 md:w-20 text-black'>
+                        <span className='text-2xl md:text-3xl font-bold opacity-50'>#{index+1}</span>
+                      </div>
                       
-                      <p className='text-xs sm:text-sm md:text-base text-gray-600 mb-2 sm:mb-3 truncate'>
-                        {tune.tune.tune_name}
-                      </p>
+                      {/* Car Image */}
+                      <div className='w-32 sm:w-40 md:w-48 lg:w-56 shrink-0 flex items-center justify-center from-gray-50 to-gray-100'>
+                        <img 
+                          className='w-full h-auto object-contain' 
+                          src={image_url}
+                          alt={`${tune.tune.car.Manufacturer} ${tune.tune.car.Model}`}
+                        />
+                      </div>
                       
-                      <div className='flex flex-wrap items-center gap-x-4 gap-y-2 text-xs md:text-sm text-gray-600'>
-                        <span>Creator: <span className='font-semibold text-gray-800'>{tune.tune.creator.username}</span></span>
-                        <span className='hidden sm:inline text-gray-400'>•</span>
-                        <span>Created: {new Date(tune.saved_on).toLocaleString()}</span>
+                      {/* Content */}
+                      <div className='flex-1 px-4 py-2 md:px-6 flex flex-col justify-center min-w-0'>
+                        <h2 className='overflow-hidden text-xs sm:text-sm md:text-xl font-bold text-gray-900 mb-1 truncate'>
+                          {tune.tune.car.Manufacturer} {tune.tune.car.Model}
+                        </h2>
+                        
+                        <p className='text-xs sm:text-sm md:text-base text-gray-600 mb-2 sm:mb-3 truncate'>
+                          {tune.tune.tune_name}
+                        </p>
+                        
+                        <div className='flex flex-wrap items-center gap-x-4 gap-y-2 text-xs md:text-sm text-gray-600'>
+                          <span>Creator: <span className='font-semibold text-gray-800'>{tune.tune.creator.username}</span></span>
+                          <span className='hidden sm:inline text-gray-400'>•</span>
+                          <span>Created: {new Date(tune.saved_on).toLocaleString()}</span>
+                        </div>
+                      </div>
+                      
+                      {/* Class Badge - Top Right */}
+                      <div className='absolute top-2 right-2 sm:top-3 sm:right-16 md:right-20'>
+                        <span className={`inline-block px-2 py-0.5 sm:px-3 sm:py-1 ${rank_to_color[tune.tune.resultant_rank as RankType]} text-white text-[10px] sm:text-xs md:text-sm font-bold shadow-md rounded`}>
+                          CLASS {tune.tune.resultant_rank}
+                        </span>
+                      </div>
+                      
+                      {/* Menu */}
+                      <div className='flex items-center pr-3 md:pr-4'>
+                        <Menu as="div" className="relative">
+                          <MenuButton className="p-1 cursor-pointer hover:bg-gray-100 transition-colors rounded-2xl">
+                            <FontAwesomeIcon 
+                              icon={faEllipsisH} 
+                              className="text-gray-600 text-lg md:text-xl" 
+                            />
+                          </MenuButton>
+                          <MenuItems
+                            transition
+                            modal={false}
+                            anchor="bottom end"
+                            className="absolute right-0 mt-2 w-40 sm:w-48 bg-white border border-gray-200 shadow-xl rounded-lg overflow-hidden z-50 focus:outline-none transition duration-100 ease-out data-closed:scale-95 data-closed:opacity-0"
+                          >
+                            {auth.user?.username === tune.tune.creator.username && 
+                              <MenuItem>
+                                <button onClick={() => handleOpenRenameModal(tune.tune.tune_id)} className='cursor-pointer group flex w-full items-center gap-2 sm:gap-3 px-3 sm:px-4 py-2 sm:py-3 text-xs sm:text-sm font-medium transition-colors hover:bg-blue-100/50'>
+                                  <PencilIcon className="size-4 sm:size-5 text-gray-600 transition-colors group-hover:text-blue-600" />
+                                  <span className='text-gray-700 transition-colors group-hover:text-blue-600'>Rename</span>
+                                </button>
+                              </MenuItem>
+                            }
+                            {auth.user?.username === tune.tune.creator.username ?
+                              (
+                                <MenuItem>
+                                  <button onClick={() => handleOpenDeleteModal(tune.tune.tune_id)} className='cursor-pointer group flex w-full items-center gap-2 sm:gap-3 px-3 sm:px-4 py-2 sm:py-3 text-xs sm:text-sm font-medium transition-colors hover:bg-red-100/50'>
+                                    <TrashIcon className="transition-colors size-4 sm:size-5 text-gray-600 group-hover:text-red-600" />
+                                    <span className='transition-colors text-gray-700 group-hover:text-red-600'>Delete</span>
+                                  </button>
+                                </MenuItem>
+                              ) : (
+                                <MenuItem>
+                                  <button onClick={() => handleOpenRemoveModal(tune.tune.tune_id)} className='cursor-pointer group flex w-full items-center gap-2 sm:gap-3 px-3 sm:px-4 py-2 sm:py-3 text-xs sm:text-sm font-medium transition-colors hover:bg-red-100/50'>
+                                    <MinusCircleIcon className="transition-colors size-4 sm:size-5 text-gray-600 group-hover:text-red-600" />
+                                    <span className='transition-colors text-gray-700 group-hover:text-red-600'>Remove</span>
+                                  </button>
+                                </MenuItem>
+                              )
+                            }
+                          </MenuItems>
+                        </Menu>
                       </div>
                     </div>
-                    
-                    {/* Class Badge - Top Right */}
-                    <div className='absolute top-2 right-2 sm:top-3 sm:right-16 md:right-20'>
-                      <span className={`inline-block px-2 py-0.5 sm:px-3 sm:py-1 ${rank_to_color[tune.tune.resultant_rank as RankType]} text-white text-[10px] sm:text-xs md:text-sm font-bold shadow-md rounded`}>
-                        CLASS {tune.tune.resultant_rank}
-                      </span>
-                    </div>
-                    
-                    {/* Menu */}
-                    <div className='flex items-center pr-3 md:pr-4'>
-                      <Menu as="div" className="relative">
-                        <MenuButton className="p-1 cursor-pointer hover:bg-gray-100 transition-colors rounded-2xl">
-                          <FontAwesomeIcon 
-                            icon={faEllipsisH} 
-                            className="text-gray-600 text-lg md:text-xl" 
-                          />
-                        </MenuButton>
-                        <MenuItems
-                          transition
-                          modal={false}
-                          anchor="bottom end"
-                          className="absolute right-0 mt-2 w-40 sm:w-48 bg-white border border-gray-200 shadow-xl rounded-lg overflow-hidden z-50 focus:outline-none transition duration-100 ease-out data-closed:scale-95 data-closed:opacity-0"
-                        >
-                          {auth.user?.username === tune.tune.creator.username && 
-                            <MenuItem>
-                              <button onClick={() => handleOpenRenameModal(tune.tune.tune_id)} className='cursor-pointer group flex w-full items-center gap-2 sm:gap-3 px-3 sm:px-4 py-2 sm:py-3 text-xs sm:text-sm font-medium transition-colors hover:bg-blue-100/50'>
-                                <PencilIcon className="size-4 sm:size-5 text-gray-600 transition-colors group-hover:text-blue-600" />
-                                <span className='text-gray-700 transition-colors group-hover:text-blue-600'>Rename</span>
-                              </button>
-                            </MenuItem>
-                          }
-                          {auth.user?.username === tune.tune.creator.username ?
-                            (
-                              <MenuItem>
-                                <button onClick={() => handleOpenDeleteModal(tune.tune.tune_id)} className='cursor-pointer group flex w-full items-center gap-2 sm:gap-3 px-3 sm:px-4 py-2 sm:py-3 text-xs sm:text-sm font-medium transition-colors hover:bg-red-100/50'>
-                                  <TrashIcon className="transition-colors size-4 sm:size-5 text-gray-600 group-hover:text-red-600" />
-                                  <span className='transition-colors text-gray-700 group-hover:text-red-600'>Delete</span>
-                                </button>
-                              </MenuItem>
-                            ) : (
-                              <MenuItem>
-                                <button onClick={() => handleOpenRemoveModal(tune.tune.tune_id)} className='cursor-pointer group flex w-full items-center gap-2 sm:gap-3 px-3 sm:px-4 py-2 sm:py-3 text-xs sm:text-sm font-medium transition-colors hover:bg-red-100/50'>
-                                  <MinusCircleIcon className="transition-colors size-4 sm:size-5 text-gray-600 group-hover:text-red-600" />
-                                  <span className='transition-colors text-gray-700 group-hover:text-red-600'>Remove</span>
-                                </button>
-                              </MenuItem>
-                            )
-                          }
-                        </MenuItems>
-                      </Menu>
-                    </div>
-                  </div>
+                  </Link>
+                  
                 );
               })
             )}

@@ -9,7 +9,8 @@ export const router = createRouter({
   context: {
     //auth will be passed down from App component
     auth: undefined!
-  }
+  },
+  scrollRestoration: true
 });
 
 declare module "@tanstack/react-router" {

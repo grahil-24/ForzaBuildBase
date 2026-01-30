@@ -50,7 +50,11 @@ export const Route = createFileRoute('/_authenticated/browse')({
   }),
   preload: true,
   loaderDeps: ({search: {page, rank, drivetrain, fuel_type, manufacturer, search}}) => ({page, rank, drivetrain, fuel_type, manufacturer, search}),
-  loader: async({ context, location }) => {const res = await fetchCars(location, context.auth); window.scrollTo(0, 0); return res},
+  loader: async({ context, location }) => {
+    const res = await fetchCars(location, context.auth); 
+    // window.scrollTo(0, 0); 
+    return res
+  },
   staleTime: Infinity,
   component: BrowseComponent,
 })
@@ -67,7 +71,7 @@ const fetchCars = async (location: ParsedLocation, auth: AuthState): Promise<Loa
 
   const queryString = params.toString();
   const res = await authFetch(`${BACKEND}/browse?${queryString}`,
-      { method: 'GET' },
+      { method: 'GET'},
       auth
     );
     if (!res.ok) throw new Error('Failed to fetch cars');

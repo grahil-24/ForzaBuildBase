@@ -4,6 +4,7 @@ import type { AuthState } from '../../../../types/auth';
 import { authFetch } from '../../../../api/authFetch';
 import { BACKEND } from '../../../../config/env';
 import NotFoundComponent from '../../../../components/NotFoundComponent';
+import { ShareIcon, PencilIcon, TrashIcon } from '@heroicons/react/24/outline';
 
 export const Route = createFileRoute('/_authenticated/view/tune/$tuneId')({
   loader: async({context, params, location}) => {
@@ -20,6 +21,7 @@ export const Route = createFileRoute('/_authenticated/view/tune/$tuneId')({
       }
     ]
   }),
+  
   notFoundComponent: NotFoundComponent,
   component: RouteComponent,
 })
@@ -107,16 +109,18 @@ function RouteComponent() {
 
             {/* Right side - Action Buttons */}
             <div className="flex flex-wrap gap-3">
-              <button className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-semibold transition-colors flex items-center gap-2">
-                <i className="fas fa-edit"></i>
+              <button className="cursor-pointer bg-blue-600 hover:bg-blue-700 text-white pl-2 pr-3 py-2 rounded-lg font-semibold transition-colors flex items-center gap-2">
+                <PencilIcon className='size-5 mr-auto'/>
                 Edit Tune
               </button>
-              <button className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg font-semibold transition-colors flex items-center gap-2">
+              <button className="cursor-pointer bg-red-600 hover:bg-red-700 text-white pr-3 py-2 rounded-lg font-semibold transition-colors flex items-center gap-2">
                 <i className="fas fa-trash"></i>
+                <TrashIcon className='size-5'/>
                 Delete
               </button>
-              <button className="bg-slate-200 hover:bg-slate-300 text-slate-700 px-4 py-2 rounded-lg font-semibold transition-colors flex items-center gap-2">
+              <button className="cursor-pointer bg-slate-200 hover:bg-slate-300 text-slate-700 pr-3 py-2 rounded-lg font-semibold transition-colors flex items-center gap-2">
                 <i className="fas fa-share"></i>
+                <ShareIcon className='size-5'/>
                 Share
               </button>
             </div>
