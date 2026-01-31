@@ -225,7 +225,7 @@ function RouteComponent() {
                 <MenuItems
                   transition
                   anchor="bottom end"
-                  className="absolute right-0 z-10 mt-2 w-30 origin-top-right rounded-md bg-white shadow-2xl ring-1 ring-black/5 focus:outline-none transition flex justify-center duration-100 ease-out data-closed:scale-95 data-closed:opacity-0"
+                  className="absolute right-0 z-1 mt-2 w-30 origin-top-right rounded-md bg-white shadow-2xl ring-1 ring-black/5 focus:outline-none transition flex justify-center duration-100 ease-out data-closed:scale-95 data-closed:opacity-0"
                 >
                   <div className="py-1">
                     <MenuItem>
@@ -330,9 +330,16 @@ function RouteComponent() {
               processedTunes.map((tune, index) => {
                 const image_url = formatS3BucketURL({manufacturer: tune.tune.car.Manufacturer, image_filename: tune.tune.car.image_filename});
                 return (
-                  <Link className='block' to='/view/tune/$tuneId' params={{tuneId: tune.tune.tune_id.toString()}}>
-                    <div key={index} className='cursor-pointer relative flex items-center border border-gray-200 bg-white hover:shadow-lg transition-shadow duration-200 overflow-hidden rounded-lg'>
+                  <div key={index} className='relative flex items-center border border-gray-200 bg-white hover:shadow-lg transition-shadow duration-200 overflow-hidden rounded-lg'>
+                    {/* Clickable Link Overlay */}
+                    <Link 
+                      className='absolute inset-0 z-0' 
+                      to='/view/tune/$tuneId' 
+                      params={{tuneId: tune.tune.tune_id.toString()}}
+                    />
                     
+                    {/* Content Container - Above Link */}
+                    <div className='relative z-1 flex items-center w-full pointer-events-none'>
                       {/* Rank Badge */}
                       <div className='hidden sm:flex items-center justify-center w-16 md:w-20 text-black'>
                         <span className='text-2xl md:text-3xl font-bold opacity-50'>#{index+1}</span>
@@ -371,8 +378,8 @@ function RouteComponent() {
                         </span>
                       </div>
                       
-                      {/* Menu */}
-                      <div className='flex items-center pr-3 md:pr-4'>
+                      {/* Menu  */}
+                      <div className='relative z-2 flex items-center pr-3 md:pr-4 pointer-events-auto'>
                         <Menu as="div" className="relative">
                           <MenuButton className="p-1 cursor-pointer hover:bg-gray-100 transition-colors rounded-2xl">
                             <FontAwesomeIcon 
@@ -384,11 +391,14 @@ function RouteComponent() {
                             transition
                             modal={false}
                             anchor="bottom end"
-                            className="absolute right-0 mt-2 w-40 sm:w-48 bg-white border border-gray-200 shadow-xl rounded-lg overflow-hidden z-50 focus:outline-none transition duration-100 ease-out data-closed:scale-95 data-closed:opacity-0"
+                            className="absolute right-0 mt-2 w-40 sm:w-48 bg-white border border-gray-200 shadow-xl rounded-lg overflow-hidden z-3 focus:outline-none transition duration-100 ease-out data-closed:scale-95 data-closed:opacity-0"
                           >
                             {auth.user?.username === tune.tune.creator.username && 
                               <MenuItem>
-                                <button onClick={() => handleOpenRenameModal(tune.tune.tune_id)} className='cursor-pointer group flex w-full items-center gap-2 sm:gap-3 px-3 sm:px-4 py-2 sm:py-3 text-xs sm:text-sm font-medium transition-colors hover:bg-blue-100/50'>
+                                <button 
+                                  onClick={() => handleOpenRenameModal(tune.tune.tune_id)} 
+                                  className='cursor-pointer group flex w-full items-center gap-2 sm:gap-3 px-3 sm:px-4 py-2 sm:py-3 text-xs sm:text-sm font-medium transition-colors hover:bg-blue-100/50'
+                                >
                                   <PencilIcon className="size-4 sm:size-5 text-gray-600 transition-colors group-hover:text-blue-600" />
                                   <span className='text-gray-700 transition-colors group-hover:text-blue-600'>Rename</span>
                                 </button>
@@ -397,14 +407,20 @@ function RouteComponent() {
                             {auth.user?.username === tune.tune.creator.username ?
                               (
                                 <MenuItem>
-                                  <button onClick={() => handleOpenDeleteModal(tune.tune.tune_id)} className='cursor-pointer group flex w-full items-center gap-2 sm:gap-3 px-3 sm:px-4 py-2 sm:py-3 text-xs sm:text-sm font-medium transition-colors hover:bg-red-100/50'>
+                                  <button 
+                                    onClick={() => handleOpenDeleteModal(tune.tune.tune_id)} 
+                                    className='cursor-pointer group flex w-full items-center gap-2 sm:gap-3 px-3 sm:px-4 py-2 sm:py-3 text-xs sm:text-sm font-medium transition-colors hover:bg-red-100/50'
+                                  >
                                     <TrashIcon className="transition-colors size-4 sm:size-5 text-gray-600 group-hover:text-red-600" />
                                     <span className='transition-colors text-gray-700 group-hover:text-red-600'>Delete</span>
                                   </button>
                                 </MenuItem>
                               ) : (
                                 <MenuItem>
-                                  <button onClick={() => handleOpenRemoveModal(tune.tune.tune_id)} className='cursor-pointer group flex w-full items-center gap-2 sm:gap-3 px-3 sm:px-4 py-2 sm:py-3 text-xs sm:text-sm font-medium transition-colors hover:bg-red-100/50'>
+                                  <button 
+                                    onClick={() => handleOpenRemoveModal(tune.tune.tune_id)} 
+                                    className='cursor-pointer group flex w-full items-center gap-2 sm:gap-3 px-3 sm:px-4 py-2 sm:py-3 text-xs sm:text-sm font-medium transition-colors hover:bg-red-100/50'
+                                  >
                                     <MinusCircleIcon className="transition-colors size-4 sm:size-5 text-gray-600 group-hover:text-red-600" />
                                     <span className='transition-colors text-gray-700 group-hover:text-red-600'>Remove</span>
                                   </button>
@@ -415,8 +431,7 @@ function RouteComponent() {
                         </Menu>
                       </div>
                     </div>
-                  </Link>
-                  
+                  </div>
                 );
               })
             )}

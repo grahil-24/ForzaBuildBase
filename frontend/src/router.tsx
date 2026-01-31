@@ -1,6 +1,6 @@
 import { createRouter } from '@tanstack/react-router'
 import { routeTree } from './routeTree.gen'
-import type { Car } from './types/car';
+import type { Car, RankType } from './types/car';
 
 // config();
 //create a new router instance
@@ -27,7 +27,7 @@ declare module "@tanstack/react-router" {
       creator: string,
       car: Car,
       tune_details: Record<string, number>,
-      class: string
+      class: RankType
     } 
   }
 }

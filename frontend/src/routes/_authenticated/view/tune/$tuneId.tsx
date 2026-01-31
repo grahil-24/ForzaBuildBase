@@ -1,4 +1,4 @@
-import { createFileRoute, notFound } from '@tanstack/react-router'
+import { createFileRoute, Link, notFound } from '@tanstack/react-router'
 import { formatS3BucketURL } from '../../../../util/urlFormatter';
 import type { AuthState } from '../../../../types/auth';
 import { authFetch } from '../../../../api/authFetch';
@@ -107,10 +107,12 @@ function RouteComponent() {
 
             {/* Right side - Action Buttons */}
             <div className="flex flex-wrap gap-3">
+              <Link to='/tune/edit/$tuneId' params={{tuneId: tuneDetails!.tune_id.toString()}} state={{tuneDetails}}>
               <button className="cursor-pointer bg-blue-600 hover:bg-blue-700 text-white pl-2 pr-3 py-2 rounded-lg font-semibold transition-colors flex items-center gap-2">
                 <PencilIcon className='size-4 mr-auto'/>
                 Edit Tune
               </button>
+              </Link>
               <button className="cursor-pointer bg-red-600 hover:bg-red-700 text-white px-3 py-2 rounded-lg font-semibold transition-colors flex items-center gap-2">
                 <TrashIcon className='size-5'/>
                 Delete

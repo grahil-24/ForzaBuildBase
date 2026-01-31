@@ -22,41 +22,30 @@ const tuneData = data as unknown as Record<string, TuneData>;
 const categories = Object.keys(tuneData);
 
 interface PathParams {
-  carId: string 
+  tuneId: string 
 }
-
-export const Route = createFileRoute('/_authenticated/tune/car/$carId')({
-  loader: async({context, params, location}) => {
-    let carData: Car | undefined = location.state?.carData
-    if(carData === undefined) {
-      carData = await fetchCar(params, context.auth)
-    }
-    return carData;
+export const Route = createFileRoute('/_authenticated/tune/edit/$tuneId')({
+  loader: async ({context, params, location}) => {
+    const tuneDetails = location.state?.tuneDetails
+    return tuneDetails;
   },
-  head: () => ({
-    meta: [
-      {
-        title: 'Tune'
-      }
-    ]
-  }),
-  notFoundComponent: NotFoundComponent,
   component: RouteComponent,
+  notFoundComponent: NotFoundComponent
 })
 
-const fetchCar = async(params: PathParams, authContext: AuthState): Promise<Car> => {
-  const car = await authFetch(`${BACKEND}/view/car/${params.carId}`,
-    {method: 'GET'},
-    authContext
-  )
-  if(car.status === 404){
-    throw notFound();
-  }
-  if(!car.ok){
-    throw new Error();
-  }
-  return (await car.json()).car;
-}
+// const fetchCar = async(params: PathParams, authContext: AuthState): Promise<Car> => {
+//   const car = await authFetch(`${BACKEND}/view/car/${params.tuneId}`,
+//     {method: 'GET'},
+//     authContext
+//   )
+//   if(car.status === 404){
+//     throw notFound();
+//   }
+//   if(!car.ok){
+//     throw new Error();
+//   }
+//   return (await car.json()).car;
+// }
 
 const classColors: Record<RankType, string> = {
   'S2': 'bg-pink-600',
@@ -87,36 +76,24 @@ const cssColors: Record<RankType, string> = {
   
 function RouteComponent() {
   const navigate = useNavigate();
-  const car: Car = Route.useLoaderData();
+  const tuneDetails = Route.useLoaderData();
   const {auth} = Route.useRouteContext();
-  const [carClass, setCarClass] = useState<RankType>('S1');
+  const [carClass, setCarClass] = useState<RankType>(tuneDetails!.class);
   const [position, setPosition] = useState({ x: 0, y: 0 });
   const [openClassMenu, setOpenClassMenu] = useState<boolean>(false);
   const classButtonRef = useRef<HTMLButtonElement>(null);
-  const imageURL = formatS3BucketURL({manufacturer: car.Manufacturer, image_filename: car.image_filename, size: "medium"})
+  const imageURL = formatS3BucketURL({manufacturer: tuneDetails!.car.Manufacturer, image_filename: tuneDetails!.car.image_filename, size: "medium"})
   const numOfTabs = categories.length;
   const [activeIndex, setActiveIndex] = useState(0);
   
-  const [tuneName, setTuneName] = useState(`${car.Manufacturer} ${car.Model} Tune`);
+  const [tuneName, setTuneName] = useState(`${tuneDetails?.tune_name}`);
   const [isEditingName, setIsEditingName] = useState(false);
   const nameInputRef = useRef<HTMLInputElement | null>(null);
 
   const tabListRef = useRef<HTMLDivElement | null>(null);
   const tabRefs = useRef<(HTMLElement | null)[]>([]);
   
-  const [sliderData, setSliderData] = useState<Record<string, number>>(() => {
-    const initialData: Record<string, number> = {};
-    Object.values(tuneData).forEach((section) => {
-      section.sliders.forEach((sliderGroup) => {
-        Object.values(sliderGroup).forEach((sliders) => {
-          sliders.forEach((slider: Slider) => {
-            initialData[slider.sliderId] = slider.defaultValue;
-          });
-        });
-      });
-    });
-    return initialData;
-  });
+  const [sliderData, setSliderData] = useState<Record<string, number>>(tuneDetails!.tune_details);
   
   const [formIsDirty, setFormIsDirty] = useState<boolean>(false);
   
@@ -197,7 +174,7 @@ function RouteComponent() {
       createTune.reset();
       setFormIsDirty(false);
       setTimeout(() => {
-        navigate({to: '/view/tune/$tuneId', params: {tuneId: data.tune.tune_id}, state: {tuneDetails: {created_on: data.tune.created_on, tune_id: data.tune.tune_id, tune_name: data.tune.tune_name, creator: auth.user!.username, car: car, class: carClass, tune_details: sliderData}}})
+        navigate({to: '/view/tune/$tuneId', params: {tuneId: data.tune.tune_id}, state: {tuneDetails: {created_on: data.tune.created_on, tune_id: data.tune.tune_id, tune_name: data.tune.tune_name, creator: auth.user!.username, car: tuneDetails!.car, class: carClass, tune_details: sliderData}}})
       }, 2000);
       
     }
@@ -210,18 +187,18 @@ function RouteComponent() {
           <div className="w-full md:w-auto flex items-center gap-4">
             <img 
               src={imageURL} 
-              alt={`${car.Manufacturer} ${car.Model}`}
+              alt={`${tuneDetails!.car.Manufacturer} ${tuneDetails!.car.Model}`}
               className="w-48 sm:w-56 md:w-60 md:-mt-8 h-auto object-contain drop-shadow-lg"
             />
             <div className="text-center sm:text-left flex-1 min-w-0">
               <div className="text-blue-600 text-xs md:text-sm font-bold uppercase tracking-wider">
-                {car.Manufacturer}
+                {tuneDetails!.car.Manufacturer}
               </div>
               <h1 className="text-xl md:text-2xl font-bold text-slate-900 leading-tight">
-                {car.Model}
+                {tuneDetails!.car.Model}
               </h1>
               <div className="text-slate-500 text-base md:text-lg font-medium">
-                {car.Year}
+                {tuneDetails!.car.Year}
               </div>
             </div>
           </div>
@@ -237,10 +214,10 @@ function RouteComponent() {
                     type="text"
                     value={tuneName}
                     onChange={(e) => { setTuneName(e.target.value); setFormIsDirty(true); }}
-                    onBlur={() => { setIsEditingName(false); if (!tuneName.trim()) setTuneName(`${car.Manufacturer} ${car.Model} Tune`); }}
+                    onBlur={() => { setIsEditingName(false); if (!tuneName.trim()) setTuneName(`${tuneDetails?.tune_name}`); }}
                     onKeyDown={(e) => {
                         if(e.key === 'Enter') {
-                          if(!tuneName.trim()) setTuneName(`${car.Manufacturer} ${car.Model} Tune`);
+                          if(!tuneName.trim()) setTuneName(`${tuneDetails?.tune_name}`);
                           setIsEditingName(false);
                         }
                       }
@@ -266,11 +243,11 @@ function RouteComponent() {
               <label className="text-sm font-bold text-slate-700">Class:</label>
               <button
                 ref={classButtonRef}
-                onClick={handleClassButtonClick}
-                className={`${classColors[carClass]} bg-linear-to-r from-indigo-500 from-10% via-sky-500 via-30% to-emerald-500 to-90% cursor-pointer w-12 h-12 px-3 py-2 rounded-full text-white font-black italic shadow-lg border-2 border-white transition-all hover:scale-105 active:scale-95`}
-                >
-                {carClass}
-              </button>
+onClick={handleClassButtonClick}
+className={`${classColors[carClass]} bg-linear-to-r from-indigo-500 from-10% via-sky-500 via-30% to-emerald-500 to-90% cursor-pointer w-12 h-12 px-3 py-2 rounded-full text-white font-black italic shadow-lg border-2 border-white transition-all hover:scale-105 active:scale-95`}
+>
+{carClass}
+</button>
               </div>
               <button onClick={() => {
                 // Convert all numeric tune settings to strings for MikroORM decimal types
@@ -282,17 +259,18 @@ function RouteComponent() {
 
                 createTune.mutate(JSON.stringify({
                   tune_name: tuneName, 
-                  car_id: car.id, 
+                  car_id: tuneDetails?.car.id, 
                   tuneSettings: {
                     ...tuneSettingsAsStrings, 
                     resultant_rank: carClass
-                  }
+                  },
+                  tune_id: tuneDetails?.tune_id
                 }))
               }} className='border-2 border-black px-2 py-2 rounded-sm hover:bg-black hover:text-white duration-200 cursor-pointer'>
                 {createTune.isPending ? ( 
-                  <p>Saving...</p>
+                  <p>Updating...</p>
                 ) : (
-                  <><FontAwesomeIcon icon={faFloppyDisk}/> Save</>
+                  <><FontAwesomeIcon icon={faFloppyDisk}/> Update</>
                 )}
               </button>
             </div>
