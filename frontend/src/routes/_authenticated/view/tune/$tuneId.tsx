@@ -4,7 +4,7 @@ import type { AuthState } from '../../../../types/auth';
 import { authFetch } from '../../../../api/authFetch';
 import { BACKEND } from '../../../../config/env';
 import NotFoundComponent from '../../../../components/NotFoundComponent';
-import { ShareIcon, PencilIcon, TrashIcon } from '@heroicons/react/24/outline';
+import { ShareIcon, PencilIcon, TrashIcon, MinusCircleIcon } from '@heroicons/react/24/outline';
 
 export const Route = createFileRoute('/_authenticated/view/tune/$tuneId')({
   loader: async({context, params, location}) => {
@@ -39,6 +39,7 @@ const fetchTuneDetails = async(tune_id: string, auth: AuthState) => {
 
 function RouteComponent() {
   const tuneDetails = Route.useLoaderData();
+  const {auth} = Route.useRouteContext();
   const imageUrl = formatS3BucketURL({manufacturer: tuneDetails!.car.Manufacturer!, image_filename: tuneDetails!.car.image_filename!, size: "medium"});
   return (
     <div className="min-h-screen w-full flex justify-center px-2 sm:px-4 py-4 md:py-8 bg-slate-50">
@@ -107,18 +108,27 @@ function RouteComponent() {
 
             {/* Right side - Action Buttons */}
             <div className="flex flex-wrap gap-3">
-              <Link to='/tune/edit/$tuneId' params={{tuneId: tuneDetails!.tune_id.toString()}} state={{tuneDetails}}>
-              <button className="cursor-pointer bg-blue-600 hover:bg-blue-700 text-white pl-2 pr-3 py-2 rounded-lg font-semibold transition-colors flex items-center gap-2">
-                <PencilIcon className='size-4 mr-auto'/>
-                Edit Tune
-              </button>
-              </Link>
-              <button className="cursor-pointer bg-red-600 hover:bg-red-700 text-white px-3 py-2 rounded-lg font-semibold transition-colors flex items-center gap-2">
-                <TrashIcon className='size-5'/>
-                Delete
-              </button>
+              {tuneDetails?.creator === auth.user?.username && 
+                <Link to='/tune/edit/$tuneId' params={{tuneId: tuneDetails!.tune_id.toString()}} state={{tuneDetails}}>
+                  <button className="cursor-pointer bg-blue-600 hover:bg-blue-700 text-white pl-2 pr-3 py-2 rounded-lg font-semibold transition-colors flex items-center gap-2">
+                    <PencilIcon className='size-4 mr-auto'/>
+                    Edit Tune
+                  </button>
+                </Link>
+              }
+              {tuneDetails?.creator === auth.user?.username ? (
+                  <button className="cursor-pointer bg-red-600 hover:bg-red-700 text-white px-3 py-2 rounded-lg font-semibold transition-colors flex items-center gap-2">
+                    <TrashIcon className='size-5'/>
+                    Delete
+                  </button>
+                ) : (
+                  <button className="cursor-pointer bg-red-600 hover:bg-red-700 text-white px-3 py-2 rounded-lg font-semibold transition-colors flex items-center gap-2">
+                    <MinusCircleIcon className='size-5'/>
+                    Remove
+                  </button>
+                )
+              }
               <button className="cursor-pointer bg-slate-200 hover:bg-slate-300 text-slate-700 px-3 py-2 rounded-lg font-semibold transition-colors flex items-center gap-2">
-             
                 <ShareIcon className='size-5'/>
                 Share
               </button>

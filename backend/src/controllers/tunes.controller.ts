@@ -37,6 +37,9 @@ const createAndUpdate = catchAsync(async(req: Request, res: Response, next: Next
             res.status(404).json({status: "error", message: "Tune doesnt exist!"});
             return;
         }
+        if(user_id !== tune.creator?.user_id){
+            return next(new AppError('You are not authorized to update this tune', 403));
+        }
         tune.tune_name = tune_name;
         tune.updated_on = new Date();
     }else{

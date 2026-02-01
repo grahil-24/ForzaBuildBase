@@ -96,7 +96,6 @@ function RouteComponent() {
   const imageURL = formatS3BucketURL({manufacturer: car.Manufacturer, image_filename: car.image_filename, size: "medium"})
   const numOfTabs = categories.length;
   const [activeIndex, setActiveIndex] = useState(0);
-  
   const [tuneName, setTuneName] = useState(`${car.Manufacturer} ${car.Model} Tune`);
   const [isEditingName, setIsEditingName] = useState(false);
   const nameInputRef = useRef<HTMLInputElement | null>(null);
@@ -193,12 +192,12 @@ function RouteComponent() {
       createTune.reset();
     },
     onSuccess: (data: any) => {
-      toast.success('Tune created successfully!', {autoClose: 2000});
+      toast.success('Tune created successfully!', {autoClose: 1000});
       createTune.reset();
       setFormIsDirty(false);
       setTimeout(() => {
         navigate({to: '/view/tune/$tuneId', params: {tuneId: data.tune.tune_id}, state: {tuneDetails: {created_on: data.tune.created_on, tune_id: data.tune.tune_id, tune_name: data.tune.tune_name, creator: auth.user!.username, car: car, class: carClass, tune_details: sliderData}}})
-      }, 2000);
+      }, 1000);
       
     }
   })
@@ -267,7 +266,7 @@ function RouteComponent() {
               <button
                 ref={classButtonRef}
                 onClick={handleClassButtonClick}
-                className={`${classColors[carClass]} bg-linear-to-r from-indigo-500 from-10% via-sky-500 via-30% to-emerald-500 to-90% cursor-pointer w-12 h-12 px-3 py-2 rounded-full text-white font-black italic shadow-lg border-2 border-white transition-all hover:scale-105 active:scale-95`}
+                className={`${classColors[carClass]} cursor-pointer w-12 h-12 px-3 py-2 rounded-full text-white font-black italic shadow-lg border-2 border-white transition-all hover:scale-105 active:scale-95`}
                 >
                 {carClass}
               </button>

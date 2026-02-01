@@ -27,8 +27,10 @@ export const Route = createFileRoute('/_authenticated/tune/edit/$tuneId')({
   loader: async ({context, params, location}) => {
     let tuneDetails = location.state?.tuneDetails
     if(tuneDetails === undefined){
-      console.log("tuneDetails is undefined");
       tuneDetails = await fetchTune(params, context.auth);
+    }
+    if(tuneDetails?.creator !== context.auth.user?.username){
+      throw notFound();
     }
     return tuneDetails;
   },
@@ -158,7 +160,7 @@ function RouteComponent() {
     }
   };
 
-  const createTune = useMutation({
+  const updateTune = useMutation({
     mutationFn: async(newTune: string) => {
       const res = await authFetch(`${BACKEND}/tune/create`, {method: 'POST', headers: {'Content-Type': 'application/json'}, body: newTune}, auth);
       if(res.status === 409){
@@ -170,16 +172,16 @@ function RouteComponent() {
       return await res.json();
     },
     onError: (error) => {
-      toast.error(error?.message || 'There was a problem saving the tune');
-      createTune.reset();
+      toast.error(error?.message || 'There was a problem updating the tune');
+      updateTune.reset();
     },
     onSuccess: (data: any) => {
-      toast.success('Tune created successfully!', {autoClose: 2000});
-      createTune.reset();
+      toast.success('Tune updated successfully!', {autoClose: 1000});
+      updateTune.reset();
       setFormIsDirty(false);
       setTimeout(() => {
         navigate({to: '/view/tune/$tuneId', params: {tuneId: data.tune.tune_id}, state: {tuneDetails: {created_on: data.tune.created_on, tune_id: data.tune.tune_id, tune_name: data.tune.tune_name, creator: auth.user!.username, car: tuneDetails!.car, class: carClass, tune_details: sliderData}}})
-      }, 2000);
+      }, 1000);
     }
   })
 
@@ -246,15 +248,14 @@ function RouteComponent() {
               <label className="text-sm font-bold text-slate-700">Class:</label>
               <button
                 ref={classButtonRef}
-onClick={handleClassButtonClick}
-className={`${classColors[carClass]} bg-linear-to-r from-indigo-500 from-10% via-sky-500 via-30% to-emerald-500 to-90% cursor-pointer w-12 h-12 px-3 py-2 rounded-full text-white font-black italic shadow-lg border-2 border-white transition-all hover:scale-105 active:scale-95`}
->
-{carClass}
-</button>
+                onClick={handleClassButtonClick}
+                className={`${classColors[carClass]} cursor-pointer w-12 h-12 ml-2 px-3 py-2 rounded-full text-white font-black italic shadow-lg`}
+                >
+                {carClass}
+              </button>
               </div>
               <button onClick={() => {
-                console.log("tuneName ", tuneName);
-                createTune.mutate(JSON.stringify({
+                updateTune.mutate(JSON.stringify({
                   tune_name: tuneName, 
                   car_id: tuneDetails?.car.id, 
                   tuneSettings: {
@@ -264,7 +265,7 @@ className={`${classColors[carClass]} bg-linear-to-r from-indigo-500 from-10% via
                   tune_id: tuneDetails?.tune_id
                 }))
               }} className='border-2 border-black px-2 py-2 rounded-sm hover:bg-black hover:text-white duration-200 cursor-pointer'>
-                {createTune.isPending ? ( 
+                {updateTune.isPending ? ( 
                   <p>Updating...</p>
                 ) : (
                   <><FontAwesomeIcon icon={faFloppyDisk}/> Update</>
