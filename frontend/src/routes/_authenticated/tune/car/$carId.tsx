@@ -273,18 +273,11 @@ function RouteComponent() {
               </button>
               </div>
               <button onClick={() => {
-                // Convert all numeric tune settings to strings for MikroORM decimal types
-                const tuneSettingsAsStrings = Object.entries(sliderData).reduce((acc, [key, value]) => {
-                  // Keep resultant_rank as is (it's already a string), convert numbers to strings
-                  acc[key] = typeof value === 'number' ? value.toString() : value;
-                  return acc;
-                }, {} as Record<string, string | number>);
-
                 createTune.mutate(JSON.stringify({
                   tune_name: tuneName, 
                   car_id: car.id, 
                   tuneSettings: {
-                    ...tuneSettingsAsStrings, 
+                    ...sliderData,
                     resultant_rank: carClass
                   }
                 }))

@@ -1,10 +1,9 @@
-import { createFileRoute, useBlocker, notFound, useNavigate} from '@tanstack/react-router'
+import { createFileRoute, useBlocker, notFound, useNavigate, ErrorComponent} from '@tanstack/react-router'
 import { Tab, TabGroup, TabList, TabPanel, TabPanels } from '@headlessui/react'
 import { useLayoutEffect, useState, useRef} from 'react'
 import { TabForm } from '../../../../components/tune/tabs/TabForm'
-import type { Slider, TuneData } from '../../../../types/tune'
+import type { TuneData } from '../../../../types/tune'
 import data from '../../../../components/tune/tabs/data.json'
-import type { Car } from '../../../../types/car'
 import { authFetch } from '../../../../api/authFetch'
 import type { AuthState } from '../../../../types/auth'
 import { BACKEND } from '../../../../config/env'
@@ -26,26 +25,31 @@ interface PathParams {
 }
 export const Route = createFileRoute('/_authenticated/tune/edit/$tuneId')({
   loader: async ({context, params, location}) => {
-    const tuneDetails = location.state?.tuneDetails
+    let tuneDetails = location.state?.tuneDetails
+    if(tuneDetails === undefined){
+      console.log("tuneDetails is undefined");
+      tuneDetails = await fetchTune(params, context.auth);
+    }
     return tuneDetails;
   },
   component: RouteComponent,
-  notFoundComponent: NotFoundComponent
+  notFoundComponent: NotFoundComponent,
+  errorComponent: ErrorComponent
 })
 
-// const fetchCar = async(params: PathParams, authContext: AuthState): Promise<Car> => {
-//   const car = await authFetch(`${BACKEND}/view/car/${params.tuneId}`,
-//     {method: 'GET'},
-//     authContext
-//   )
-//   if(car.status === 404){
-//     throw notFound();
-//   }
-//   if(!car.ok){
-//     throw new Error();
-//   }
-//   return (await car.json()).car;
-// }
+const fetchTune = async(params: PathParams, authContext: AuthState) => {
+  const tune = await authFetch(`${BACKEND}/tune/${params.tuneId}`,
+    {method: 'GET'},
+    authContext
+  )
+  if(tune.status === 404){
+    throw notFound();
+  }
+  if(!tune.ok){
+    throw new Error();
+  }
+  return (await tune.json());
+}
 
 const classColors: Record<RankType, string> = {
   'S2': 'bg-pink-600',
@@ -176,7 +180,6 @@ function RouteComponent() {
       setTimeout(() => {
         navigate({to: '/view/tune/$tuneId', params: {tuneId: data.tune.tune_id}, state: {tuneDetails: {created_on: data.tune.created_on, tune_id: data.tune.tune_id, tune_name: data.tune.tune_name, creator: auth.user!.username, car: tuneDetails!.car, class: carClass, tune_details: sliderData}}})
       }, 2000);
-      
     }
   })
 
@@ -250,18 +253,12 @@ className={`${classColors[carClass]} bg-linear-to-r from-indigo-500 from-10% via
 </button>
               </div>
               <button onClick={() => {
-                // Convert all numeric tune settings to strings for MikroORM decimal types
-                const tuneSettingsAsStrings = Object.entries(sliderData).reduce((acc, [key, value]) => {
-                  // Keep resultant_rank as is (it's already a string), convert numbers to strings
-                  acc[key] = typeof value === 'number' ? value.toString() : value;
-                  return acc;
-                }, {} as Record<string, string | number>);
-
+                console.log("tuneName ", tuneName);
                 createTune.mutate(JSON.stringify({
                   tune_name: tuneName, 
                   car_id: tuneDetails?.car.id, 
                   tuneSettings: {
-                    ...tuneSettingsAsStrings, 
+                    ...sliderData, 
                     resultant_rank: carClass
                   },
                   tune_id: tuneDetails?.tune_id

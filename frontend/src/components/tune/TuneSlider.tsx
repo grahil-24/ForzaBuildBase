@@ -26,7 +26,6 @@ export const TuneSlider = ({
   step = 1, 
   unit = '' 
 }: SliderInterface) => {
-  
   const numOfDecimals = countDecimals(step);
   
   return (

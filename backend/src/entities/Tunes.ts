@@ -1,7 +1,8 @@
-import { Entity, PrimaryKey, Property, ManyToOne, SmallIntType, TinyIntType, Unique, OneToMany, Cascade, Collection } from '@mikro-orm/core';
+import { Entity, PrimaryKey, Property, ManyToOne, SmallIntType, TinyIntType, Unique, OneToMany, Cascade, Collection, DecimalType } from '@mikro-orm/core';
 import { Car } from './Car';
 import { User } from './User';
 import { SavedTunes } from './SavedTunes';
+import { DecimalLocale } from 'validator';
 
 
 @Entity({tableName: 'tunes'})
@@ -28,86 +29,86 @@ export class Tune {
     @Property({type: "datetime", nullable: false})
     updated_on?: Date
 
-    @Property({ type: "decimal", precision: 2, scale: 1, nullable: false })
-    front_tire_pressure!: string;
+    @Property({ type: new DecimalType('number'), precision: 2, scale: 1, nullable: false,  })
+    front_tire_pressure!: number;
 
-    @Property({ type: "decimal", precision: 2, scale: 1, nullable: false })
-    rear_tire_pressure!: string;
+    @Property({ type: new DecimalType('number'), precision: 2, scale: 1, nullable: false })
+    rear_tire_pressure!: number;
 
-    @Property({ type: "decimal", precision: 3, scale: 2, nullable: false })
-    final_drive!: string;
+    @Property({ type: new DecimalType('number'), precision: 3, scale: 2, nullable: false })
+    final_drive!: number;
 
-    @Property({ type: "decimal", precision: 3, scale: 1, nullable: false })
-    front_camber!: string;
+    @Property({ type: new DecimalType('number'), precision: 3, scale: 1, nullable: false })
+    front_camber!: number;
 
-    @Property({ type: "decimal", precision: 3, scale: 1, nullable: false })
-    rear_camber!: string;
+    @Property({ type: new DecimalType('number'), precision: 3, scale: 1, nullable: false })
+    rear_camber!: number;
 
-    @Property({ type: "decimal", precision: 3, scale: 1, nullable: false })
-    front_toe!: string;
+    @Property({ type: new DecimalType('number'), precision: 3, scale: 1, nullable: false })
+    front_toe!: number;
 
-    @Property({ type: "decimal", precision: 3, scale: 1, nullable: false })
-    rear_toe!: string;
+    @Property({ type: new DecimalType('number'), precision: 3, scale: 1, nullable: false })
+    rear_toe!: number;
 
-    @Property({ type: "decimal", precision: 2, scale: 1, nullable: false })
-    front_caster!: string;
+    @Property({ type: new DecimalType('number'), precision: 2, scale: 1, nullable: false })
+    front_caster!: number;
 
-    @Property({ type: "decimal", precision: 4, scale: 2, nullable: false })
-    front_arb!: string;
+    @Property({ type: new DecimalType('number'), precision: 4, scale: 2, nullable: false })
+    front_arb!: number;
 
-    @Property({ type: "decimal", precision: 4, scale: 2, nullable: false })
-    rear_arb!: string;
+    @Property({ type: new DecimalType('number'), precision: 4, scale: 2, nullable: false })
+    rear_arb!: number;
 
-    @Property({ type: "decimal", precision: 4, scale: 1, nullable: false })
-    front_spring!: string;
+    @Property({ type: new DecimalType('number'), precision: 4, scale: 1, nullable: false })
+    front_spring!: number;
 
-    @Property({ type: "decimal", precision: 4, scale: 1, nullable: false })
-    rear_spring!: string;
+    @Property({ type: new DecimalType('number'), precision: 4, scale: 1, nullable: false })
+    rear_spring!: number;
 
-    @Property({ type: "decimal", precision: 3, scale: 1, nullable: false })
-    front_ride_height!: string;
+    @Property({ type: new DecimalType('number'), precision: 3, scale: 1, nullable: false })
+    front_ride_height!: number;
 
-    @Property({ type: "decimal", precision: 3, scale: 1, nullable: false })
-    rear_ride_height!: string;
+    @Property({ type: new DecimalType('number'), precision: 3, scale: 1, nullable: false })
+    rear_ride_height!: number;
 
-    @Property({ type: "decimal", precision: 3, scale: 1, nullable: false })
-    front_rebound!: string;
+    @Property({ type: new DecimalType('number'), precision: 3, scale: 1, nullable: false })
+    front_rebound!: number;
 
-    @Property({ type: "decimal", precision: 3, scale: 1, nullable: false })
-    rear_rebound!: string;
+    @Property({ type: new DecimalType('number'), precision: 3, scale: 1, nullable: false })
+    rear_rebound!: number;
 
-    @Property({ type: "decimal", precision: 3, scale: 1, nullable: false })
-    front_bump!: string;
+    @Property({ type: new DecimalType('number'), precision: 3, scale: 1, nullable: false })
+    front_bump!: number;
 
-    @Property({ type: "decimal", precision: 3, scale: 1, nullable: false })
-    rear_bump!: string;
+    @Property({ type: new DecimalType('number'), precision: 3, scale: 1, nullable: false })
+    rear_bump!: number;
+
+    @Property({ type: new DecimalType('number'), unsigned: true, nullable: false })
+    front_aero!: number;
 
     @Property({ type: "smallint", unsigned: true, nullable: false })
-    front_aero!: SmallIntType;
-
-    @Property({ type: "smallint", unsigned: true, nullable: false })
-    rear_aero!: SmallIntType;
+    rear_aero!: number;
 
     @Property({ type: "tinyint", unsigned: true, nullable: false })
-    brake_balance!: TinyIntType;
+    brake_balance!: number;
 
     @Property({ type: "tinyint", unsigned: true, nullable: false })
-    brake_pressure!: TinyIntType;
+    brake_pressure!: number;
 
     @Property({ type: "tinyint", unsigned: true, nullable: false })
-    front_diff_accel!: TinyIntType;
+    front_diff_accel!: number;
 
     @Property({ type: "tinyint", unsigned: true, nullable: false })
-    front_diff_decel!: TinyIntType;
+    front_diff_decel!: number;
 
     @Property({ type: "tinyint", unsigned: true, nullable: false })
-    rear_diff_accel!: TinyIntType;
+    rear_diff_accel!: number;
 
     @Property({ type: "tinyint", unsigned: true, nullable: false })
-    rear_diff_decel!: TinyIntType;
+    rear_diff_decel!: number;
 
     @Property({ type: "tinyint", unsigned: true, nullable: false })
-    center_diff_balance!: TinyIntType;
+    center_diff_balance!: SmallIntType;
 
     @Property({ type: 'varchar', length: 3, nullable: false})
     resultant_rank!: string;

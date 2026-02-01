@@ -11,7 +11,6 @@ import { SavedTunes } from '../entities/SavedTunes';
 const createAndUpdate = catchAsync(async(req: Request, res: Response, next: NextFunction) => {
     const {user_id} = req;
     const {tune_name, car_id, tuneSettings, tune_id} = req.body;
-    
     if(!tune_name || !car_id || !tuneSettings) {
         return next(new AppError('Missing required fields: tune_name, car_id, tuneSettings', 400));
     }
@@ -38,6 +37,7 @@ const createAndUpdate = catchAsync(async(req: Request, res: Response, next: Next
             res.status(404).json({status: "error", message: "Tune doesnt exist!"});
             return;
         }
+        tune.tune_name = tune_name;
         tune.updated_on = new Date();
     }else{
         tune = new Tune();
@@ -89,7 +89,6 @@ const createAndUpdate = catchAsync(async(req: Request, res: Response, next: Next
         }
         await em.persistAndFlush(tune);
     }catch(error: any){
-        console.log("caught error ", error);
         if(error.errno == 1062){
             res.status(409).json({status: "error", message: "You have already created a tune with this name"});
             return;
