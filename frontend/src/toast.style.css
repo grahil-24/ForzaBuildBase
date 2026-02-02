@@ -16,22 +16,26 @@
 
 /* Success Toast */
 .Toastify__toast--success {
-  background-color: #00ff5e !important; /* green-500 */
-  color: #ffffff !important;
+  background-color: #e8f5e9 !important; /* green-500 */
+  color: #6ba96a !important;
+  border-color: #a5d6a7;
+  border-width: 1px;
 }
 
 .Toastify__toast--success .Toastify__toast-icon svg {
-  fill: #ffffff !important;
+  fill: #70c991 !important;
 }
 
 /* Error Toast */
 .Toastify__toast--error {
-  background-color: #f10000 !important;
-  color: #ffffff !important;
+  background-color: #f5e8e8 !important;
+  color: #ce5858 !important;
+  border-color: #d6a5a5;
+  border-width: 1px;
 }
 
 .Toastify__toast--error .Toastify__toast-icon svg {
-  fill: #ffffff !important;
+  fill: #c85050 !important;
 }
 
 /* Toast Body - adds space between message and close button */
@@ -41,13 +45,13 @@
 }
 
 /* Close Button */
-.Toastify__close-button {
-  color: #ffffff !important;
-  opacity: 0.7;
+.Toastify__toast--error .Toastify__close-button {
+  color: #f49090 !important;
+  opacity: 0.9;
 }
 
-.Toastify__toast--error .Toastify__close-button {
-  color: #ffffff !important;
+.Toastify__toast--success .Toastify__close-button {
+  color: #90f4b5 !important;
   opacity: 0.9;
 }
 

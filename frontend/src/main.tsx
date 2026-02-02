@@ -14,7 +14,7 @@ createRoot(document.getElementById('root')!).render(
     <QueryClientProvider client={queryClient}>
       <AuthProvider>
         <LoadingBarProvider>
-        <ToastContainer pauseOnHover={false} transition={Slide} pauseOnFocusLoss={false} position='top-center' autoClose={5000} />
+        <ToastContainer hideProgressBar={true} pauseOnHover={false} transition={Slide} pauseOnFocusLoss={false} position='top-center' autoClose={5000} />
         <App />
         </LoadingBarProvider>
       </AuthProvider>

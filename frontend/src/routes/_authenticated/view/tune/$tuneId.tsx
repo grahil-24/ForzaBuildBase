@@ -1,10 +1,14 @@
-import { createFileRoute, Link, notFound } from '@tanstack/react-router'
+import { createFileRoute, Link, notFound, useNavigate } from '@tanstack/react-router'
 import { formatS3BucketURL } from '../../../../util/urlFormatter';
 import type { AuthState } from '../../../../types/auth';
 import { authFetch } from '../../../../api/authFetch';
 import { BACKEND } from '../../../../config/env';
 import NotFoundComponent from '../../../../components/NotFoundComponent';
 import { ShareIcon, PencilIcon, TrashIcon, MinusCircleIcon } from '@heroicons/react/24/outline';
+import { useRemoveTune } from '../../../../hooks/useRemoveTune';
+import { RemoveDialogModal } from '../../../../components/profile/RemoveDialogModal';
+import { useState } from 'react';
+import {toast} from 'react-toastify';
 
 export const Route = createFileRoute('/_authenticated/view/tune/$tuneId')({
   loader: async({context, params, location}) => {
@@ -40,6 +44,15 @@ const fetchTuneDetails = async(tune_id: string, auth: AuthState) => {
 function RouteComponent() {
   const tuneDetails = Route.useLoaderData();
   const {auth} = Route.useRouteContext();
+  const navigate = useNavigate();
+  const [removeModalOpen, setRemoveModalOpen] = useState<boolean>(false);
+  
+  const handleRemoveTuneSuccess = () => {
+    toast.success('Tune removed successfully!', {autoClose: 3000});
+    navigate({to: '/profile/tunes'});
+  }
+
+  const removeTune = useRemoveTune(auth, async() => handleRemoveTuneSuccess());
   const imageUrl = formatS3BucketURL({manufacturer: tuneDetails!.car.Manufacturer!, image_filename: tuneDetails!.car.image_filename!, size: "medium"});
   return (
     <div className="min-h-screen w-full flex justify-center px-2 sm:px-4 py-4 md:py-8 bg-slate-50">
@@ -116,13 +129,24 @@ function RouteComponent() {
                   </button>
                 </Link>
               }
+              <RemoveDialogModal 
+                openModal={removeModalOpen}
+                onClose={() => {
+                    //reset mutations state before closing the modal
+                    removeTune.reset();
+                    setRemoveModalOpen(false);
+                }}
+                onSubmit={() => {removeTune.mutate({tune_id: tuneDetails!.tune_id}); setRemoveModalOpen(false)}}
+                mode={tuneDetails?.creator === auth.user?.username ? 'delete' : 'remove'}
+                isLoading={removeTune.isPending}
+              />
               {tuneDetails?.creator === auth.user?.username ? (
-                  <button className="cursor-pointer bg-red-600 hover:bg-red-700 text-white px-3 py-2 rounded-lg font-semibold transition-colors flex items-center gap-2">
+                  <button onClick={() => setRemoveModalOpen(true)} className="cursor-pointer bg-red-600 hover:bg-red-700 text-white px-3 py-2 rounded-lg font-semibold transition-colors flex items-center gap-2">
                     <TrashIcon className='size-5'/>
                     Delete
                   </button>
                 ) : (
-                  <button className="cursor-pointer bg-red-600 hover:bg-red-700 text-white px-3 py-2 rounded-lg font-semibold transition-colors flex items-center gap-2">
+                  <button onClick={() => setRemoveModalOpen(true)} className="cursor-pointer bg-red-600 hover:bg-red-700 text-white px-3 py-2 rounded-lg font-semibold transition-colors flex items-center gap-2">
                     <MinusCircleIcon className='size-5'/>
                     Remove
                   </button>

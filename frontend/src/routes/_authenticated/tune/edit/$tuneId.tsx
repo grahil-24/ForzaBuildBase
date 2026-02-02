@@ -243,16 +243,20 @@ function RouteComponent() {
               </div>
             </div>
             {/* Class Selection */}
-            <div className="flex items-center gap-5">
-              <div>
+            <div className="flex items-center gap-10">
+              <div className='flex items-center gap-2'>
               <label className="text-sm font-bold text-slate-700">Class:</label>
-              <button
-                ref={classButtonRef}
-                onClick={handleClassButtonClick}
-                className={`${classColors[carClass]} cursor-pointer w-12 h-12 ml-2 px-3 py-2 rounded-full text-white font-black italic shadow-lg`}
+              <div className="relative flex h-13 w-13 items-center justify-center overflow-hidden rounded-full ">
+                {/* The Rotating Gradient - Increased size to ensure it covers the edges */}
+                <div className="animate-rotate absolute -inset-full bg-[conic-gradient(from_0deg,#ec4899_0deg_60deg,#a855f7_60deg_120deg,#3b82f6_120deg_180deg,#f97316_180deg_240deg,#facc15_240deg_300deg,#22c55e_300deg_360deg)]"></div>
+                <button
+                  ref={classButtonRef}
+                  onClick={handleClassButtonClick}
+                  className={`${classColors[carClass]} cursor-pointer relative z-2 h-12 w-12 rounded-full font-black italic text-white shadow-lg outline-none`}
                 >
-                {carClass}
-              </button>
+                  {carClass}
+                </button>
+              </div>
               </div>
               <button onClick={() => {
                 updateTune.mutate(JSON.stringify({
@@ -325,7 +329,7 @@ function RouteComponent() {
                       key={name}
                       ref={(el) => {tabRefs.current[index]= el}}
                       className={({ selected }) => `
-                        cursor-pointer px-4 py-2 text-xs sm:text-sm font-bold rounded-lg transition-colors
+                        cursor-pointer focus:outline-none px-4 py-2 text-xs sm:text-sm font-bold rounded-lg transition-colors
                         ${selected 
                           ? 'bg-slate-900 text-white' 
                           : 'bg-white text-slate-600 border border-slate-200 hover:bg-slate-100'}
@@ -340,7 +344,7 @@ function RouteComponent() {
               <button
                 onClick={handleNextTab}
                 disabled={activeIndex === numOfTabs - 1}
-                className="shrink-0 h-10 w-8 flex items-center justify-center bg-white border border-slate-200 shadow-sm rounded-lg disabled:opacity-30"
+                className="cursor-pointer shrink-0 h-10 w-8 flex items-center justify-center bg-white border border-slate-200 shadow-sm rounded-lg disabled:opacity-30"
               >
                 &gt;
               </button>
@@ -349,7 +353,7 @@ function RouteComponent() {
           
           <TabPanels>
             {categories.map((name) => (
-              <TabPanel key={name} className="focus:outline-none">
+              <TabPanel key={name}>
                 <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-3 sm:p-6 min-h-[400px]">
                   <TabForm
                     data={tuneData[name]}

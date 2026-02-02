@@ -1,5 +1,15 @@
 @import "tailwindcss";
 
+@theme {
+  /* This defines the custom animation for Tailwind to pick up */
+  --animate-rotate: rotate-border 10s linear infinite;
+
+  @keyframes rotate-border {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+  }
+}
+
 :root {
   font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
   line-height: 1.5;
