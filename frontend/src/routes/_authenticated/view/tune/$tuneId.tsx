@@ -108,7 +108,8 @@ function RouteComponent() {
               </div>
               
               <div className="flex items-center gap-2">
-                <span className="text-slate-600">Created on: {new Date(tuneDetails!.created_on!).toLocaleString()}</span>
+                <span className="text-slate-600">Created on: {new Date(tuneDetails!.created_on!).toLocaleString('en-GB',{day: 'numeric', month: 'short', year: 'numeric' })}
+                </span>
               </div>
               
               <div className="flex items-center gap-2">

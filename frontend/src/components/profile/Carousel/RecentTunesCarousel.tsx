@@ -79,7 +79,7 @@ const EmblaCarousel: React.FC<PropType> = (props) => {
                           {tune.tune?.tune_name}
                         </h3>
                         <p className="text-sm text-gray-600">
-                          Saved on {new Date(tune.saved_on).toLocaleDateString()}
+                          Saved on: {new Date(tune.saved_on).toLocaleString('en-GB',{day: 'numeric', month: 'short', year: 'numeric' })}
                         </p>
                       </div>
                       

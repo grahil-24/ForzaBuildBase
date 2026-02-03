@@ -343,7 +343,7 @@ function RouteComponent() {
                         <div className='flex flex-wrap items-center gap-x-4 gap-y-2 text-xs md:text-sm text-gray-600'>
                           <span>Creator: <span className='font-semibold text-gray-800'>{tune.tune.creator.username}</span></span>
                           <span className='hidden sm:inline text-gray-400'>•</span>
-                          <span>Created: {new Date(tune.saved_on).toLocaleString()}</span>
+                          <span>Created: {new Date(tune.saved_on).toLocaleString('en-GB',{day: 'numeric', month: 'short', year: 'numeric' })}</span>
                         </div>
                       </div>
                       
