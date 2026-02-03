@@ -9,6 +9,8 @@ import { useRemoveTune } from '../../../../hooks/useRemoveTune';
 import { RemoveDialogModal } from '../../../../components/profile/RemoveDialogModal';
 import { useState } from 'react';
 import {toast} from 'react-toastify';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faFloppyDisk } from '@fortawesome/free-solid-svg-icons';
 
 export const Route = createFileRoute('/_authenticated/view/tune/$tuneId')({
   loader: async({context, params, location}) => {
@@ -122,41 +124,48 @@ function RouteComponent() {
 
             {/* Right side - Action Buttons */}
             <div className="flex flex-wrap gap-3">
-              {tuneDetails?.creator === auth.user?.username && 
-                <Link to='/tune/edit/$tuneId' params={{tuneId: tuneDetails!.tune_id.toString()}} state={{tuneDetails}}>
-                  <button className="cursor-pointer bg-blue-600 hover:bg-blue-700 text-white pl-2 pr-3 py-2 rounded-lg font-semibold transition-colors flex items-center gap-2">
-                    <PencilIcon className='size-4 mr-auto'/>
-                    Edit Tune
+              {tuneDetails!.isSaved ? (
+                <>
+                  {tuneDetails?.creator === auth.user?.username && (
+                    <Link to='/tune/edit/$tuneId' params={{tuneId: tuneDetails!.tune_id.toString()}} state={{tuneDetails}}>
+                      <button className="cursor-pointer bg-blue-600 hover:bg-blue-700 text-white pl-2 pr-3 py-2 rounded-lg font-semibold transition-colors flex items-center gap-2">
+                        <PencilIcon className='size-4 mr-auto'/>
+                        Edit Tune
+                      </button>
+                    </Link>
+                  )}
+                  <RemoveDialogModal 
+                    openModal={removeModalOpen}
+                    onClose={() => {
+                      //reset mutations state before closing the modal
+                      removeTune.reset();
+                      setRemoveModalOpen(false);
+                    }}
+                    onSubmit={() => {removeTune.mutate({tune_id: tuneDetails!.tune_id}); setRemoveModalOpen(false)}}
+                    mode={tuneDetails?.creator === auth.user?.username ? 'delete' : 'remove'}
+                    isLoading={removeTune.isPending}
+                  />
+                  {tuneDetails?.creator === auth.user?.username ? (
+                    <button onClick={() => setRemoveModalOpen(true)} className="cursor-pointer bg-red-600 hover:bg-red-700 text-white px-3 py-2 rounded-lg font-semibold transition-colors flex items-center gap-2">
+                      <TrashIcon className='size-5'/>
+                      Delete
+                    </button>
+                  ) : (
+                    <button onClick={() => setRemoveModalOpen(true)} className="cursor-pointer bg-red-600 hover:bg-red-700 text-white px-3 py-2 rounded-lg font-semibold transition-colors flex items-center gap-2">
+                      <MinusCircleIcon className='size-5'/>
+                      Remove
+                    </button>
+                  )}
+                  <button className="cursor-pointer bg-slate-200 hover:bg-slate-300 text-slate-700 px-3 py-2 rounded-lg font-semibold transition-colors flex items-center gap-2">
+                    <ShareIcon className='size-5'/>
+                    Share
                   </button>
-                </Link>
-              }
-              <RemoveDialogModal 
-                openModal={removeModalOpen}
-                onClose={() => {
-                    //reset mutations state before closing the modal
-                    removeTune.reset();
-                    setRemoveModalOpen(false);
-                }}
-                onSubmit={() => {removeTune.mutate({tune_id: tuneDetails!.tune_id}); setRemoveModalOpen(false)}}
-                mode={tuneDetails?.creator === auth.user?.username ? 'delete' : 'remove'}
-                isLoading={removeTune.isPending}
-              />
-              {tuneDetails?.creator === auth.user?.username ? (
-                  <button onClick={() => setRemoveModalOpen(true)} className="cursor-pointer bg-red-600 hover:bg-red-700 text-white px-3 py-2 rounded-lg font-semibold transition-colors flex items-center gap-2">
-                    <TrashIcon className='size-5'/>
-                    Delete
+                </>
+              ) : (
+                  <button  className='border-2 border-black px-2 py-2 rounded-sm hover:bg-black hover:text-white duration-200 cursor-pointer'>
+                    <FontAwesomeIcon icon={faFloppyDisk}/> Save to profile
                   </button>
-                ) : (
-                  <button onClick={() => setRemoveModalOpen(true)} className="cursor-pointer bg-red-600 hover:bg-red-700 text-white px-3 py-2 rounded-lg font-semibold transition-colors flex items-center gap-2">
-                    <MinusCircleIcon className='size-5'/>
-                    Remove
-                  </button>
-                )
-              }
-              <button className="cursor-pointer bg-slate-200 hover:bg-slate-300 text-slate-700 px-3 py-2 rounded-lg font-semibold transition-colors flex items-center gap-2">
-                <ShareIcon className='size-5'/>
-                Share
-              </button>
+              )}
             </div>
           </div>
         </div>

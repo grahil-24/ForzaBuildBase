@@ -124,31 +124,33 @@ const getTune = catchAsync(async(req: Request, res: Response, next: NextFunction
         return next(new AppError("Entity manager not available", 500));
     }
     
-    const tuneRef = new Tune(tune_id);
-    const userRef = em.getReference(User, {user_id});
-
-    const savedTune = await em.findOne(SavedTunes, {tune: tuneRef, user: userRef}, {
-        populate: ['tune.creator', 'tune.car'],
+    // First, check if the tune exists
+    const tune = await em.findOne(Tune, {tune_id}, {
+        populate: ['creator', 'car'],
         fields: [
-            'tune.tune_id', 'tune.tune_name', 'tune.created_on', 'tune.resultant_rank',
-            'tune.front_tire_pressure', 'tune.rear_tire_pressure', 'tune.final_drive',
-            'tune.front_camber', 'tune.rear_camber', 'tune.front_toe', 'tune.rear_toe', 'tune.front_caster',
-            'tune.front_arb', 'tune.rear_arb', 'tune.front_spring', 'tune.rear_spring',
-            'tune.front_ride_height', 'tune.rear_ride_height', 'tune.front_rebound', 'tune.rear_rebound',
-            'tune.front_bump', 'tune.rear_bump', 'tune.front_aero', 'tune.rear_aero',
-            'tune.brake_balance', 'tune.brake_pressure',
-            'tune.front_diff_accel', 'tune.front_diff_decel', 'tune.rear_diff_accel', 'tune.rear_diff_decel',
-            'tune.center_diff_balance',
-            'tune.creator.user_id', 'tune.creator.username',
-            'tune.car.id', 'tune.car.Year', 'tune.car.image_filename', 'tune.car.Model', 'tune.car.Manufacturer'
+            'tune_id', 'tune_name', 'created_on', 'resultant_rank',
+            'front_tire_pressure', 'rear_tire_pressure', 'final_drive',
+            'front_camber', 'rear_camber', 'front_toe', 'rear_toe', 'front_caster',
+            'front_arb', 'rear_arb', 'front_spring', 'rear_spring',
+            'front_ride_height', 'rear_ride_height', 'front_rebound', 'rear_rebound',
+            'front_bump', 'rear_bump', 'front_aero', 'rear_aero',
+            'brake_balance', 'brake_pressure',
+            'front_diff_accel', 'front_diff_decel', 'rear_diff_accel', 'rear_diff_decel',
+            'center_diff_balance',
+            'creator.user_id', 'creator.username',
+            'car.id', 'car.Year', 'car.image_filename', 'car.Model', 'car.Manufacturer'
         ]
     });
 
-    if (!savedTune) {
+    if (!tune) {
         return next(new AppError('Tune not found', 404));
     }
 
-    const tune = savedTune.tune;
+    // Check if the current user has saved this tune
+    const userRef = em.getReference(User, {user_id});
+    const savedTune = await em.findOne(SavedTunes, {tune, user: userRef});
+    const isSaved = !!savedTune;
+
     res.status(200).json({
         status: 'success',
         car: {
@@ -163,6 +165,7 @@ const getTune = catchAsync(async(req: Request, res: Response, next: NextFunction
         creator: tune.creator?.username,
         class: tune.resultant_rank,
         tune_id: tune.tune_id,
+        isSaved: isSaved,
         tune_details: {
             front_tire_pressure: tune.front_tire_pressure,
             rear_tire_pressure: tune.rear_tire_pressure,
