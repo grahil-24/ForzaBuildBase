@@ -9,9 +9,15 @@ export const useRenameTune = (auth: AuthState) => {
 
     return useMutation({
         mutationFn: async({newName, tune_id}: {newName: string, tune_id: number}) => {
-            await authFetch(`${BACKEND}/tune/${tune_id}/rename`, 
+            const res = await authFetch(`${BACKEND}/tune/${tune_id}/rename`, 
             {method: 'PATCH', body: JSON.stringify({name: newName}), headers: {'Content-Type': 'application/json'}},
             auth);
+            if(res.status >= 400){
+                if(res.status === 409){
+                    throw Error('Tune with this name already exists!');
+                }
+                throw Error('Couldnt rename the tune! Something went wrong, please try again later!')
+            }
         },
         // onSuccess: async () => { await onSuccess()},
         onError: (error) => {

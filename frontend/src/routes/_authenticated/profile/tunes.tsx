@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from '@tanstack/react-router'
 import { Menu, MenuButton, MenuItem, MenuItems } from '@headlessui/react'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faEllipsisH, faAngleUp } from '@fortawesome/free-solid-svg-icons'
+import { faEllipsisH } from '@fortawesome/free-solid-svg-icons'
 import { PencilIcon, TrashIcon, MinusCircleIcon, ChevronDownIcon } from '@heroicons/react/24/outline'
 import { BACKEND } from '../../../config/env'
 import { useInfiniteQuery, useQueryClient } from '@tanstack/react-query'
@@ -10,7 +10,7 @@ import type { AuthState } from '../../../types/auth'
 import ErrorToast from '../../../components/ErrorToast'
 import { formatS3BucketURL } from '../../../util/urlFormatter'
 import type { RankType } from '../../../types/car'
-import { useMemo, useState, useCallback, useEffect} from 'react'
+import { useMemo, useState, useCallback} from 'react'
 import { useRemoveTune } from '../../../hooks/useRemoveTune'
 import { useRenameTune } from '../../../hooks/useRenameTune'
 import { RemoveDialogModal } from '../../../components/profile/RemoveDialogModal'
@@ -19,6 +19,7 @@ import {toast} from 'react-toastify'
 import type { Tune } from '../../../types/tune'
 import { SearchBar } from '../../../components/profile/tunes/SearchBar'
 import Fuse from 'fuse.js'
+import ScrollToTop from '../../../components/ScrollToTop'
 
 interface InfiniteQueryPageType {
   hasNextPage: boolean, 
@@ -94,7 +95,6 @@ function RouteComponent() {
   //if the creator of tune is the current user, he is allowed to delete the tune or else just remove it
   const [removeMode, setRemoveMode] = useState<'delete' | 'remove'>('delete');
   const [sortBy, setSortBy] = useState<SortOption>('newest');
-  const [scrollPosition, setScrollPosition] = useState<number>(0);
 
   const {data, error, fetchNextPage, hasNextPage, isFetching, isFetchingNextPage, status} = useInfiniteQuery({
     queryKey: ['tunes'],
@@ -138,10 +138,6 @@ function RouteComponent() {
       setRenameModalOpen(true);
   };
 
-  // const handleError = (error: Error) => {
-  //   toast(error.message);
-  // }
-
   const removeTune = useRemoveTune(auth, handleRemoveTuneSuccess);
   const renameTune = useRenameTune(auth);
 
@@ -179,29 +175,9 @@ function RouteComponent() {
     return sortTunes(allTunes);
   }, [data, search, sortTunes]);
 
-  const handleScroll = useCallback(() => {
-    const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
-    const scrollHeight = document.documentElement.scrollHeight;
-    const clientHeight = window.innerHeight;
-    const position = Math.ceil(
-      (scrollTop / (scrollHeight - clientHeight)) * 100
-    );
-    setScrollPosition(position);
-  }, []);
-
-
-  const scrollToTop = useCallback(() => {
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  }, []);
-
-  useEffect(() => {
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, [handleScroll]);
-
   return (
     <div>
-      <div className='sticky top-0 z-10 bg-white border-b border-gray-200 shadow-sm'>
+      <div className='top-0 bg-white border-b border-gray-200 shadow-sm'>
         <div className='max-w-4xl mx-auto px-4 py-6'>
           <div className='flex items-center justify-between flex-wrap gap-4'>
             <div>
@@ -454,14 +430,7 @@ function RouteComponent() {
           </>
         )}
       </div>
-      {scrollPosition > 30 && (
-        <div 
-          className='cursor-pointer shadow-xl bg-gray-200 rounded-full p-3 mb-10 fixed bottom-0 right-30'
-          onClick={scrollToTop}
-        >
-          <FontAwesomeIcon size='xl' icon={faAngleUp} />
-        </div>
-      )}
+      <ScrollToTop visiblePosition={30}/>
     </div>
   )
 }

@@ -7,6 +7,7 @@ import Searchbar from '../../components/Searchbar';
 import {authFetch} from "../../api/authFetch.ts";
 import type { AuthState } from '../../types/auth.ts';
 import { BACKEND } from '../../config/env.ts';
+import ScrollToTop from '../../components/ScrollToTop.tsx';
 
 interface BrowseSearch {
   page?: number,
@@ -86,7 +87,7 @@ function BrowseComponent(): React.ReactElement {
   const [pageInputField, setPageInputField] = useState<number>(page);
   const [searchBarText, setSearchBarText] = useState<string>("");
 
-  useEffect(()=> {
+  useEffect(() => {
     setPageInputField(page);
   }, [page]);
 
@@ -99,60 +100,74 @@ function BrowseComponent(): React.ReactElement {
     });
   };
 
-  const handleSearchbar = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setSearchBarText(e.target.value);
-  }
-
-  const handleSearch = () => {
-    navigate({to: '/browse', search: {search: searchBarText, page: 1}})
-  }
-
-  const handlePageInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setPageInputField(Number(e.target.value));
-  }
-
-  const handlePageEnterPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
-     if(e.key === 'Enter'){
-        goToPage(pageInputField);
-     }
-  }
-
   return (
-    <div className="w-full">
-      <div className='relative flex flex-col md:flex-row items-center justify-center px-6 gap-4'>
-        <p className='text-lg pt-5'>Showing {total} results</p>
-        <div className='md:absolute md:right-6'>
-          <Searchbar handleSearchbar={handleSearchbar} handleSearch={handleSearch}/>
+    <div className="w-full max-w-(--break-2xl) mx-auto">
+      {/* Header Section */}
+      <div className='px-6 mt-5 grid grid-cols-1 md:grid-cols-3 items-center gap-4'>
+        
+        {/* 1. Filter: Left aligned. On mobile, we keep it inline-block */}
+        <div className='flex justify-start order-1'>
+          <FilterSidebar />
+        </div>
+
+        {/* 2. Results: Dead Center on desktop. Order 2 */}
+        <div className='text-center order-2'>
+          <p className='text-lg font-semibold whitespace-nowrap'>
+            Showing <span className="text-lime-600">{total}</span> results
+          </p>
+        </div>
+
+        {/* 3. Search: Right aligned on desktop. Full width on mobile. Order 3 */}
+        <div className='flex justify-center md:justify-end order-3 w-full'>
+          <Searchbar 
+            handleSearchbar={(e) => setSearchBarText(e.target.value)} 
+            handleSearch={() => navigate({to: '/browse', search: {search: searchBarText, page: 1}})}
+          />
         </div>
       </div>
-      <div className='flex gap-6 p-6'>
-        <aside className='fixed -mt-10'>
-          <FilterSidebar />
-        </aside>
-        <div className="ml-15 flex-1 pt-5">
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5 gap-3">
+
+      {/* Main Content */}
+      <div className='p-6'>
+        {/* Removed ml-15 as it's not standard Tailwind and causes off-centering */}
+        <div className="flex-1">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5 gap-4">
             {cars.map((car) => (
               <CarTiles key={car.id} car={car} />
             ))}
           </div>
-          <div className="flex justify-center items-center mt-8 space-x-2">
+
+          {/* Pagination */}
+          <div className="flex justify-center items-center mt-12 space-x-4">
             <button
               onClick={() => goToPage(page - 1)}
               disabled={page <= 1}
-              className="px-3 py-1 bg-lime-400 text-white rounded disabled:opacity-50"
+              className="px-4 py-2 bg-slate-800 text-white rounded-md disabled:opacity-30 transition-opacity hover:bg-slate-700"
             >
               Prev
             </button>
-            <span className="text-black"><input onChange={handlePageInputChange} onKeyDown={handlePageEnterPress} type='number' value={pageInputField} min={1} max={totalPages}/> / {totalPages}</span>
+            <div className="flex items-center gap-2">
+              <input 
+                className="w-12 text-center border rounded-md p-1"
+                onChange={(e) => setPageInputField(Number(e.target.value))} 
+                onKeyDown={(e) => e.key === 'Enter' && goToPage(pageInputField)} 
+                type='number' 
+                value={pageInputField} 
+              />
+              <span className="text-gray-500">/ {totalPages}</span>
+            </div>
             <button
               onClick={() => goToPage(page + 1)}
               disabled={page >= totalPages}
-              className="px-3 py-1 bg-lime-400 text-white rounded disabled:opacity-50"
+              className="px-4 py-2 bg-slate-800 text-white rounded-md disabled:opacity-30 transition-opacity hover:bg-slate-700"
             >
               Next
             </button>
           </div>
         </div>
+      </div>
+      
+      <div className='md:hidden'>
+        <ScrollToTop />
       </div>
     </div>
   )

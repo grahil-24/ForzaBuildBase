@@ -333,10 +333,10 @@ const FilterSidebar = () => {
       </Dialog>
 
       {/* Filter Button */}
-      <button
-        type="button"
-        onClick={() => setFiltersOpen(true)}
-        className="mt-0 p-2 text-gray-400 hover:text-gray-500"
+     <button
+      type="button"
+      onClick={() => setFiltersOpen(true)}
+      className="p-2 text-gray-500 hover:text-gray-700 border border-gray-200 rounded-md hover:bg-gray-50 transition-colors w-fit flex items-center justify-center"
       >
         <span className="sr-only">Filters</span>
         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-6">
