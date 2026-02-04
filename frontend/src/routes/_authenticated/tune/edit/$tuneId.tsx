@@ -180,7 +180,7 @@ function RouteComponent() {
       updateTune.reset();
       setFormIsDirty(false);
       setTimeout(() => {
-        navigate({to: '/view/tune/$tuneId', params: {tuneId: data.tune.tune_id}, state: {tuneDetails: {created_on: data.tune.created_on, tune_id: data.tune.tune_id, tune_name: data.tune.tune_name, creator: auth.user!.username, car: tuneDetails!.car, class: carClass, tune_details: sliderData}}})
+        navigate({to: '/view/tune/$tuneId', params: {tuneId: data.tune.tune_id}, state: {tuneDetails: {isSaved: true, created_on: data.tune.created_on, tune_id: data.tune.tune_id, tune_name: data.tune.tune_name, creator: auth.user!.username, car: tuneDetails!.car, class: carClass, tune_details: sliderData}}})
       }, 1000);
     }
   })

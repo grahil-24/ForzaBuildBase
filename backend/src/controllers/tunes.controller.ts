@@ -8,7 +8,7 @@ import {Car} from '../entities/Car';
 import { validateTuneName } from '../utils/Validator';
 import { SavedTunes } from '../entities/SavedTunes';
 
-const createAndUpdate = catchAsync(async(req: Request, res: Response, next: NextFunction) => {
+const createAndUpdateTune = catchAsync(async(req: Request, res: Response, next: NextFunction) => {
     const {user_id} = req;
     const {tune_name, car_id, tuneSettings, tune_id} = req.body;
     if(!tune_name || !car_id || !tuneSettings) {
@@ -198,7 +198,7 @@ const getTune = catchAsync(async(req: Request, res: Response, next: NextFunction
     });
 });
 
-const rename = catchAsync(async(req: Request, res: Response, next: NextFunction) => {
+const renameTune = catchAsync(async(req: Request, res: Response, next: NextFunction) => {
     const {user_id} = req;
     const tuneid = Number(req.params.tuneid);
     const newName = req.body.name;
@@ -232,7 +232,7 @@ const rename = catchAsync(async(req: Request, res: Response, next: NextFunction)
     }    
 });
 
-const remove = catchAsync(async(req: Request, res: Response, next: NextFunction) => {
+const removeTune = catchAsync(async(req: Request, res: Response, next: NextFunction) => {
     const {user_id} = req;
     const tuneid = Number(req.params.tuneid);
     if(isNaN(tuneid)){
@@ -257,5 +257,46 @@ const remove = catchAsync(async(req: Request, res: Response, next: NextFunction)
     res.status(204).json({status: "success", "message": "Tune deleted successfully"});
 });
 
+const saveTune = catchAsync(async(req: Request, res: Response, next: NextFunction) => {
+    const {user_id} = req;
+    const tune_id = Number(req.params.tuneid);
+    
+    if(isNaN(tune_id)){
+        return next(new AppError('Invalid tune id', 400));
+    }
 
-export {rename, remove, createAndUpdate, getTune};
+    const em = RequestContext.getEntityManager();
+    if (!em) {
+        return next(new AppError("Entity manager not available", 500));
+    }
+
+    // Check if tune exists
+    const tune = await em.findOne(Tune, {tune_id});
+    if(!tune){
+        return next(new AppError('Tune not found', 404));
+    }
+
+    const user = em.getReference(User, {user_id});
+
+    // Check if tune is already saved by this user
+    const existingSavedTune = await em.findOne(SavedTunes, {tune, user});
+    if(existingSavedTune){
+        res.status(409).json({status: "error", message: "Tune is already saved"});
+        return;
+    }
+
+    // Create and save the new SavedTunes entry
+    const savedTune = new SavedTunes(tune, user);
+    savedTune.saved_on = new Date();
+    
+    await em.persistAndFlush(savedTune);
+
+    res.status(201).json({
+        status: "success",
+        message: "Tune saved successfully"
+    });
+    
+});
+
+
+export {renameTune, removeTune, createAndUpdateTune, getTune, saveTune};

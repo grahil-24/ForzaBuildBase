@@ -10,7 +10,9 @@ import { RemoveDialogModal } from '../../../../components/profile/RemoveDialogMo
 import { useState } from 'react';
 import {toast} from 'react-toastify';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faFloppyDisk } from '@fortawesome/free-solid-svg-icons';
+// import { faBookmark as faBookmarkSolid } from '@fortawesome/free-solid-svg-icons';
+import {faBookmark} from '@fortawesome/free-regular-svg-icons'
+import { useMutation } from '@tanstack/react-query';
 
 export const Route = createFileRoute('/_authenticated/view/tune/$tuneId')({
   loader: async({context, params, location}) => {
@@ -48,13 +50,42 @@ function RouteComponent() {
   const {auth} = Route.useRouteContext();
   const navigate = useNavigate();
   const [removeModalOpen, setRemoveModalOpen] = useState<boolean>(false);
-  
+  const [isSaved, setIsSaved] = useState(() => tuneDetails?.isSaved);
+
   const handleRemoveTuneSuccess = () => {
     toast.success('Tune removed successfully!', {autoClose: 3000});
-    navigate({to: '/profile/tunes'});
+    if(tuneDetails?.creator === auth.user?.username){
+      navigate({to: '/profile/tunes'});
+    }else{
+      setIsSaved(false);
+    }
   }
 
   const removeTune = useRemoveTune(auth, async() => handleRemoveTuneSuccess());
+
+  const saveTune = useMutation({
+    mutationFn: async() => {
+      const res = await authFetch(`${BACKEND}/tune/${tuneDetails?.tune_id}/save`, {method: 'POST'}, auth);
+      if(!res.ok){
+        throw Error('Error saving tune! Try again later');
+      }
+    }, 
+    onError: (error) => {
+      setIsSaved(false);
+      toast.error(error?.message || 'Error saving tune! Try again later');
+      saveTune.reset();
+    },
+    onSuccess: () => {
+      toast.success('Tune saved to profile successfully!', {autoClose: 3000});
+      saveTune.reset();
+      setIsSaved(true);
+    }
+  })
+
+  const handleSaveTuneClick = () => {
+    saveTune.mutate();
+  }
+
   const imageUrl = formatS3BucketURL({manufacturer: tuneDetails!.car.Manufacturer!, image_filename: tuneDetails!.car.image_filename!, size: "medium"});
   return (
     <div className="min-h-screen w-full flex justify-center px-2 sm:px-4 py-4 md:py-8 bg-slate-50">
@@ -124,7 +155,7 @@ function RouteComponent() {
 
             {/* Right side - Action Buttons */}
             <div className="flex flex-wrap gap-3">
-              {tuneDetails!.isSaved ? (
+              { isSaved ? (
                 <>
                   {tuneDetails?.creator === auth.user?.username && (
                     <Link to='/tune/edit/$tuneId' params={{tuneId: tuneDetails!.tune_id.toString()}} state={{tuneDetails}}>
@@ -162,8 +193,11 @@ function RouteComponent() {
                   </button>
                 </>
               ) : (
-                  <button  className='border-2 border-black px-2 py-2 rounded-sm hover:bg-black hover:text-white duration-200 cursor-pointer'>
-                    <FontAwesomeIcon icon={faFloppyDisk}/> Save to profile
+                  <button  onClick={handleSaveTuneClick} className='border-2 border-black px-2 py-2 rounded-sm hover:bg-black hover:text-white duration-200 cursor-pointer'>
+                    {saveTune.isPending ? 
+                      'Saving ...' : 
+                      <><FontAwesomeIcon icon={faBookmark} /> Save to profile</>
+                    }
                   </button>
               )}
             </div>
