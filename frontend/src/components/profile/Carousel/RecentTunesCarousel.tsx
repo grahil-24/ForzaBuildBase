@@ -74,7 +74,7 @@ const EmblaCarousel: React.FC<PropType> = (props) => {
 
                     {/* Text + Menu */}
                     <div className="flex items-start mt-auto">
-                      <div className="flex-col min-w-0">
+                      <div className="flex-col min-w-0 w-[55%]">
                         <h3 className="cursor-pointer hover:underline text-xl font-semibold truncate">
                           {tune.tune?.tune_name}
                         </h3>
@@ -90,7 +90,7 @@ const EmblaCarousel: React.FC<PropType> = (props) => {
 
                       {/* Menu Trigger */}
                       <Menu as="div" className="relative ml-2 shrink-0 focus:outline-none">
-                        <MenuButton>
+                        <MenuButton className='focus:outline-none'>
                           <FontAwesomeIcon 
                             icon={faEllipsisVertical} 
                             className="text-gray-600 cursor-pointer" 
@@ -101,7 +101,7 @@ const EmblaCarousel: React.FC<PropType> = (props) => {
                           transition
                           modal={false}
                           anchor="bottom end"
-                          className="[--anchor-gap:--spacing(1)] data-closed:scale-95 data-closed:opacity-0 transition duration-100 ease-out z-9999 w-30 bg-white border border-gray-200 shadow-xl  text-sm mt-1"
+                          className="[--anchor-gap:--spacing(1)] data-closed:scale-95 data-closed:opacity-0 transition duration-100 ease-out z-9999 w-30 bg-white border border-gray-200 shadow-xl  text-sm mt-1 focus:outline-none"
                         >
                           {user === tune.tune.creator.username &&
                             <MenuItem>

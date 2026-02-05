@@ -28,7 +28,8 @@ declare module "@tanstack/react-router" {
       car: Car,
       tune_details: Record<string, number>,
       class: RankType,
-      isSaved: boolean
+      isSaved: boolean,
+      public_url: string
     } 
   }
 }

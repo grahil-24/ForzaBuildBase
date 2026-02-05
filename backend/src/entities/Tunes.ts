@@ -6,7 +6,7 @@ import { DecimalLocale } from 'validator';
 
 
 @Entity({tableName: 'tunes'})
-@Unique({properties: ['creator', 'tune_name']})
+@Unique({properties: ['creator', 'tune_name', 'public_url']})
 export class Tune {
     @PrimaryKey({type: "smallint", autoincrement: true, nullable: false})
     tune_id?: number
@@ -112,6 +112,9 @@ export class Tune {
 
     @Property({ type: 'varchar', length: 3, nullable: false})
     resultant_rank!: string;
+
+    @Property({type: 'varchar', length: 22, nullable: false})
+    public_url!: string;
 
     constructor(tune_id?: number, tune_name?: string, creator?: User, car?: Car, created_on?: Date){
         this.tune_name = tune_name;

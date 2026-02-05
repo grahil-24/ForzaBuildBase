@@ -7,6 +7,8 @@ import { User } from '../entities/User';
 import {Car} from '../entities/Car';
 import { validateTuneName } from '../utils/Validator';
 import { SavedTunes } from '../entities/SavedTunes';
+import { generatePublicURL } from '../utils/PublicURL';
+import type { Loaded } from '@mikro-orm/mysql';
 
 const createAndUpdateTune = catchAsync(async(req: Request, res: Response, next: NextFunction) => {
     const {user_id} = req;
@@ -49,6 +51,7 @@ const createAndUpdateTune = catchAsync(async(req: Request, res: Response, next: 
         tune.car = car;
         tune.created_on = created_on;
         tune.updated_on = created_on;
+        tune.public_url = generatePublicURL();
     }
 
     // Assign tune settings from request body
@@ -107,7 +110,8 @@ const createAndUpdateTune = catchAsync(async(req: Request, res: Response, next: 
             tune_name: tune.tune_name,
             car_id: car.id,
             created_on: tune.created_on,
-            updated_on: tune.updated_on
+            updated_on: tune.updated_on,
+            public_url: tune.public_url
         }
     });
 });
@@ -128,7 +132,7 @@ const getTune = catchAsync(async(req: Request, res: Response, next: NextFunction
     const tune = await em.findOne(Tune, {tune_id}, {
         populate: ['creator', 'car'],
         fields: [
-            'tune_id', 'tune_name', 'created_on', 'resultant_rank',
+            'tune_id', 'tune_name', 'created_on', 'resultant_rank', 'public_url',
             'front_tire_pressure', 'rear_tire_pressure', 'final_drive',
             'front_camber', 'rear_camber', 'front_toe', 'rear_toe', 'front_caster',
             'front_arb', 'rear_arb', 'front_spring', 'rear_spring',
@@ -166,6 +170,7 @@ const getTune = catchAsync(async(req: Request, res: Response, next: NextFunction
         class: tune.resultant_rank,
         tune_id: tune.tune_id,
         isSaved: isSaved,
+        public_url: tune.public_url,
         tune_details: {
             front_tire_pressure: tune.front_tire_pressure,
             rear_tire_pressure: tune.rear_tire_pressure,

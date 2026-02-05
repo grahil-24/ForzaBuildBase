@@ -13,6 +13,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 // import { faBookmark as faBookmarkSolid } from '@fortawesome/free-solid-svg-icons';
 import {faBookmark} from '@fortawesome/free-regular-svg-icons'
 import { useMutation } from '@tanstack/react-query';
+import { Dialog, DialogPanel, DialogTitle, Button } from '@headlessui/react';
 
 export const Route = createFileRoute('/_authenticated/view/tune/$tuneId')({
   loader: async({context, params, location}) => {
@@ -51,6 +52,7 @@ function RouteComponent() {
   const navigate = useNavigate();
   const [removeModalOpen, setRemoveModalOpen] = useState<boolean>(false);
   const [isSaved, setIsSaved] = useState(() => tuneDetails?.isSaved);
+  const [isShareDialogOpen, setIsShareDialogOpen] = useState<boolean>(false);
 
   const handleRemoveTuneSuccess = () => {
     toast.success('Tune removed successfully!', {autoClose: 3000});
@@ -187,7 +189,7 @@ function RouteComponent() {
                       Remove
                     </button>
                   )}
-                  <button className="cursor-pointer bg-slate-200 hover:bg-slate-300 text-slate-700 px-3 py-2 rounded-lg font-semibold transition-colors flex items-center gap-2">
+                  <button onClick={() => setIsShareDialogOpen(true)}className="cursor-pointer bg-slate-200 hover:bg-slate-300 text-slate-700 px-3 py-2 rounded-lg font-semibold transition-colors flex items-center gap-2">
                     <ShareIcon className='size-5'/>
                     Share
                   </button>
@@ -413,6 +415,28 @@ function RouteComponent() {
         </div>
 
       </div>
+      <Dialog open={isShareDialogOpen} as="div" className="relative z-10 focus:outline-none" onClose={() => setIsShareDialogOpen(false)}>
+        <div className="fixed inset-0 z-10 w-screen overflow-y-auto">
+          <div className="flex min-h-full items-center justify-center p-4">
+            <DialogPanel
+              transition
+              className="w-full max-w-md rounded-xl bg-white shadow-2xl border-black/10 border p-6 backdrop-blur-4xl duration-300 ease-out data-closed:transform-[scale(95%)] data-closed:opacity-0"
+            >
+              <DialogTitle as="h3" className="text-base/7 font-medium text-black">
+                Share
+              </DialogTitle>
+              <div className='border border-gray-200 rounded-xl p-2 flex justify-between mt-5 text-sm items-center'>
+                <div>
+                  <p>http://localhost:5173/share/{tuneDetails?.public_url}</p>
+                </div>
+                <button className='bg-blue-600 text-white px-4 py-2 rounded-3xl font-bold'>
+                  Copy
+                </button>
+              </div>
+            </DialogPanel>
+          </div>
+        </div>
+      </Dialog>
     </div>
   )
 }
