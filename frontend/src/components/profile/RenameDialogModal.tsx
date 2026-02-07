@@ -17,7 +17,6 @@ export const RenameDialogModal = ({openModal, onClose,onSubmit,isLoading,isSucce
     }
   }, [openModal]);
 
-
   const close = () => {
     setName("");
     onClose();

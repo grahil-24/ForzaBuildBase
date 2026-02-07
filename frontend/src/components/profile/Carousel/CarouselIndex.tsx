@@ -7,9 +7,9 @@ const OPTIONS: EmblaOptionsType = { align: 'start' }
 type CarouselProps = {
   recentTunes: Tune[],
   user: string,
-  onRenameClick: (tuneid: number) => void,
-  onRemoveClick: (tuneid: number) => void,
-  onDeleteClick: (tuneid: number) => void,
+  onRenameClick?: (tuneid: number) => void,
+  onRemoveClick?: (tuneid: number) => void,
+  onDeleteClick?: (tuneid: number) => void,
 }
 
 

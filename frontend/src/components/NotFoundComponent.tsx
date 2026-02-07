@@ -16,7 +16,7 @@ const NotFoundComponent = () => {
                   The page you are looking for doesnt exist
                 </p>
                 <a
-                  href="/profile"
+                  href="/dashboard"
                   className="inline-block rounded-lg border px-8 py-3 text-center text-base font-semibold border-black text-black transition duration-300 hover:bg-black hover:text-white"
                 >
                   Go To Home

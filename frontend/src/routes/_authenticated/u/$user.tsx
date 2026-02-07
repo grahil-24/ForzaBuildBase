@@ -3,7 +3,7 @@ import { Menu, MenuButton, MenuItem, MenuItems } from '@headlessui/react'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faEllipsisH } from '@fortawesome/free-solid-svg-icons'
 import { PencilIcon, TrashIcon, MinusCircleIcon, ChevronDownIcon } from '@heroicons/react/24/outline'
-import { BACKEND } from '../../../config/env'
+import { BACKEND, FRONTEND } from '../../../config/env'
 import { useInfiniteQuery, useQueryClient } from '@tanstack/react-query'
 import { authFetch } from '../../../api/authFetch'
 import type { AuthState } from '../../../types/auth'
@@ -20,6 +20,21 @@ import type { Tune } from '../../../types/tune'
 import { SearchBar } from '../../../components/profile/tunes/SearchBar'
 import Fuse from 'fuse.js'
 import ScrollToTop from '../../../components/ScrollToTop'
+import ShareTuneDialogComponent from '../../../components/tune/ShareTuneDialog'
+
+
+export const Route = createFileRoute('/_authenticated/u/$user')({
+  component: RouteComponent,
+  head: () => ({
+    meta: [
+      {
+        title: 'Saved Tunes'
+      }
+    ]
+  }),
+  errorComponent: ErrorToast
+})
+
 
 interface InfiniteQueryPageType {
   hasNextPage: boolean, 
@@ -51,18 +66,17 @@ const fuseOptions = {
   threshold: 0.4
 }
 
-
-export const Route = createFileRoute('/_authenticated/profile/tunes')({
-  component: RouteComponent,
-  head: () => ({
-    meta: [
-      {
-        title: 'Saved Tunes'
-      }
-    ]
-  }),
-  errorComponent: ErrorToast
-})
+const shareIcon = 
+    <svg className='size-5' xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640" >
+      <path 
+        fill="none" 
+        stroke="black" 
+        stroke-width="32" 
+        stroke-linejoin="round" 
+        stroke-linecap="round"
+        d="M371.8 82.4C359.8 87.4 352 99 352 112L352 192L240 192C142.8 192 64 270.8 64 368C64 481.3 145.5 531.9 164.2 542.1C166.7 543.5 169.5 544 172.3 544C183.2 544 192 535.1 192 524.3C192 516.8 187.7 509.9 182.2 504.8C172.8 496 160 478.4 160 448.1C160 395.1 203 352.1 256 352.1L352 352.1L352 432.1C352 445 359.8 456.7 371.8 461.7C383.8 466.7 397.5 463.9 406.7 454.8L566.7 294.8C579.2 282.3 579.2 262 566.7 249.5L406.7 89.5C397.5 80.3 383.8 77.6 371.8 82.6z"/>
+    </svg>
+ 
 
 const fetchTunes = async({pageParam, auth}: {pageParam: string | undefined, auth: AuthState}): Promise<InfiniteQueryPageType> => {
   const url = pageParam 
@@ -95,6 +109,7 @@ function RouteComponent() {
   //if the creator of tune is the current user, he is allowed to delete the tune or else just remove it
   const [removeMode, setRemoveMode] = useState<'delete' | 'remove'>('delete');
   const [sortBy, setSortBy] = useState<SortOption>('newest');
+  const [shareDialogTuneId, setShareDialogTuneId] = useState<number | null>(null);
 
   const {data, error, fetchNextPage, hasNextPage, isFetching, isFetchingNextPage, status} = useInfiniteQuery({
     queryKey: ['tunes'],
@@ -137,6 +152,11 @@ function RouteComponent() {
       setSelectedTuneId(tuneId);
       setRenameModalOpen(true);
   };
+
+  const handleShareDialogClose = () => {
+    setShareDialogTuneId(null);
+  }
+
 
   const removeTune = useRemoveTune(auth, handleRemoveTuneSuccess);
   const renameTune = useRenameTune(auth);
@@ -247,7 +267,6 @@ function RouteComponent() {
           </div>
         </div>
       </div>
-
       {/* Main Content */}
       <div className='max-w-4xl mx-auto px-4 py-6 space-y-3'>
         {status === 'pending' ? (
@@ -264,7 +283,7 @@ function RouteComponent() {
           //   Error loading tunes
           // </div>
             
-            <ErrorToast error={error} />
+            (<ErrorToast error={error} />)
           )
           }
             <RenameDialogModal 
@@ -403,10 +422,20 @@ function RouteComponent() {
                                 </MenuItem>
                               )
                             }
+                            <MenuItem>
+                              <button 
+                                onClick={() => setShareDialogTuneId(tune.tune.tune_id)} 
+                                className='cursor-pointer group flex w-full items-center gap-2 sm:gap-3 px-3 sm:px-4 py-2 sm:py-3 text-xs sm:text-sm font-medium transition-colors hover:bg-gray-200/50'
+                              >
+                                {shareIcon}
+                                <span className='transition-colors text-gray-700'>Share</span>
+                              </button>
+                            </MenuItem>
                           </MenuItems>
                         </Menu>
                       </div>
                     </div>
+                    <ShareTuneDialogComponent url={`${FRONTEND}/share/${tune.tune.public_url}`} handleDialogClose={handleShareDialogClose} isShareDialogOpen={shareDialogTuneId === tune.tune.tune_id}/>
                   </div>
                 );
               })
@@ -425,7 +454,6 @@ function RouteComponent() {
                     : 'You have reached the end!'}
               </button>
             </div>
-            
             <div className='text-center text-gray-500 text-sm'>{isFetching && !isFetchingNextPage ? 'Fetching...' : null}</div>
           </>
         )}

@@ -1,6 +1,4 @@
-// import { SessionExpiredError } from "../errors/auth.errors";
-
-const BACKEND = import.meta.env.VITE_BACKEND;
+import { BACKEND } from "../config/env";
 
 export async function authFetch(url: string, options: RequestInit = {},
                                 auth: { accessToken: string | null; logout: () => Promise<void>; setAccessToken: (token: string | null) => void}

@@ -7,7 +7,7 @@ import { useUsernameAvailability } from "../hooks/useUsernameAvailability";
 
 export const Route = createFileRoute('/sign-up')({
     validateSearch: (search)=> ({
-        redirect: (search.redirect as string) || '/profile'
+        redirect: (search.redirect as string) || '/dashboard'
     }),
     beforeLoad: ({context, search}) => {
         //redirect if already authenticated

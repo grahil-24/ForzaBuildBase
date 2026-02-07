@@ -21,7 +21,7 @@ function Nav() {
         {/* Desktop Navigation */}
         <div className="hidden sm:flex items-center space-x-4 flex-1 ml-6 lg:ml-10">
           <Link
-            to="/profile"
+            to="/dashboard"
             className="relative text-black px-3 py-2 rounded-md text-sm font-medium after:content-[''] after:absolute after:bottom-1 after:left-3 after:right-3 after:h-0.5 after:bg-black after:scale-x-0 after:origin-left after:transition-transform after:duration-300 hover:after:scale-x-100"
           >
             Dashboard
@@ -33,7 +33,7 @@ function Nav() {
             Browse
           </Link>
           <Link
-            to="/profile/tunes"
+            to="/dashboard/tunes"
             className="relative text-black px-3 py-2 rounded-md text-sm font-medium after:content-[''] after:absolute after:bottom-1 after:left-3 after:right-3 after:h-0.5 after:bg-black after:scale-x-0 after:origin-left after:transition-transform after:duration-300 hover:after:scale-x-100"
           >
             My Tunes
@@ -146,7 +146,7 @@ function Nav() {
             className="px-4 pt-2 pb-3 space-y-1"
           >
             <Link
-              to="/profile"
+              to="/dashboard"
               className="text-gray-900 hover:bg-gray-100 block px-3 py-2 rounded-md text-base font-medium"
             >
               Dashboard
@@ -158,7 +158,7 @@ function Nav() {
               Browse
             </Link>
             <Link
-              to="/profile/tunes"
+              to="/dashboard/tunes"
               className="text-gray-700 hover:bg-gray-100 hover:text-gray-900 block px-3 py-2 rounded-md text-base font-medium"
             >
               My Tunes
@@ -172,7 +172,7 @@ function Nav() {
                     {authContext.user?.username}
                   </div>
                   <Link
-                    to="/profile"
+                    to="/dashboard"
                     className="text-gray-700 hover:bg-gray-100 hover:text-gray-900 block px-3 py-2 rounded-md text-base font-medium"
                   >
                     Your profile

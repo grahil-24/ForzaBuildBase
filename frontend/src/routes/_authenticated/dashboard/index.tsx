@@ -12,7 +12,7 @@ import ErrorToast from '../../../components/ErrorToast';
 import { useRemoveTune } from '../../../hooks/useRemoveTune';
 import { useRenameTune } from '../../../hooks/useRenameTune';
 
-export const Route = createFileRoute('/_authenticated/profile/')({
+export const Route = createFileRoute('/_authenticated/dashboard/')({
     loader: async({context}) => await fetchProfile(context.auth),
     preload: true,
     component: RouteComponent,
@@ -27,7 +27,7 @@ export const Route = createFileRoute('/_authenticated/profile/')({
 })
 
 const fetchProfile = async (auth: AuthState) => {
-    const res = await authFetch(`${BACKEND}/profile/recent-tunes`,
+    const res = await authFetch(`${BACKEND}/me/tunes/recent`,
         {method: 'GET'},
         auth
     );
@@ -87,7 +87,7 @@ function RouteComponent() {
     return (
         <div> 
             {/* <ErrorToast /> */}
-            <RenameDialogModal 
+            {/* <RenameDialogModal 
                 openModal={renameModalOpen}
                 onClose={handleCloseRenameModal}
                 onSubmit={(newName) => {renameTune.mutate({newName, tune_id: selectedTuneId!},
@@ -113,7 +113,7 @@ function RouteComponent() {
                 onSubmit={() => {removeTune.mutate({tune_id: selectedTuneId!}); setRemoveModalOpen(false)}}
                 mode={removeMode}
                 isLoading={removeTune.isPending}
-            />
+            /> */}
             <div className='max-w-4/5 pt-10 min-w-sm'>
                 <div className='flex justify-between'>
                     <div className='text-2xl ml-10'>Recent Tunes</div>
@@ -123,7 +123,7 @@ function RouteComponent() {
                     </div>
                 </div>
                 {recentTunes.length > 0 ? (
-                        <Carousel user={auth.user!.username} recentTunes={recentTunes} onRenameClick={handleOpenRenameModal} onRemoveClick={handleOpenRemoveModal} onDeleteClick={handleOpenDeleteModal}/>   
+                        <Carousel user={auth.user!.username} recentTunes={recentTunes} />   
                     ) :
                     (
                         <div className='mt-4 flex-row items-center'>

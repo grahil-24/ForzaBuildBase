@@ -14,7 +14,8 @@ interface Tune {
             Manufacturer: string,
             Model?:string
         },
-        resultant_rank: RankType
+        resultant_rank: RankType,
+        public_url: string
     }
 }
 

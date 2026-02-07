@@ -62,9 +62,8 @@ export const getMyTunes = catchAsync(async(req: Request, res: Response, next: Ne
     );
     
     await em.populate(savedTunes.items, ['tune', 'tune.creator', 'tune.car'], {
-        fields: ['tune.tune_name', 'tune.creator.username', 'tune.car.image_filename', 'tune.car.Manufacturer', 'tune.car.Model','tune.resultant_rank']
+        fields: ['tune.tune_name', 'tune.creator.username', 'tune.car.image_filename', 'tune.car.Manufacturer', 'tune.car.Model','tune.resultant_rank', 'tune.public_url']
     });
-
     res.status(200).json({
         pages: savedTunes.items,
         nextCursor: savedTunes.endCursor,

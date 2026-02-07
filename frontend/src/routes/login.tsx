@@ -7,7 +7,7 @@ import { faEye } from '@fortawesome/free-solid-svg-icons';
 
 export const Route = createFileRoute('/login')({
   validateSearch: (search) => ({
-    redirect: (search.redirect as string) || '/profile'
+    redirect: (search.redirect as string) || '/dashboard'
   }),
   beforeLoad: ({context, search}) => {
     //redirect if already authenticated

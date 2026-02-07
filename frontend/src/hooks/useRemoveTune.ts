@@ -8,7 +8,7 @@ export const useRemoveTune = (auth: AuthState, onSuccess: () => Promise<void>) =
 
     return useMutation({
         mutationFn: async({tune_id}: {tune_id: number}) => {
-            await authFetch(`${BACKEND}/tune/${tune_id}/remove`,
+            const res = await authFetch(`${BACKEND}/tune/${tune_id}/remove`,
                 {method: 'DELETE'},
                 auth
             )

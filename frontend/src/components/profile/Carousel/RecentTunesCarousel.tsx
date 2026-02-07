@@ -8,14 +8,15 @@ import { PencilIcon, TrashIcon, MinusCircleIcon } from '@heroicons/react/24/outl
 import type { Tune } from '../../../types/tune'
 import { formatS3BucketURL } from '../../../util/urlFormatter'
 import type { RankType } from '../../../types/car'
+import { Link } from '@tanstack/react-router'
 
 type PropType = {
   slides: Tune[],
   options?: EmblaOptionsType,
   user: string,
-  onRenameClick: (tuneid: number) => void,
-  onRemoveClick: (tuneid: number) => void,
-  onDeleteClick: (tuneid: number) => void,
+  onRenameClick?: (tuneid: number) => void,
+  onRemoveClick?: (tuneid: number) => void,
+  onDeleteClick?: (tuneid: number) => void,
 }
 
 const rank_to_color: Record<RankType, string> = {
@@ -74,22 +75,22 @@ const EmblaCarousel: React.FC<PropType> = (props) => {
 
                     {/* Text + Menu */}
                     <div className="flex items-start mt-auto">
-                      <div className="flex-col min-w-0 w-[55%]">
+                      <div className="flex-col min-w-0 w-[65%]">
                         <h3 className="cursor-pointer hover:underline text-xl font-semibold truncate">
-                          {tune.tune?.tune_name}
+                          <Link to='/view/tune/$tuneId' params={{tuneId: tune.tune.tune_id.toString()}}>{tune.tune?.tune_name}</Link>
                         </h3>
                         <p className="text-sm text-gray-600">
                           Saved on: {new Date(tune.saved_on).toLocaleString('en-GB',{day: 'numeric', month: 'short', year: 'numeric' })}
                         </p>
                       </div>
                       
-                      <div className='mx-auto'>
+                      <div className='ml-auto'>
                         <div>Created by:</div>
                         <div>{tune.tune.creator.username}</div>
                       </div>
 
                       {/* Menu Trigger */}
-                      <Menu as="div" className="relative ml-2 shrink-0 focus:outline-none">
+                      {/* <Menu as="div" className="relative ml-2 shrink-0 focus:outline-none">
                         <MenuButton className='focus:outline-none'>
                           <FontAwesomeIcon 
                             icon={faEllipsisVertical} 
@@ -128,7 +129,7 @@ const EmblaCarousel: React.FC<PropType> = (props) => {
                           )
                         }
                         </MenuItems>
-                      </Menu>
+                      </Menu> */}
                     </div>
                   </div>
                 </div>

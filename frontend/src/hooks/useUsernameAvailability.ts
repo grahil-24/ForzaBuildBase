@@ -1,5 +1,6 @@
 import {useQuery} from '@tanstack/react-query';
 import { useDebounce } from './useDebounce';
+import { BACKEND } from '../config/env';
 
 interface UsernameAvailabilityResponse {
     available: boolean;
@@ -12,7 +13,7 @@ export const useUsernameAvailability = (username: string) => {
     const query = useQuery({
         queryKey: ["username-availability", debouncedUsername],
         queryFn: async() : Promise<UsernameAvailabilityResponse> => {
-            const res = await fetch(`${import.meta.env.VITE_BACKEND}/auth/check-username?username=${encodeURIComponent(debouncedUsername)}`, {
+            const res = await fetch(`${BACKEND}/auth/check-username?username=${encodeURIComponent(debouncedUsername)}`, {
                 method: "GET",
                 headers: {
                     "Accept": "application/json"
