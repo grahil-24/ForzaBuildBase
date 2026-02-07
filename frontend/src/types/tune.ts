@@ -15,8 +15,9 @@ interface Tune {
             Model?:string
         },
         resultant_rank: RankType,
-        public_url: string
-    }
+        public_url: string,
+    },
+    isSaved: boolean
 }
 
 type Slider = {

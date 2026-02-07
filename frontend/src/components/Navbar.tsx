@@ -33,7 +33,8 @@ function Nav() {
             Browse
           </Link>
           <Link
-            to="/dashboard/tunes"
+            to="/u/$user"
+            params={{user: authContext.user!.username}}
             className="relative text-black px-3 py-2 rounded-md text-sm font-medium after:content-[''] after:absolute after:bottom-1 after:left-3 after:right-3 after:h-0.5 after:bg-black after:scale-x-0 after:origin-left after:transition-transform after:duration-300 hover:after:scale-x-100"
           >
             My Tunes

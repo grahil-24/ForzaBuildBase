@@ -1,10 +1,10 @@
-import { createFileRoute, Link } from '@tanstack/react-router'
+import { createFileRoute, Link} from '@tanstack/react-router'
 import { Menu, MenuButton, MenuItem, MenuItems } from '@headlessui/react'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faEllipsisH } from '@fortawesome/free-solid-svg-icons'
+import { faEllipsisH, faBookmark } from '@fortawesome/free-solid-svg-icons'
 import { PencilIcon, TrashIcon, MinusCircleIcon, ChevronDownIcon } from '@heroicons/react/24/outline'
 import { BACKEND, FRONTEND } from '../../../config/env'
-import { useInfiniteQuery, useQueryClient } from '@tanstack/react-query'
+import { useInfiniteQuery, useQueryClient, useMutation } from '@tanstack/react-query'
 import { authFetch } from '../../../api/authFetch'
 import type { AuthState } from '../../../types/auth'
 import ErrorToast from '../../../components/ErrorToast'
@@ -78,10 +78,10 @@ const shareIcon =
     </svg>
  
 
-const fetchTunes = async({pageParam, auth}: {pageParam: string | undefined, auth: AuthState}): Promise<InfiniteQueryPageType> => {
+const fetchTunes = async({user, pageParam, auth}: {user: string, pageParam: string | undefined, auth: AuthState}): Promise<InfiniteQueryPageType> => {
   const url = pageParam 
-    ? `${BACKEND}/profile/my-tunes?cursor=${pageParam}` 
-    : `${BACKEND}/profile/my-tunes`;
+    ? `${BACKEND}/profile/${user}/tunes?cursor=${pageParam}` 
+    : `${BACKEND}/profile/${user}/tunes`;
   const res = await authFetch(url, {method: 'GET'}, auth);
   return await res.json();
 }
@@ -100,7 +100,7 @@ type SortOption = 'newest' | 'oldest' | 'alphabetical'
 function RouteComponent() {
   const {auth} = Route.useRouteContext();
   const queryClient = useQueryClient();
-
+  const {user} = Route.useParams();
 
   const [renameModalOpen, setRenameModalOpen] = useState<boolean>(false);
   const [search, setSearch] = useState<string>("");
@@ -113,7 +113,7 @@ function RouteComponent() {
 
   const {data, error, fetchNextPage, hasNextPage, isFetching, isFetchingNextPage, status} = useInfiniteQuery({
     queryKey: ['tunes'],
-    queryFn: ({pageParam}) => fetchTunes({auth, pageParam}),
+    queryFn: ({pageParam}) => fetchTunes({user, auth, pageParam}),
     initialPageParam: undefined as string | undefined,
     getNextPageParam: (lastPage) => lastPage.nextCursor,
   })
@@ -161,6 +161,28 @@ function RouteComponent() {
   const removeTune = useRemoveTune(auth, handleRemoveTuneSuccess);
   const renameTune = useRenameTune(auth);
 
+  const saveTune = useMutation({
+    mutationFn: async(tune_id: number) => {
+      const res = await authFetch(`${BACKEND}/tune/${tune_id}/save`, {method: 'POST'}, auth);
+      if(!res.ok){
+        throw Error('Error saving tune! Try again later');
+      }
+    }, 
+    onError: (error) => {
+      toast.error(error?.message || 'Error saving tune! Try again later');
+      saveTune.reset();
+    },
+    onSuccess: async() => {
+      toast.success('Tune saved to profile successfully!', {autoClose: 3000});
+      saveTune.reset();
+      await queryClient.invalidateQueries({queryKey: ['tunes']});
+    }
+  })
+
+  const handleSaveTune = (tune_id: number) => {
+    saveTune.mutate(tune_id);
+  }
+
   const getSortLabel = (option: SortOption) => {
     switch(option) {
       case 'newest': return 'Newest';
@@ -181,6 +203,7 @@ function RouteComponent() {
   }, [sortBy])
 
   const processedTunes = useMemo(() => {
+    console.log("data ", data);
     if (!data?.pages) return [];
     
     let allTunes = data.pages.flatMap((page) => page.pages);
@@ -399,29 +422,37 @@ function RouteComponent() {
                                 </button>
                               </MenuItem>
                             }
-                            {auth.user?.username === tune.tune.creator.username ?
-                              (
-                                <MenuItem>
-                                  <button 
-                                    onClick={() => handleOpenDeleteModal(tune.tune.tune_id)} 
-                                    className='cursor-pointer group flex w-full items-center gap-2 sm:gap-3 px-3 sm:px-4 py-2 sm:py-3 text-xs sm:text-sm font-medium transition-colors hover:bg-red-100/50'
-                                  >
-                                    <TrashIcon className="transition-colors size-4 sm:size-5 text-gray-600 group-hover:text-red-600" />
-                                    <span className='transition-colors text-gray-700 group-hover:text-red-600'>Delete</span>
-                                  </button>
-                                </MenuItem>
-                              ) : (
-                                <MenuItem>
-                                  <button 
-                                    onClick={() => handleOpenRemoveModal(tune.tune.tune_id)} 
-                                    className='cursor-pointer group flex w-full items-center gap-2 sm:gap-3 px-3 sm:px-4 py-2 sm:py-3 text-xs sm:text-sm font-medium transition-colors hover:bg-red-100/50'
-                                  >
-                                    <MinusCircleIcon className="transition-colors size-4 sm:size-5 text-gray-600 group-hover:text-red-600" />
-                                    <span className='transition-colors text-gray-700 group-hover:text-red-600'>Remove</span>
-                                  </button>
-                                </MenuItem>
-                              )
-                            }
+                            {auth.user?.username === tune.tune.creator.username ? (
+                              <MenuItem>
+                                <button 
+                                  onClick={() => handleOpenDeleteModal(tune.tune.tune_id)} 
+                                  className='cursor-pointer group flex w-full items-center gap-2 sm:gap-3 px-3 sm:px-4 py-2 sm:py-3 text-xs sm:text-sm font-medium transition-colors hover:bg-red-100/50'
+                                >
+                                  <TrashIcon className="transition-colors size-4 sm:size-5 text-gray-600 group-hover:text-red-600" />
+                                  <span className='transition-colors text-gray-700 group-hover:text-red-600'>Delete</span>
+                                </button>
+                              </MenuItem>
+                            ) : tune.isSaved ? (
+                              <MenuItem>
+                                <button 
+                                  onClick={() => handleOpenRemoveModal(tune.tune.tune_id)} 
+                                  className='cursor-pointer group flex w-full items-center gap-2 sm:gap-3 px-3 sm:px-4 py-2 sm:py-3 text-xs sm:text-sm font-medium transition-colors hover:bg-red-100/50'
+                                >
+                                  <MinusCircleIcon className="transition-colors size-4 sm:size-5 text-gray-600 group-hover:text-red-600" />
+                                  <span className='transition-colors text-gray-700 group-hover:text-red-600'>Remove</span>
+                                </button>
+                              </MenuItem>
+                            ) : (
+                              <MenuItem>
+                                <button 
+                                  onClick={() => handleSaveTune(tune.tune.tune_id)} 
+                                  className='cursor-pointer group flex w-full items-center gap-2 sm:gap-3 px-3 sm:px-4 py-2 sm:py-3 text-xs sm:text-sm font-medium transition-colors hover:bg-green-100/50'
+                                >
+                                  <FontAwesomeIcon icon={faBookmark} />
+                                  <span className='transition-colors text-gray-700 group-hover:text-green-600'>Save</span>
+                                </button>
+                              </MenuItem>
+                            )}
                             <MenuItem>
                               <button 
                                 onClick={() => setShareDialogTuneId(tune.tune.tune_id)} 

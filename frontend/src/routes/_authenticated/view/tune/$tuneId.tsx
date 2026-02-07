@@ -17,11 +17,13 @@ import ShareTuneDialogComponent from '../../../../components/tune/ShareTuneDialo
 
 export const Route = createFileRoute('/_authenticated/view/tune/$tuneId')({
   loader: async({context, params, location}) => {
-    let tuneData = location.state.tuneDetails;
-    if(tuneData === undefined){
-      tuneData = await fetchTuneDetails(params.tuneId, context.auth);  
-    }
-    return tuneData;
+    // let tuneData = location.state.tuneDetails;
+    // if(tuneData === undefined){
+    //   tuneData = await fetchTuneDetails(params.tuneId, context.auth);  
+    // }
+    // return tuneData;
+
+    return await fetchTuneDetails(params.tuneId, context.auth);
   },
   head: () => ({
     meta: [
@@ -57,7 +59,7 @@ function RouteComponent() {
   const handleRemoveTuneSuccess = () => {
     toast.success('Tune removed successfully!', {autoClose: 3000});
     if(tuneDetails?.creator === auth.user?.username){
-      navigate({to: '/dashboard/tunes'});
+      navigate({to: '/u/$user', params: {user: auth.user!.username}});
     }else{
       setIsSaved(false);
     }
