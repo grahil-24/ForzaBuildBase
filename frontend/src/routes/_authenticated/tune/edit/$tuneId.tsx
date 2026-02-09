@@ -25,14 +25,14 @@ interface PathParams {
 }
 export const Route = createFileRoute('/_authenticated/tune/edit/$tuneId')({
   loader: async ({context, params, location}) => {
-    let tuneDetails = location.state?.tuneDetails
-    if(tuneDetails === undefined){
-      tuneDetails = await fetchTune(params, context.auth);
-    }
-    if(tuneDetails?.creator !== context.auth.user?.username){
-      throw notFound();
-    }
-    return tuneDetails;
+    // let tuneDetails = location.state?.tuneDetails
+    // if(tuneDetails === undefined){
+    //   tuneDetails = await fetchTune(params, context.auth);
+    // }
+    // if(tuneDetails?.creator !== context.auth.user?.username){
+    //   throw notFound();
+    // }
+    return await fetchTune(params, context.auth);
   },
   component: RouteComponent,
   notFoundComponent: NotFoundComponent,

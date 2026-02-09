@@ -118,7 +118,7 @@ function RouteComponent() {
                 <div className='flex justify-between'>
                     <div className='text-2xl ml-10'>Recent Tunes</div>
                     <div className='group inline-block'>
-                        <div><Link to={'/profile/tunes'}>View all</Link></div>
+                        <div><Link to={'/u/$user'} params={{user: auth.user!.username}}>View all</Link></div>
                         <div className='w-0 h-0.5 duration-300 group-hover:w-full bg-black'></div>
                     </div>
                 </div>

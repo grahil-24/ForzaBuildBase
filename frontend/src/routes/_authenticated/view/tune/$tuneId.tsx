@@ -7,24 +7,16 @@ import NotFoundComponent from '../../../../components/NotFoundComponent';
 import { ShareIcon, PencilIcon, TrashIcon, MinusCircleIcon } from '@heroicons/react/24/outline';
 import { useRemoveTune } from '../../../../hooks/useRemoveTune';
 import { RemoveDialogModal } from '../../../../components/profile/RemoveDialogModal';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import {toast} from 'react-toastify';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 // import { faBookmark as faBookmarkSolid } from '@fortawesome/free-solid-svg-icons';
 import {faBookmark} from '@fortawesome/free-regular-svg-icons'
-import { useMutation } from '@tanstack/react-query';
+import { useMutation, useQueryClient, useQuery } from '@tanstack/react-query';
 import ShareTuneDialogComponent from '../../../../components/tune/ShareTuneDialog';
 
 export const Route = createFileRoute('/_authenticated/view/tune/$tuneId')({
-  loader: async({context, params, location}) => {
-    // let tuneData = location.state.tuneDetails;
-    // if(tuneData === undefined){
-    //   tuneData = await fetchTuneDetails(params.tuneId, context.auth);  
-    // }
-    // return tuneData;
-
-    return await fetchTuneDetails(params.tuneId, context.auth);
-  },
+  component: RouteComponent,
   head: () => ({
     meta: [
       {
@@ -32,9 +24,7 @@ export const Route = createFileRoute('/_authenticated/view/tune/$tuneId')({
       }
     ]
   }),
-  
-  notFoundComponent: NotFoundComponent,
-  component: RouteComponent,
+  notFoundComponent: NotFoundComponent
 })
 
 const fetchTuneDetails = async(tune_id: string, auth: AuthState) => {
@@ -49,19 +39,35 @@ const fetchTuneDetails = async(tune_id: string, auth: AuthState) => {
 }
 
 function RouteComponent() {
-  const tuneDetails = Route.useLoaderData();
   const {auth} = Route.useRouteContext();
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
+  const { tuneId } = Route.useParams();
+  
+  const { data: tuneDetails, isLoading, error } = useQuery({
+    queryKey: ['tune', tuneId],
+    queryFn: () => fetchTuneDetails(tuneId, auth),
+  });
+
   const [removeModalOpen, setRemoveModalOpen] = useState<boolean>(false);
-  const [isSaved, setIsSaved] = useState(() => tuneDetails?.isSaved);
+  const [isSaved, setIsSaved] = useState<boolean>(false);
   const [isShareDialogOpen, setIsShareDialogOpen] = useState<boolean>(false);
 
-  const handleRemoveTuneSuccess = () => {
+  // Sync isSaved with tuneDetails when data loads/updates
+  useEffect(() => {
+    if (tuneDetails?.isSaved !== undefined) {
+      setIsSaved(tuneDetails.isSaved);
+    }
+  }, [tuneDetails?.isSaved]);
+
+  const handleRemoveTuneSuccess = async () => {
     toast.success('Tune removed successfully!', {autoClose: 3000});
     if(tuneDetails?.creator === auth.user?.username){
       navigate({to: '/u/$user', params: {user: auth.user!.username}});
     }else{
       setIsSaved(false);
+      await queryClient.invalidateQueries({queryKey: ['tune', tuneId]});
+      // await queryClient.invalidateQueries({queryKey: ['tunes', auth.user?.username]});
     }
   }
 
@@ -83,10 +89,12 @@ function RouteComponent() {
       toast.error(error?.message || 'Error saving tune! Try again later');
       saveTune.reset();
     },
-    onSuccess: () => {
+    onSuccess: async () => {
       toast.success('Tune saved to profile successfully!', {autoClose: 3000});
       saveTune.reset();
       setIsSaved(true);
+      await queryClient.invalidateQueries({queryKey: ['tune', tuneId]});
+      // await queryClient.invalidateQueries({queryKey: ['tunes', auth.user?.username]});
     }
   })
 
@@ -94,7 +102,33 @@ function RouteComponent() {
     saveTune.mutate();
   }
 
-  const imageUrl = formatS3BucketURL({manufacturer: tuneDetails!.car.Manufacturer!, image_filename: tuneDetails!.car.image_filename!, size: "medium"});
+  // Handle loading state
+  if (isLoading) {
+    return (
+      <div className="min-h-screen w-full flex justify-center items-center">
+        <svg className="size-8 animate-spin" viewBox="0 0 24 24">
+          <path fill="currentColor" d="M12,1A11,11,0,1,0,23,12,11,11,0,0,0,12,1Zm0,19a8,8,0,1,1,8-8A8,8,0,0,1,12,20Z" opacity=".25"/>
+          <path fill="currentColor" d="M10.72,19.9a8,8,0,0,1-6.5-9.79A7.77,7.77,0,0,1,10.4,4.16a8,8,0,0,1,9.49,6.52A1.54,1.54,0,0,0,21.38,12h.13a1.37,1.37,0,0,0,1.38-1.54,11,11,0,1,0-12.7,12.39A1.54,1.54,0,0,0,12,21.34h0A1.47,1.47,0,0,0,10.72,19.9Z"></path>
+        </svg>
+      </div>
+    );
+  }
+
+  // Handle error state
+  if (error) {
+    return (
+      <div className="min-h-screen w-full flex justify-center items-center">
+        <div className="text-red-600">Error loading tune details</div>
+      </div>
+    );
+  }
+
+  // Handle no data
+  if (!tuneDetails) {
+    return null;
+  }
+
+  const imageUrl = formatS3BucketURL({manufacturer: tuneDetails.car.Manufacturer!, image_filename: tuneDetails.car.image_filename!, size: "medium"});
   return (
     <div className="min-h-screen w-full flex justify-center px-2 sm:px-4 py-4 md:py-8 bg-slate-50">
       <div className="w-full max-w-6xl">
@@ -145,7 +179,7 @@ function RouteComponent() {
             {/* Left side - Created info + Class */}
             <div className="flex flex-wrap items-center gap-4">
               <div className="flex items-center gap-2">
-                <span className="text-slate-600">Created by: <strong className="text-slate-900">{tuneDetails?.creator}</strong></span>
+                <Link to='/u/$user' params={{user: tuneDetails.creator}}><span className="text-slate-600">Created by: <strong className="hover:underline text-slate-900">{tuneDetails?.creator}</strong></span></Link>
               </div>
               
               <div className="flex items-center gap-2">

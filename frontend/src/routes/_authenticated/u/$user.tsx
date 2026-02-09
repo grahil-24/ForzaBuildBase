@@ -112,7 +112,7 @@ function RouteComponent() {
   const [shareDialogTuneId, setShareDialogTuneId] = useState<number | null>(null);
 
   const {data, error, fetchNextPage, hasNextPage, isFetching, isFetchingNextPage, status} = useInfiniteQuery({
-    queryKey: ['tunes'],
+    queryKey: ['tunes', user],
     queryFn: ({pageParam}) => fetchTunes({user, auth, pageParam}),
     initialPageParam: undefined as string | undefined,
     getNextPageParam: (lastPage) => lastPage.nextCursor,
@@ -133,7 +133,7 @@ function RouteComponent() {
   const handleRemoveTuneSuccess = async() => {
     toast.success('Tune removed successfully!');
     //when data has been deleted, need to refresh data
-    await queryClient.invalidateQueries({queryKey: ['tunes']});
+    await queryClient.invalidateQueries({queryKey: ['tunes', user]});
   }
 
   const handleCloseRenameModal = () => {
@@ -145,7 +145,7 @@ function RouteComponent() {
       toast.success('Tune renamed successfully!');
       handleCloseRenameModal();
       //when data has been modified, need to refresh data
-      await queryClient.invalidateQueries({queryKey: ['tunes']});
+      await queryClient.invalidateQueries({queryKey: ['tunes', user]});
   }
 
   const handleOpenRenameModal = (tuneId: number) => {
@@ -175,7 +175,7 @@ function RouteComponent() {
     onSuccess: async() => {
       toast.success('Tune saved to profile successfully!', {autoClose: 3000});
       saveTune.reset();
-      await queryClient.invalidateQueries({queryKey: ['tunes']});
+      await queryClient.invalidateQueries({queryKey: ['tunes', user]});
     }
   })
 
@@ -383,7 +383,7 @@ function RouteComponent() {
                         </p>
                         
                         <div className='flex flex-wrap items-center gap-x-4 gap-y-2 text-xs md:text-sm text-gray-600'>
-                          <span>Creator: <span className='font-semibold text-gray-800'>{tune.tune.creator.username}</span></span>
+                          <Link className='pointer-events-auto' to='/u/$user'params={{user: tune.tune.creator.username}}><span>Creator: <span className='hover:underline font-semibold text-gray-800'>{tune.tune.creator.username}</span></span></Link>
                           <span className='hidden sm:inline text-gray-400'>•</span>
                           <span>Created: {new Date(tune.saved_on).toLocaleString('en-GB',{day: 'numeric', month: 'short', year: 'numeric' })}</span>
                         </div>
@@ -399,7 +399,7 @@ function RouteComponent() {
                       {/* Menu  */}
                       <div className='relative z-2 flex items-center pr-3 md:pr-4 pointer-events-auto'>
                         <Menu as="div" className="relative">
-                          <MenuButton className="p-1 cursor-pointer hover:bg-gray-100 transition-colors rounded-2xl">
+                          <MenuButton className="p-1 cursor-pointer focus:outline-none mt-2 sm:mt-0 rounded-2xl">
                             <FontAwesomeIcon 
                               icon={faEllipsisH} 
                               className="text-gray-600 text-lg md:text-xl" 
@@ -408,8 +408,8 @@ function RouteComponent() {
                           <MenuItems
                             transition
                             modal={false}
-                            anchor="bottom end"
-                            className="absolute right-0 mt-2 w-40 sm:w-48 bg-white border border-gray-200 shadow-xl rounded-lg overflow-hidden z-3 focus:outline-none transition duration-100 ease-out data-closed:scale-95 data-closed:opacity-0"
+                            anchor="bottom start"
+                            className="absolute right-0 mt-0 w-30 sm:w-35 bg-white border border-gray-200 shadow-xl rounded-lg overflow-hidden z-3 focus:outline-none transition duration-100 ease-out data-closed:scale-95 data-closed:opacity-0"
                           >
                             {auth.user?.username === tune.tune.creator.username && 
                               <MenuItem>

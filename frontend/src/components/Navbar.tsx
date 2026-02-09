@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Transition, Menu, MenuButton, MenuItem, MenuItems, Button} from "@headlessui/react";
 import { Link} from "@tanstack/react-router";
 import { Route } from "../routes/__root";
+import { Cog8ToothIcon, ArrowRightStartOnRectangleIcon } from "@heroicons/react/24/outline";
 
 function Nav() {
   const authContext = Route.useRouteContext().auth;
@@ -43,7 +44,7 @@ function Nav() {
           {/* User Menu */}
           {authContext.isAuthenticated && 
             <Menu as="div" className="relative ml-auto">
-              <MenuButton className="text-black relative flex items-center gap-2 rounded-full px-3 py-2 hover:bg-gray-100 transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-500">
+              <MenuButton className="focus:outline-none text-black relative flex items-center gap-2 rounded-full px-3 py-2 hover:bg-gray-100 transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-500">
                 <span className="sr-only">Open user menu</span>
                 <span className="text-sm font-medium">{authContext.user?.username}</span>
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -53,29 +54,31 @@ function Nav() {
 
               <MenuItems
                 transition
-                className="absolute right-0 z-20 mt-2 w-48 origin-top-right rounded-md bg-white border border-gray-200 shadow-lg py-1 transition data-closed:scale-95 data-closed:transform data-closed:opacity-0 data-enter:duration-100 data-enter:ease-out data-leave:duration-75 data-leave:ease-in"
+                className="focus:outline-none absolute right-0 z-20 mt-2 w-30 origin-top-right rounded-md bg-white border border-gray-200 shadow-lg py-0 transition data-closed:scale-95 data-closed:transform data-closed:opacity-0 data-enter:duration-100 data-enter:ease-out data-leave:duration-75 data-leave:ease-in"
               >
-                <MenuItem>
+                {/* <MenuItem>
                   <a
                     href="#"
                     className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                   >
                     Your profile
                   </a>
-                </MenuItem>
+                </MenuItem> */}
                 <MenuItem>
                   <Button
-                    className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                    className="flex gap-2 cursor-pointer items-center w-full text-left px-2 py-2 text-sm text-gray-700 hover:bg-gray-100"
                   >
+                    <Cog8ToothIcon className="size-6"/>
                     Settings
                   </Button>
                 </MenuItem>
                 <MenuItem>
                   <button
                     onClick={handleLogout}
-                    className="block px-4 w-full text-left cursor-pointer py-2 text-sm text-gray-700 hover:bg-gray-100"
+                    className="flex items-center group hover:bg-red-100/50 transition-colors duration-300 gap-2 px-2 w-full text-left cursor-pointer py-2 text-sm text-gray-700"
                   >
-                    Sign out
+                    <ArrowRightStartOnRectangleIcon className='group-hover:text-red-600 transition-colors duration-300 size-6' />
+                    <p className="group-hover:text-red-600 transition-colors duration-300">Sign out</p>
                   </button>
                 </MenuItem>
               </MenuItems>
@@ -159,7 +162,8 @@ function Nav() {
               Browse
             </Link>
             <Link
-              to="/dashboard/tunes"
+              to="/u/$user"
+              params={{user: authContext.user!.username}}
               className="text-gray-700 hover:bg-gray-100 hover:text-gray-900 block px-3 py-2 rounded-md text-base font-medium"
             >
               My Tunes
@@ -172,12 +176,12 @@ function Nav() {
                   <div className="px-3 py-2 text-sm font-medium text-gray-500">
                     {authContext.user?.username}
                   </div>
-                  <Link
+                  {/* <Link
                     to="/dashboard"
                     className="text-gray-700 hover:bg-gray-100 hover:text-gray-900 block px-3 py-2 rounded-md text-base font-medium"
                   >
                     Your profile
-                  </Link>
+                  </Link> */}
                   <button
                     className="w-full text-left text-gray-700 hover:bg-gray-100 hover:text-gray-900 block px-3 py-2 rounded-md text-base font-medium"
                   >

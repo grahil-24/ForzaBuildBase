@@ -16,7 +16,6 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthenticatedBrowseRouteImport } from './routes/_authenticated/browse'
 import { Route as AuthenticatedDashboardIndexRouteImport } from './routes/_authenticated/dashboard/index'
 import { Route as AuthenticatedUUserRouteImport } from './routes/_authenticated/u/$user'
-import { Route as AuthenticatedDashboardTunesRouteImport } from './routes/_authenticated/dashboard/tunes'
 import { Route as AuthenticatedViewTuneTuneIdRouteImport } from './routes/_authenticated/view/tune/$tuneId'
 import { Route as AuthenticatedViewCarCarIdRouteImport } from './routes/_authenticated/view/car/$carId'
 import { Route as AuthenticatedTuneEditTuneIdRouteImport } from './routes/_authenticated/tune/edit/$tuneId'
@@ -57,12 +56,6 @@ const AuthenticatedUUserRoute = AuthenticatedUUserRouteImport.update({
   path: '/u/$user',
   getParentRoute: () => AuthenticatedRoute,
 } as any)
-const AuthenticatedDashboardTunesRoute =
-  AuthenticatedDashboardTunesRouteImport.update({
-    id: '/dashboard/tunes',
-    path: '/dashboard/tunes',
-    getParentRoute: () => AuthenticatedRoute,
-  } as any)
 const AuthenticatedViewTuneTuneIdRoute =
   AuthenticatedViewTuneTuneIdRouteImport.update({
     id: '/view/tune/$tuneId',
@@ -93,7 +86,6 @@ export interface FileRoutesByFullPath {
   '/login': typeof LoginRoute
   '/sign-up': typeof SignUpRoute
   '/browse': typeof AuthenticatedBrowseRoute
-  '/dashboard/tunes': typeof AuthenticatedDashboardTunesRoute
   '/u/$user': typeof AuthenticatedUUserRoute
   '/dashboard': typeof AuthenticatedDashboardIndexRoute
   '/tune/car/$carId': typeof AuthenticatedTuneCarCarIdRoute
@@ -106,7 +98,6 @@ export interface FileRoutesByTo {
   '/login': typeof LoginRoute
   '/sign-up': typeof SignUpRoute
   '/browse': typeof AuthenticatedBrowseRoute
-  '/dashboard/tunes': typeof AuthenticatedDashboardTunesRoute
   '/u/$user': typeof AuthenticatedUUserRoute
   '/dashboard': typeof AuthenticatedDashboardIndexRoute
   '/tune/car/$carId': typeof AuthenticatedTuneCarCarIdRoute
@@ -121,7 +112,6 @@ export interface FileRoutesById {
   '/login': typeof LoginRoute
   '/sign-up': typeof SignUpRoute
   '/_authenticated/browse': typeof AuthenticatedBrowseRoute
-  '/_authenticated/dashboard/tunes': typeof AuthenticatedDashboardTunesRoute
   '/_authenticated/u/$user': typeof AuthenticatedUUserRoute
   '/_authenticated/dashboard/': typeof AuthenticatedDashboardIndexRoute
   '/_authenticated/tune/car/$carId': typeof AuthenticatedTuneCarCarIdRoute
@@ -136,7 +126,6 @@ export interface FileRouteTypes {
     | '/login'
     | '/sign-up'
     | '/browse'
-    | '/dashboard/tunes'
     | '/u/$user'
     | '/dashboard'
     | '/tune/car/$carId'
@@ -149,7 +138,6 @@ export interface FileRouteTypes {
     | '/login'
     | '/sign-up'
     | '/browse'
-    | '/dashboard/tunes'
     | '/u/$user'
     | '/dashboard'
     | '/tune/car/$carId'
@@ -163,7 +151,6 @@ export interface FileRouteTypes {
     | '/login'
     | '/sign-up'
     | '/_authenticated/browse'
-    | '/_authenticated/dashboard/tunes'
     | '/_authenticated/u/$user'
     | '/_authenticated/dashboard/'
     | '/_authenticated/tune/car/$carId'
@@ -230,13 +217,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedUUserRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
-    '/_authenticated/dashboard/tunes': {
-      id: '/_authenticated/dashboard/tunes'
-      path: '/dashboard/tunes'
-      fullPath: '/dashboard/tunes'
-      preLoaderRoute: typeof AuthenticatedDashboardTunesRouteImport
-      parentRoute: typeof AuthenticatedRoute
-    }
     '/_authenticated/view/tune/$tuneId': {
       id: '/_authenticated/view/tune/$tuneId'
       path: '/view/tune/$tuneId'
@@ -270,7 +250,6 @@ declare module '@tanstack/react-router' {
 
 interface AuthenticatedRouteChildren {
   AuthenticatedBrowseRoute: typeof AuthenticatedBrowseRoute
-  AuthenticatedDashboardTunesRoute: typeof AuthenticatedDashboardTunesRoute
   AuthenticatedUUserRoute: typeof AuthenticatedUUserRoute
   AuthenticatedDashboardIndexRoute: typeof AuthenticatedDashboardIndexRoute
   AuthenticatedTuneCarCarIdRoute: typeof AuthenticatedTuneCarCarIdRoute
@@ -281,7 +260,6 @@ interface AuthenticatedRouteChildren {
 
 const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
   AuthenticatedBrowseRoute: AuthenticatedBrowseRoute,
-  AuthenticatedDashboardTunesRoute: AuthenticatedDashboardTunesRoute,
   AuthenticatedUUserRoute: AuthenticatedUUserRoute,
   AuthenticatedDashboardIndexRoute: AuthenticatedDashboardIndexRoute,
   AuthenticatedTuneCarCarIdRoute: AuthenticatedTuneCarCarIdRoute,
