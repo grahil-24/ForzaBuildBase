@@ -69,7 +69,6 @@ const FilterSidebar = () => {
       initialSelected['manufacturer'] = brandValue;
     }
 
-
     setSelected(initialSelected);
   }, [currentSearch]);
 

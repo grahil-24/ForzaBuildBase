@@ -203,6 +203,93 @@ const getTune = catchAsync(async(req: Request, res: Response, next: NextFunction
     });
 });
 
+const getPublicTune = catchAsync(async(req: Request, res: Response, next: NextFunction) => {
+    const {user_id} = req;
+    const public_url = req.params.publicurl;
+    if(public_url && public_url.length !== 22){
+        return next(new AppError('Invalid public url', 400));
+    }
+
+    const em = RequestContext.getEntityManager();
+    if (!em) {
+        return next(new AppError("Entity manager not available", 500));
+    }
+    
+    // First, check if the tune exists
+    const tune = await em.findOne(Tune, {public_url}, {
+        populate: ['creator', 'car'],
+        fields: [
+            'tune_id', 'tune_name', 'created_on', 'resultant_rank', 'public_url',
+            'front_tire_pressure', 'rear_tire_pressure', 'final_drive',
+            'front_camber', 'rear_camber', 'front_toe', 'rear_toe', 'front_caster',
+            'front_arb', 'rear_arb', 'front_spring', 'rear_spring',
+            'front_ride_height', 'rear_ride_height', 'front_rebound', 'rear_rebound',
+            'front_bump', 'rear_bump', 'front_aero', 'rear_aero',
+            'brake_balance', 'brake_pressure',
+            'front_diff_accel', 'front_diff_decel', 'rear_diff_accel', 'rear_diff_decel',
+            'center_diff_balance',
+            'creator.user_id', 'creator.username',
+            'car.id', 'car.Year', 'car.image_filename', 'car.Model', 'car.Manufacturer'
+        ]
+    });
+
+    if (!tune) {
+        return next(new AppError('Tune not found', 404));
+    }
+
+    // Check if the current user has saved this tune
+    const userRef = em.getReference(User, {user_id});
+    const savedTune = await em.findOne(SavedTunes, {tune, user: userRef});
+    const isSaved = !!savedTune;
+
+    res.status(200).json({
+        status: 'success',
+        car: {
+            id: tune.car?.id,
+            Year: tune.car?.Year,
+            image_filename: tune.car?.image_filename,
+            Model: tune.car?.Model,
+            Manufacturer: tune.car?.Manufacturer
+        },
+        tune_name: tune.tune_name,
+        created_on: tune.created_on,
+        creator: tune.creator?.username,
+        class: tune.resultant_rank,
+        tune_id: tune.tune_id,
+        isSaved: isSaved,
+        public_url: tune.public_url,
+        tune_details: {
+            front_tire_pressure: tune.front_tire_pressure,
+            rear_tire_pressure: tune.rear_tire_pressure,
+            final_drive: tune.final_drive,
+            front_camber: tune.front_camber,
+            rear_camber: tune.rear_camber,
+            front_toe: tune.front_toe,
+            rear_toe: tune.rear_toe,
+            front_caster: tune.front_caster,
+            front_arb: tune.front_arb,
+            rear_arb: tune.rear_arb,
+            front_spring: tune.front_spring,
+            rear_spring: tune.rear_spring,
+            front_ride_height: tune.front_ride_height,
+            rear_ride_height: tune.rear_ride_height,
+            front_rebound: tune.front_rebound,
+            rear_rebound: tune.rear_rebound,
+            front_bump: tune.front_bump,
+            rear_bump: tune.rear_bump,
+            front_aero: tune.front_aero,
+            rear_aero: tune.rear_aero,
+            brake_balance: tune.brake_balance,
+            brake_pressure: tune.brake_pressure,
+            front_diff_accel: tune.front_diff_accel,
+            front_diff_decel: tune.front_diff_decel,
+            rear_diff_accel: tune.rear_diff_accel,
+            rear_diff_decel: tune.rear_diff_decel,
+            center_diff_balance: tune.center_diff_balance
+        }
+    });
+});
+
 const renameTune = catchAsync(async(req: Request, res: Response, next: NextFunction) => {
     const {user_id} = req;
     const tuneid = Number(req.params.tuneid);
@@ -304,4 +391,4 @@ const saveTune = catchAsync(async(req: Request, res: Response, next: NextFunctio
 });
 
 
-export {renameTune, removeTune, createAndUpdateTune, getTune, saveTune};
+export {renameTune, removeTune, createAndUpdateTune, getTune, saveTune, getPublicTune};

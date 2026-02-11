@@ -4,13 +4,13 @@ import { authFetch } from '../../../../api/authFetch';
 import { BACKEND } from '../../../../config/env';
 // import { SessionExpiredError } from '../../../../errors/auth.errors';
 import NotFoundComponent from '../../../../components/NotFoundComponent';
-import ErrorComponent from '../../../../components/ErrorComponent';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCog, faChartLine, faBolt, faTachometerAlt, faRocket, faHandPaper, faMountain} from '@fortawesome/free-solid-svg-icons';
 import type { IconDefinition } from '@fortawesome/free-solid-svg-icons';
 import {useState, useEffect, type  ReactElement, type JSX} from 'react';
 import { formatS3BucketURL } from '../../../../util/urlFormatter';
 import type { Car } from '../../../../types/car';
+import ErrorToast from '../../../../components/ErrorToast';
 
 const faSteeringWheel: ReactElement =
     <svg stroke="currentColor" fill="currentColor" strokeWidth="0" viewBox="0 0 512 512" height="15px" width="15px" xmlns="http://www.w3.org/2000/svg">
@@ -27,7 +27,7 @@ type Unit = 'imperial' | 'metric';
 export const Route = createFileRoute('/_authenticated/view/car/$carId')({
   loader: ({context, params}) => fetchCar(params, context.auth),
   notFoundComponent: NotFoundComponent,
-  errorComponent: ErrorComponent,
+  errorComponent: ErrorToast,
   component: RouteComponent,
   head: () => ({
     meta: [

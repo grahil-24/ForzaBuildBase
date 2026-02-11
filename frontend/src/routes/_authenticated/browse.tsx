@@ -8,6 +8,7 @@ import {authFetch} from "../../api/authFetch.ts";
 import type { AuthState } from '../../types/auth.ts';
 import { BACKEND } from '../../config/env.ts';
 import ScrollToTop from '../../components/ScrollToTop.tsx';
+import ErrorToast from '../../components/ErrorToast.tsx';
 
 interface BrowseSearch {
   page?: number,
@@ -49,6 +50,7 @@ export const Route = createFileRoute('/_authenticated/browse')({
       }
     ]
   }),
+  errorComponent: ErrorToast,
   preload: true,
   loaderDeps: ({search: {page, rank, drivetrain, fuel_type, manufacturer, search}}) => ({page, rank, drivetrain, fuel_type, manufacturer, search}),
   loader: async({ context, location }) => {

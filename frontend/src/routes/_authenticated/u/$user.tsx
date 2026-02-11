@@ -1,4 +1,4 @@
-import { createFileRoute, Link} from '@tanstack/react-router'
+import { createFileRoute, Link, notFound} from '@tanstack/react-router'
 import { Menu, MenuButton, MenuItem, MenuItems } from '@headlessui/react'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faEllipsisH, faBookmark } from '@fortawesome/free-solid-svg-icons'
@@ -7,7 +7,6 @@ import { BACKEND, FRONTEND } from '../../../config/env'
 import { useInfiniteQuery, useQueryClient, useMutation } from '@tanstack/react-query'
 import { authFetch } from '../../../api/authFetch'
 import type { AuthState } from '../../../types/auth'
-import ErrorToast from '../../../components/ErrorToast'
 import { formatS3BucketURL } from '../../../util/urlFormatter'
 import type { RankType } from '../../../types/car'
 import { useMemo, useState, useCallback} from 'react'
@@ -21,10 +20,37 @@ import { SearchBar } from '../../../components/profile/tunes/SearchBar'
 import Fuse from 'fuse.js'
 import ScrollToTop from '../../../components/ScrollToTop'
 import ShareTuneDialogComponent from '../../../components/tune/ShareTuneDialog'
+import NotFoundComponent from '../../../components/NotFoundComponent'
+import ErrorToast from '../../../components/ErrorToast'
 
 
 export const Route = createFileRoute('/_authenticated/u/$user')({
+  beforeLoad: ({params}) => {
+    if(params.user.length < 4){
+      throw notFound();
+    }
+  },
   component: RouteComponent,
+  loader: async ({ params, context }) => {
+    const { user } = params;
+    const { auth } = context;
+    
+    // Check if user exists by fetching first page
+    const url = `${BACKEND}/profile/${user}/tunes`;
+    const res = await authFetch(url, { method: 'GET' }, auth);
+    
+    if (res.status === 404) {
+      throw notFound();
+    }
+    
+    if (!res.ok) {
+      throw new Error('Something went wrong! Please try again later');
+    }
+    
+    // Return the initial data (optional - can be used to prevent duplicate fetch)
+    return await res.json();
+  },
+  errorComponent: ErrorToast,
   head: () => ({
     meta: [
       {
@@ -32,7 +58,7 @@ export const Route = createFileRoute('/_authenticated/u/$user')({
       }
     ]
   }),
-  errorComponent: ErrorToast
+  notFoundComponent: NotFoundComponent,
 })
 
 
@@ -82,7 +108,15 @@ const fetchTunes = async({user, pageParam, auth}: {user: string, pageParam: stri
   const url = pageParam 
     ? `${BACKEND}/profile/${user}/tunes?cursor=${pageParam}` 
     : `${BACKEND}/profile/${user}/tunes`;
+  
   const res = await authFetch(url, {method: 'GET'}, auth);
+  
+  if(!res.ok){
+    const error = new Error('Failed to fetch tunes');
+    // Attach the status so we can check it in the component
+    (error as any).status = res.status;
+    throw error;
+  }
   return await res.json();
 }
 
@@ -111,11 +145,11 @@ function RouteComponent() {
   const [sortBy, setSortBy] = useState<SortOption>('newest');
   const [shareDialogTuneId, setShareDialogTuneId] = useState<number | null>(null);
 
-  const {data, error, fetchNextPage, hasNextPage, isFetching, isFetchingNextPage, status} = useInfiniteQuery({
+  const {data, fetchNextPage, hasNextPage, isFetching, isFetchingNextPage, status, error} = useInfiniteQuery({
     queryKey: ['tunes', user],
     queryFn: ({pageParam}) => fetchTunes({user, auth, pageParam}),
     initialPageParam: undefined as string | undefined,
-    getNextPageParam: (lastPage) => lastPage.nextCursor,
+    getNextPageParam: (lastPage) => lastPage.nextCursor, 
   })
 
   const handleOpenRemoveModal = (tuneId: number) => {
@@ -218,6 +252,10 @@ function RouteComponent() {
     return sortTunes(allTunes);
   }, [data, search, sortTunes]);
 
+  if (status === 'error' && (error as any)?.status === 404) {
+    return <NotFoundComponent />;
+  }
+
   return (
     <div>
       <div className='top-0 bg-white border-b border-gray-200 shadow-sm'>
@@ -226,7 +264,7 @@ function RouteComponent() {
             <div>
               <h1 className='text-3xl font-bold text-gray-900'>Saved Tunes</h1>
               <p className='text-sm text-gray-600 mt-1'>
-                {data?.pages[0]?.totalCount || 0} {(data?.pages[0]?.totalCount || 0) === 1 ? 'tune' : 'tunes'} in your collection
+                {data?.pages[0]?.totalCount || 0} {(data?.pages[0]?.totalCount || 0) === 1 ? 'tune' : 'tunes'} in {user === auth.user?.username ? 'your' : `${user}'s`} collection
               </p>
             </div>
     
@@ -301,14 +339,6 @@ function RouteComponent() {
           </div>
         )  : (
           <>
-          {status === 'error' && (
-          // <div className='flex justify-center text-red-600'>
-          //   Error loading tunes
-          // </div>
-            
-            (<ErrorToast error={error} />)
-          )
-          }
             <RenameDialogModal 
               openModal={renameModalOpen}
               onClose={handleCloseRenameModal}
@@ -383,7 +413,15 @@ function RouteComponent() {
                         </p>
                         
                         <div className='flex flex-wrap items-center gap-x-4 gap-y-2 text-xs md:text-sm text-gray-600'>
-                          <Link className='pointer-events-auto' to='/u/$user'params={{user: tune.tune.creator.username}}><span>Creator: <span className='hover:underline font-semibold text-gray-800'>{tune.tune.creator.username}</span></span></Link>
+                          <Link className='pointer-events-auto flex items-center gap-2' to='/u/$user' params={{user: tune.tune.creator.username}}>
+                            <span className='text-gray-600'>Creator:</span>
+                            <img 
+                              src={`https://pub-30a40fbd52d04bf49802634a617fa5af.r2.dev/profile_pic/${tune.tune.creator.profile_pic}`}
+                              alt={`${tune.tune.creator.username}'s profile`}
+                              className='size-5 sm:size-6 rounded-full object-cover'
+                            />
+                            <span className='hover:underline font-semibold text-gray-800'>{tune.tune.creator.username}</span>
+                          </Link>
                           <span className='hidden sm:inline text-gray-400'>•</span>
                           <span>Created: {new Date(tune.saved_on).toLocaleString('en-GB',{day: 'numeric', month: 'short', year: 'numeric' })}</span>
                         </div>

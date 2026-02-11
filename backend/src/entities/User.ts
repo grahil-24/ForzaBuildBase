@@ -23,6 +23,9 @@ export class User{
     @Property({type: "varchar", nullable: false, length: 30})
     username?:string
 
+    @Property({type: "varchar", default: 'def.jpg'})
+    profile_pic?: string = 'def.jpg';
+
     constructor(options?: UserOptions) {
         this.email = options?.email;
         this.password = options?.password;

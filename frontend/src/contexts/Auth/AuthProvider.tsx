@@ -7,6 +7,7 @@ interface User {
     user_id: number,
     username: string,
     email?: string,
+    profile_pic: string
 }
 
 export function AuthProvider({children}: {children: React.ReactNode}){
@@ -69,7 +70,7 @@ export function AuthProvider({children}: {children: React.ReactNode}){
         .then((data) => {
             setAccessToken(data.access_token);
             setIsAuthenticated(true);
-            return fetch(`${BACKEND}/profile`, {
+            return fetch(`${BACKEND}/me`, {
                 headers: { Authorization: `Bearer ${data.access_token}` },
             });
         })

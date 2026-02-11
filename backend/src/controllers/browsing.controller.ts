@@ -59,7 +59,8 @@ export const getCars = catchAsync(async (req: Request, res: Response, next: Next
     total: count, 
     page, 
     totalPages: Math.ceil(count / limit) 
-  });
+  })
+  
 });
 
 export const getCar = catchAsync(async(req: Request, res: Response, next: NextFunction): Promise<void> => {

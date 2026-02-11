@@ -20,72 +20,79 @@ function Nav() {
         </div>
         
         {/* Desktop Navigation */}
-        <div className="hidden sm:flex items-center space-x-4 flex-1 ml-6 lg:ml-10">
-          <Link
-            to="/dashboard"
-            className="relative text-black px-3 py-2 rounded-md text-sm font-medium after:content-[''] after:absolute after:bottom-1 after:left-3 after:right-3 after:h-0.5 after:bg-black after:scale-x-0 after:origin-left after:transition-transform after:duration-300 hover:after:scale-x-100"
-          >
-            Dashboard
-          </Link>
-          <Link
-            to="/browse"
-            className="relative text-black px-3 py-2 rounded-md text-sm font-medium after:content-[''] after:absolute after:bottom-1 after:left-3 after:right-3 after:h-0.5 after:bg-black after:scale-x-0 after:origin-left after:transition-transform after:duration-300 hover:after:scale-x-100"
-          >
-            Browse
-          </Link>
-          <Link
-            to="/u/$user"
-            params={{user: authContext.user!.username}}
-            className="relative text-black px-3 py-2 rounded-md text-sm font-medium after:content-[''] after:absolute after:bottom-1 after:left-3 after:right-3 after:h-0.5 after:bg-black after:scale-x-0 after:origin-left after:transition-transform after:duration-300 hover:after:scale-x-100"
-          >
-            My Tunes
-          </Link>
-          
-          {/* User Menu */}
-          {authContext.isAuthenticated && 
-            <Menu as="div" className="relative ml-auto">
-              <MenuButton className="focus:outline-none text-black relative flex items-center gap-2 rounded-full px-3 py-2 hover:bg-gray-100 transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-500">
-                <span className="sr-only">Open user menu</span>
-                <span className="text-sm font-medium">{authContext.user?.username}</span>
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                </svg>
-              </MenuButton>
-
-              <MenuItems
-                transition
-                className="focus:outline-none absolute right-0 z-20 mt-2 w-30 origin-top-right rounded-md bg-white border border-gray-200 shadow-lg py-0 transition data-closed:scale-95 data-closed:transform data-closed:opacity-0 data-enter:duration-100 data-enter:ease-out data-leave:duration-75 data-leave:ease-in"
+        {authContext.isAuthenticated ? ( 
+            <div className="hidden sm:flex items-center space-x-4 flex-1 ml-6 lg:ml-10">
+              <Link
+                to="/dashboard"
+                className="relative text-black px-3 py-2 rounded-md text-sm font-medium after:content-[''] after:absolute after:bottom-1 after:left-3 after:right-3 after:h-0.5 after:bg-black after:scale-x-0 after:origin-left after:transition-transform after:duration-300 hover:after:scale-x-100"
               >
-                {/* <MenuItem>
-                  <a
-                    href="#"
-                    className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                  >
-                    Your profile
-                  </a>
-                </MenuItem> */}
-                <MenuItem>
-                  <Button
-                    className="flex gap-2 cursor-pointer items-center w-full text-left px-2 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                  >
-                    <Cog8ToothIcon className="size-6"/>
-                    Settings
-                  </Button>
-                </MenuItem>
-                <MenuItem>
-                  <button
-                    onClick={handleLogout}
-                    className="flex items-center group hover:bg-red-100/50 transition-colors duration-300 gap-2 px-2 w-full text-left cursor-pointer py-2 text-sm text-gray-700"
-                  >
-                    <ArrowRightStartOnRectangleIcon className='group-hover:text-red-600 transition-colors duration-300 size-6' />
-                    <p className="group-hover:text-red-600 transition-colors duration-300">Sign out</p>
-                  </button>
-                </MenuItem>
-              </MenuItems>
-            </Menu>
-          }
-        </div>
-        
+                Dashboard
+              </Link>
+              <Link
+                to="/browse"
+                className="relative text-black px-3 py-2 rounded-md text-sm font-medium after:content-[''] after:absolute after:bottom-1 after:left-3 after:right-3 after:h-0.5 after:bg-black after:scale-x-0 after:origin-left after:transition-transform after:duration-300 hover:after:scale-x-100"
+              >
+                Browse
+              </Link>
+              <Link
+                to="/u/$user"
+                params={{user: authContext.user!.username}}
+                className="relative text-black px-3 py-2 rounded-md text-sm font-medium after:content-[''] after:absolute after:bottom-1 after:left-3 after:right-3 after:h-0.5 after:bg-black after:scale-x-0 after:origin-left after:transition-transform after:duration-300 hover:after:scale-x-100"
+              >
+                My Tunes
+              </Link>
+              
+              {/* User Menu */}
+              <Menu as="div" className="relative ml-auto">
+                <MenuButton className="focus:outline-none text-black relative flex items-center gap-2 rounded-full mr-10 transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-500">
+                  {/* <span className="text-sm font-medium">{authContext.user?.username}</span> */}
+                   <img 
+                      src={`https://pub-30a40fbd52d04bf49802634a617fa5af.r2.dev/profile_pic/${authContext.user!.profile_pic}`}
+                      alt={`${authContext.user!.profile_pic}'s profile`}
+                      className='size-5 sm:size-8 rounded-full object-cover'
+                    />
+                  {/* <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                  </svg> */}
+                </MenuButton>
+
+                <MenuItems
+                  transition
+                  className="focus:outline-none absolute right-0 z-20 mt-2 w-30 origin-top-right rounded-md bg-white border border-gray-200 shadow-lg py-0 transition data-closed:scale-95 data-closed:transform data-closed:opacity-0 data-enter:duration-100 data-enter:ease-out data-leave:duration-75 data-leave:ease-in"
+                >
+                  {/* <MenuItem>
+                    <a
+                      href="#"
+                      className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                    >
+                      Your profile
+                    </a>
+                  </MenuItem> */}
+                  <MenuItem>
+                    <Button
+                      className="flex gap-2 cursor-pointer items-center w-full text-left px-2 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                    >
+                      <Cog8ToothIcon className="size-6"/>
+                      Settings
+                    </Button>
+                  </MenuItem>
+                  <MenuItem>
+                    <button
+                      onClick={handleLogout}
+                      className="flex items-center group hover:bg-red-100/50 transition-colors duration-300 gap-2 px-2 w-full text-left cursor-pointer py-2 text-sm text-gray-700"
+                    >
+                      <ArrowRightStartOnRectangleIcon className='group-hover:text-red-600 transition-colors duration-300 size-6' />
+                      <p className="group-hover:text-red-600 transition-colors duration-300">Sign out</p>
+                    </button>
+                  </MenuItem>
+                </MenuItems>
+              </Menu>
+            </div>
+          ) : 
+          (
+            <Link to='/login'>login/signup</Link>
+          )
+        }
         {/* Mobile menu button */}
         <div className="flex sm:hidden">
           <button
@@ -145,32 +152,32 @@ function Nav() {
     >
       {(ref) => (
         <div className="md:hidden border-t border-gray-200" id="mobile-menu">
-          <div
-            ref={ref as React.RefObject<HTMLDivElement>}
-            className="px-4 pt-2 pb-3 space-y-1"
-          >
-            <Link
-              to="/dashboard"
-              className="text-gray-900 hover:bg-gray-100 block px-3 py-2 rounded-md text-base font-medium"
+          {authContext.isAuthenticated ? (
+            <div
+              ref={ref as React.RefObject<HTMLDivElement>}
+              className="px-4 pt-2 pb-3 space-y-1"
             >
-              Dashboard
-            </Link>
-            <Link
-              to="/browse"
-              className="text-gray-700 hover:bg-gray-100 hover:text-gray-900 block px-3 py-2 rounded-md text-base font-medium"
-            >
-              Browse
-            </Link>
-            <Link
-              to="/u/$user"
-              params={{user: authContext.user!.username}}
-              className="text-gray-700 hover:bg-gray-100 hover:text-gray-900 block px-3 py-2 rounded-md text-base font-medium"
-            >
-              My Tunes
-            </Link>
-            
-            {/* Mobile user menu */}
-            {authContext.isAuthenticated && (
+              <Link
+                to="/dashboard"
+                className="text-gray-900 hover:bg-gray-100 block px-3 py-2 rounded-md text-base font-medium"
+              >
+                Dashboard
+              </Link>
+              <Link
+                to="/browse"
+                className="text-gray-700 hover:bg-gray-100 hover:text-gray-900 block px-3 py-2 rounded-md text-base font-medium"
+              >
+                Browse
+              </Link>
+              <Link
+                to="/u/$user"
+                params={{user: authContext.user!.username}}
+                className="text-gray-700 hover:bg-gray-100 hover:text-gray-900 block px-3 py-2 rounded-md text-base font-medium"
+              >
+                My Tunes
+              </Link>
+              
+              {/* Mobile user menu */}
               <>
                 <div className="border-t border-gray-200 pt-2 mt-2">
                   <div className="px-3 py-2 text-sm font-medium text-gray-500">
@@ -195,8 +202,11 @@ function Nav() {
                   </button>
                 </div>
               </>
-            )}
-          </div>
+            </div>
+            ) : (
+              <Link to='/login'>login/signup</Link>
+            )
+          }
         </div>
       )}
     </Transition>

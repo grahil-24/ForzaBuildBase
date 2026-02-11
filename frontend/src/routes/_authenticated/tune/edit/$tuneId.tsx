@@ -1,4 +1,4 @@
-import { createFileRoute, useBlocker, notFound, useNavigate, ErrorComponent} from '@tanstack/react-router'
+import { createFileRoute, useBlocker, notFound, useNavigate, useRouter} from '@tanstack/react-router'
 import { Tab, TabGroup, TabList, TabPanel, TabPanels } from '@headlessui/react'
 import { useLayoutEffect, useState, useRef} from 'react'
 import { TabForm } from '../../../../components/tune/tabs/TabForm'
@@ -16,6 +16,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faFloppyDisk } from '@fortawesome/free-solid-svg-icons'
 import { useMutation } from '@tanstack/react-query'
 import { toast } from 'react-toastify'
+import ErrorToast from '../../../../components/ErrorToast'
 
 const tuneData = data as unknown as Record<string, TuneData>;
 const categories = Object.keys(tuneData);
@@ -24,7 +25,7 @@ interface PathParams {
   tuneId: string 
 }
 export const Route = createFileRoute('/_authenticated/tune/edit/$tuneId')({
-  loader: async ({context, params, location}) => {
+  loader: async ({context, params}) => {
     // let tuneDetails = location.state?.tuneDetails
     // if(tuneDetails === undefined){
     //   tuneDetails = await fetchTune(params, context.auth);
@@ -36,7 +37,7 @@ export const Route = createFileRoute('/_authenticated/tune/edit/$tuneId')({
   },
   component: RouteComponent,
   notFoundComponent: NotFoundComponent,
-  errorComponent: ErrorComponent
+  errorComponent: ErrorToast
 })
 
 const fetchTune = async(params: PathParams, authContext: AuthState) => {
@@ -50,7 +51,11 @@ const fetchTune = async(params: PathParams, authContext: AuthState) => {
   if(!tune.ok){
     throw new Error();
   }
-  return (await tune.json());
+  const res = await tune.json();
+  if(res.creator !== authContext.user?.username){
+    throw notFound();
+  }
+  return res;
 }
 
 const classColors: Record<RankType, string> = {
@@ -82,6 +87,7 @@ const cssColors: Record<RankType, string> = {
   
 function RouteComponent() {
   const navigate = useNavigate();
+  const router = useRouter();
   const tuneDetails = Route.useLoaderData();
   const {auth} = Route.useRouteContext();
   const [carClass, setCarClass] = useState<RankType>(tuneDetails!.class);
@@ -175,12 +181,13 @@ function RouteComponent() {
       toast.error(error?.message || 'There was a problem updating the tune');
       updateTune.reset();
     },
-    onSuccess: (data: any) => {
+    onSuccess: (data) => {
       toast.success('Tune updated successfully!', {autoClose: 1000});
       updateTune.reset();
       setFormIsDirty(false);
       setTimeout(() => {
         navigate({to: '/view/tune/$tuneId', params: {tuneId: data.tune.tune_id}, state: {tuneDetails: {isSaved: true, created_on: data.tune.created_on, tune_id: data.tune.tune_id, tune_name: data.tune.tune_name, creator: auth.user!.username, car: tuneDetails!.car, class: carClass, tune_details: sliderData, public_url: tuneDetails!.public_url}}})
+        router.invalidate();
       }, 1000);
     }
   })

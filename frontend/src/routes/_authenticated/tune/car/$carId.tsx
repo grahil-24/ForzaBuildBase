@@ -17,6 +17,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faFloppyDisk } from '@fortawesome/free-solid-svg-icons'
 import { useMutation } from '@tanstack/react-query'
 import { toast } from 'react-toastify'
+import ErrorToast from '../../../../components/ErrorToast'
 
 const tuneData = data as unknown as Record<string, TuneData>;
 const categories = Object.keys(tuneData);
@@ -41,6 +42,7 @@ export const Route = createFileRoute('/_authenticated/tune/car/$carId')({
     ]
   }),
   notFoundComponent: NotFoundComponent,
+  errorComponent: ErrorToast,
   component: RouteComponent,
 })
 
@@ -191,7 +193,7 @@ function RouteComponent() {
       toast.error(error?.message || 'There was a problem saving the tune');
       createTune.reset();
     },
-    onSuccess: (data: any) => {
+    onSuccess: (data) => {
       toast.success('Tune created successfully!', {autoClose: 1000});
       createTune.reset();
       setFormIsDirty(false);

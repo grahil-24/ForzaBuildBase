@@ -13,6 +13,7 @@ import { Route as SignUpRouteImport } from './routes/sign-up'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as AuthenticatedRouteImport } from './routes/_authenticated'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as SharePublic_urlRouteImport } from './routes/share/$public_url'
 import { Route as AuthenticatedBrowseRouteImport } from './routes/_authenticated/browse'
 import { Route as AuthenticatedDashboardIndexRouteImport } from './routes/_authenticated/dashboard/index'
 import { Route as AuthenticatedUUserRouteImport } from './routes/_authenticated/u/$user'
@@ -38,6 +39,11 @@ const AuthenticatedRoute = AuthenticatedRouteImport.update({
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SharePublic_urlRoute = SharePublic_urlRouteImport.update({
+  id: '/share/$public_url',
+  path: '/share/$public_url',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AuthenticatedBrowseRoute = AuthenticatedBrowseRouteImport.update({
@@ -86,6 +92,7 @@ export interface FileRoutesByFullPath {
   '/login': typeof LoginRoute
   '/sign-up': typeof SignUpRoute
   '/browse': typeof AuthenticatedBrowseRoute
+  '/share/$public_url': typeof SharePublic_urlRoute
   '/u/$user': typeof AuthenticatedUUserRoute
   '/dashboard': typeof AuthenticatedDashboardIndexRoute
   '/tune/car/$carId': typeof AuthenticatedTuneCarCarIdRoute
@@ -98,6 +105,7 @@ export interface FileRoutesByTo {
   '/login': typeof LoginRoute
   '/sign-up': typeof SignUpRoute
   '/browse': typeof AuthenticatedBrowseRoute
+  '/share/$public_url': typeof SharePublic_urlRoute
   '/u/$user': typeof AuthenticatedUUserRoute
   '/dashboard': typeof AuthenticatedDashboardIndexRoute
   '/tune/car/$carId': typeof AuthenticatedTuneCarCarIdRoute
@@ -112,6 +120,7 @@ export interface FileRoutesById {
   '/login': typeof LoginRoute
   '/sign-up': typeof SignUpRoute
   '/_authenticated/browse': typeof AuthenticatedBrowseRoute
+  '/share/$public_url': typeof SharePublic_urlRoute
   '/_authenticated/u/$user': typeof AuthenticatedUUserRoute
   '/_authenticated/dashboard/': typeof AuthenticatedDashboardIndexRoute
   '/_authenticated/tune/car/$carId': typeof AuthenticatedTuneCarCarIdRoute
@@ -126,6 +135,7 @@ export interface FileRouteTypes {
     | '/login'
     | '/sign-up'
     | '/browse'
+    | '/share/$public_url'
     | '/u/$user'
     | '/dashboard'
     | '/tune/car/$carId'
@@ -138,6 +148,7 @@ export interface FileRouteTypes {
     | '/login'
     | '/sign-up'
     | '/browse'
+    | '/share/$public_url'
     | '/u/$user'
     | '/dashboard'
     | '/tune/car/$carId'
@@ -151,6 +162,7 @@ export interface FileRouteTypes {
     | '/login'
     | '/sign-up'
     | '/_authenticated/browse'
+    | '/share/$public_url'
     | '/_authenticated/u/$user'
     | '/_authenticated/dashboard/'
     | '/_authenticated/tune/car/$carId'
@@ -164,6 +176,7 @@ export interface RootRouteChildren {
   AuthenticatedRoute: typeof AuthenticatedRouteWithChildren
   LoginRoute: typeof LoginRoute
   SignUpRoute: typeof SignUpRoute
+  SharePublic_urlRoute: typeof SharePublic_urlRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -194,6 +207,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/share/$public_url': {
+      id: '/share/$public_url'
+      path: '/share/$public_url'
+      fullPath: '/share/$public_url'
+      preLoaderRoute: typeof SharePublic_urlRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_authenticated/browse': {
@@ -277,6 +297,7 @@ const rootRouteChildren: RootRouteChildren = {
   AuthenticatedRoute: AuthenticatedRouteWithChildren,
   LoginRoute: LoginRoute,
   SignUpRoute: SignUpRoute,
+  SharePublic_urlRoute: SharePublic_urlRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
