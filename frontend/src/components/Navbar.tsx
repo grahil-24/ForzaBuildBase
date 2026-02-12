@@ -3,6 +3,7 @@ import { Transition, Menu, MenuButton, MenuItem, MenuItems, Button} from "@headl
 import { Link} from "@tanstack/react-router";
 import { Route } from "../routes/__root";
 import { Cog8ToothIcon, ArrowRightStartOnRectangleIcon } from "@heroicons/react/24/outline";
+import { PROFILE_PIC } from "../config/env";
 
 function Nav() {
   const authContext = Route.useRouteContext().auth;
@@ -47,7 +48,7 @@ function Nav() {
                 <MenuButton className="focus:outline-none text-black relative flex items-center gap-2 rounded-full mr-10 transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-500">
                   {/* <span className="text-sm font-medium">{authContext.user?.username}</span> */}
                    <img 
-                      src={`https://pub-30a40fbd52d04bf49802634a617fa5af.r2.dev/profile_pic/${authContext.user!.profile_pic}`}
+                      src={`${PROFILE_PIC}/${authContext.user!.profile_pic}`}
                       alt={`${authContext.user!.profile_pic}'s profile`}
                       className='size-5 sm:size-8 rounded-full object-cover'
                     />
@@ -69,12 +70,13 @@ function Nav() {
                     </a>
                   </MenuItem> */}
                   <MenuItem>
-                    <Button
-                      className="flex gap-2 cursor-pointer items-center w-full text-left px-2 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                    >
-                      <Cog8ToothIcon className="size-6"/>
-                      Settings
-                    </Button>
+                  <Link 
+                    to='/settings'
+                    className="flex gap-2 cursor-pointer items-center w-full text-left px-2 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded border-0 bg-transparent"
+                  >
+                    <Cog8ToothIcon className="size-6"/>
+                    Settings
+                  </Link>
                   </MenuItem>
                   <MenuItem>
                     <button

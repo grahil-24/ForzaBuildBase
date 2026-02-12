@@ -124,10 +124,12 @@ function RouteComponent() {
             {/* Right side - Login prompt */}
             <div className="text-center md:text-right">
               <p className="text-slate-600 text-sm mb-2">Want to save this tune?</p>
-              <Link to='/login' search={{redirect: `/view/tune/${tuneDetails.tune_id}`}}>
-                <button className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-semibold transition-colors">
-                  Login to Save
-                </button>
+              <Link 
+                to='/login' 
+                search={{redirect: `/view/tune/${tuneDetails.tune_id}`}}
+                className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-semibold transition-colors inline-block"
+              >
+                Login to Save
               </Link>
             </div>
           </div>

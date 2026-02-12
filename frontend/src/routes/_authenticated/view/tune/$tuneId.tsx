@@ -3,7 +3,7 @@ import type { RankType } from '../../../../types/car';
 import { formatS3BucketURL } from '../../../../util/urlFormatter';
 import type { AuthState } from '../../../../types/auth';
 import { authFetch } from '../../../../api/authFetch';
-import { BACKEND, FRONTEND } from '../../../../config/env';
+import { BACKEND, FRONTEND, PROFILE_PIC } from '../../../../config/env';
 import NotFoundComponent from '../../../../components/NotFoundComponent';
 import { ShareIcon, PencilIcon, TrashIcon, MinusCircleIcon } from '@heroicons/react/24/outline';
 import { useRemoveTune } from '../../../../hooks/useRemoveTune';
@@ -185,7 +185,15 @@ function RouteComponent() {
             {/* Left side - Created info + Class */}
             <div className="flex flex-wrap items-center gap-4">
               <div className="flex items-center gap-2">
-                <Link to='/u/$user' params={{user: tuneDetails.creator}}><span className="text-slate-600">Created by: <strong className="hover:underline text-slate-900">{tuneDetails?.creator}</strong></span></Link>
+                <Link to='/u/$user' params={{user: tuneDetails.creator}} className="flex items-center gap-2">
+                  <span className="text-slate-600">Created by:</span>
+                  <img 
+                    src={`${PROFILE_PIC}/${tuneDetails?.profile_pic}`}
+                    alt={`${tuneDetails?.creator}'s profile`}
+                    className='size-5 sm:size-6 rounded-full object-cover'
+                  />
+                  <strong className="hover:underline text-slate-900">{tuneDetails?.creator}</strong>
+                </Link>
               </div>
               
               <div className="flex items-center gap-2">
@@ -206,11 +214,14 @@ function RouteComponent() {
               { isSaved ? (
                 <>
                   {tuneDetails?.creator === auth.user?.username && (
-                    <Link to='/tune/edit/$tuneId' params={{tuneId: tuneDetails!.tune_id.toString()}} state={{tuneDetails}}>
-                      <button className="cursor-pointer bg-blue-600 hover:bg-blue-700 text-white pl-2 pr-3 py-2 rounded-lg font-semibold transition-colors flex items-center gap-2">
-                        <PencilIcon className='size-4 mr-auto'/>
-                        Edit Tune
-                      </button>
+                    <Link 
+                      to='/tune/edit/$tuneId' 
+                      params={{tuneId: tuneDetails!.tune_id.toString()}} 
+                      state={{tuneDetails}}
+                      className="cursor-pointer bg-blue-600 hover:bg-blue-700 text-white pl-2 pr-3 py-2 rounded-lg font-semibold transition-colors flex items-center gap-2"
+                    >
+                      <PencilIcon className='size-4'/>
+                      Edit Tune
                     </Link>
                   )}
                   <RemoveDialogModal 

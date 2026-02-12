@@ -1,4 +1,4 @@
-import { HeadContent, Outlet, createRootRouteWithContext } from '@tanstack/react-router'
+import { HeadContent, Outlet, createRootRouteWithContext, useMatchRoute } from '@tanstack/react-router'
 import type { AuthState } from '../types/auth'
 import ErrorComponent from '../components/ErrorComponent'
 import NotFoundComponent from '../components/NotFoundComponent'
@@ -40,11 +40,17 @@ export const Route = createRootRouteWithContext<MyRouterContext>()({
 })
 
 function RootComponent() {
+  const hideNavinRoutes = ['/login', '/sign-up', '/'];
+
+  const matchRoute = useMatchRoute();
+
+  const matchedHideNavRoute = hideNavinRoutes.some((route) => matchRoute({to: route}));
+
   useRouterLoadingBar();
   return (
     <>
       <HeadContent />
-      <Nav />
+      {!matchedHideNavRoute ? <Nav /> : null}
       <Outlet />
     </>
   )

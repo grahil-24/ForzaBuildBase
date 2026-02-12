@@ -8,7 +8,6 @@ import {Car} from '../entities/Car';
 import { validateTuneName } from '../utils/Validator';
 import { SavedTunes } from '../entities/SavedTunes';
 import { generatePublicURL } from '../utils/PublicURL';
-import type { Loaded } from '@mikro-orm/mysql';
 
 const createAndUpdateTune = catchAsync(async(req: Request, res: Response, next: NextFunction) => {
     const {user_id} = req;
@@ -141,7 +140,7 @@ const getTune = catchAsync(async(req: Request, res: Response, next: NextFunction
             'brake_balance', 'brake_pressure',
             'front_diff_accel', 'front_diff_decel', 'rear_diff_accel', 'rear_diff_decel',
             'center_diff_balance',
-            'creator.user_id', 'creator.username',
+            'creator.user_id', 'creator.username', 'creator.profile_pic',
             'car.id', 'car.Year', 'car.image_filename', 'car.Model', 'car.Manufacturer'
         ]
     });
@@ -167,6 +166,7 @@ const getTune = catchAsync(async(req: Request, res: Response, next: NextFunction
         tune_name: tune.tune_name,
         created_on: tune.created_on,
         creator: tune.creator?.username,
+        profile_pic: tune.creator?.profile_pic,
         class: tune.resultant_rank,
         tune_id: tune.tune_id,
         isSaved: isSaved,
@@ -228,7 +228,7 @@ const getPublicTune = catchAsync(async(req: Request, res: Response, next: NextFu
             'brake_balance', 'brake_pressure',
             'front_diff_accel', 'front_diff_decel', 'rear_diff_accel', 'rear_diff_decel',
             'center_diff_balance',
-            'creator.user_id', 'creator.username',
+            'creator.user_id', 'creator.username', 'creator.profile_pic',
             'car.id', 'car.Year', 'car.image_filename', 'car.Model', 'car.Manufacturer'
         ]
     });
@@ -254,6 +254,7 @@ const getPublicTune = catchAsync(async(req: Request, res: Response, next: NextFu
         tune_name: tune.tune_name,
         created_on: tune.created_on,
         creator: tune.creator?.username,
+        profile_pic: tune.creator?.profile_pic,
         class: tune.resultant_rank,
         tune_id: tune.tune_id,
         isSaved: isSaved,

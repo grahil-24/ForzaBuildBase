@@ -6,7 +6,6 @@ import { AppError } from '../utils/AppError';
 import { catchAsync } from '../utils/catchAsync';
 
 export const getCars = catchAsync(async (req: Request, res: Response, next: NextFunction): Promise<void> => {
-  // console.log("req in get cars ", req);
   const filters: FilterQuery<Car> = {};
   const limit: number = 20; 
   const page: number = Number(req.query.page) || 1;
@@ -72,7 +71,7 @@ export const getCar = catchAsync(async(req: Request, res: Response, next: NextFu
     return next(new AppError("Entity manager not available", 500));
   }
 
-  const car = await em.findOne(Car, {id: carId as unknown as IntegerType});
+  const car = await em.findOne(Car, {id: carId});
   if(!car){
     res.status(404).json({status: "error", message: "Car not found"});
   }else{

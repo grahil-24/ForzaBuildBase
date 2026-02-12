@@ -3,7 +3,7 @@ import { Menu, MenuButton, MenuItem, MenuItems } from '@headlessui/react'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faEllipsisH, faBookmark } from '@fortawesome/free-solid-svg-icons'
 import { PencilIcon, TrashIcon, MinusCircleIcon, ChevronDownIcon } from '@heroicons/react/24/outline'
-import { BACKEND, FRONTEND } from '../../../config/env'
+import { BACKEND, FRONTEND, PROFILE_PIC } from '../../../config/env'
 import { useInfiniteQuery, useQueryClient, useMutation } from '@tanstack/react-query'
 import { authFetch } from '../../../api/authFetch'
 import type { AuthState } from '../../../types/auth'
@@ -416,7 +416,7 @@ function RouteComponent() {
                           <Link className='pointer-events-auto flex items-center gap-2' to='/u/$user' params={{user: tune.tune.creator.username}}>
                             <span className='text-gray-600'>Creator:</span>
                             <img 
-                              src={`https://pub-30a40fbd52d04bf49802634a617fa5af.r2.dev/profile_pic/${tune.tune.creator.profile_pic}`}
+                              src={`${PROFILE_PIC}/${tune.tune.creator.profile_pic}`}
                               alt={`${tune.tune.creator.username}'s profile`}
                               className='size-5 sm:size-6 rounded-full object-cover'
                             />

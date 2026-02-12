@@ -1,14 +1,11 @@
 import { type EmblaOptionsType } from 'embla-carousel'
 import { PrevButton, NextButton, usePrevNextButtons } from './CarouselArrowButton'
 import useEmblaCarousel from 'embla-carousel-react'
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faEllipsisVertical} from '@fortawesome/free-solid-svg-icons'
-import { Menu, MenuButton, MenuItem, MenuItems } from '@headlessui/react'
-import { PencilIcon, TrashIcon, MinusCircleIcon } from '@heroicons/react/24/outline'
 import type { Tune } from '../../../types/tune'
 import { formatS3BucketURL } from '../../../util/urlFormatter'
 import type { RankType } from '../../../types/car'
 import { Link } from '@tanstack/react-router'
+import { PROFILE_PIC } from '../../../config/env'
 
 type PropType = {
   slides: Tune[],
@@ -29,7 +26,7 @@ const rank_to_color: Record<RankType, string> = {
 }
 
 const EmblaCarousel: React.FC<PropType> = (props) => {
-  const { slides, options, user, onRenameClick, onRemoveClick, onDeleteClick} = props
+  const { slides, options} = props
   const [emblaRef, emblaApi] = useEmblaCarousel(options)
 
   const {
@@ -86,14 +83,16 @@ const EmblaCarousel: React.FC<PropType> = (props) => {
                       
                       <div className='mx-auto'>
                         <div>Created by:</div>
-                        <div className='flex gap-1'>
-                          <img 
-                              src={`https://pub-30a40fbd52d04bf49802634a617fa5af.r2.dev/profile_pic/${tune.tune.creator.profile_pic}`}
-                              alt={`${tune.tune.creator.username}'s profile`}
-                              className='size-5 sm:size-6 rounded-full object-cover'
-                            />
-                            {tune.tune.creator.username}
-                        </div>
+                        <Link to='/u/$user' params={{user: tune.tune.creator.username}}>
+                          <div className='cursor-pointer flex gap-1 group'>
+                            <img 
+                                src={`${PROFILE_PIC}/${tune.tune.creator.profile_pic}`}
+                                alt={`${tune.tune.creator.username}'s profile`}
+                                className='size-5 sm:size-6 rounded-full object-cover'
+                              />
+                              <p className='group-hover:underline'>{tune.tune.creator.username}</p>
+                          </div>
+                        </Link>
                       </div>
 
                     </div>
