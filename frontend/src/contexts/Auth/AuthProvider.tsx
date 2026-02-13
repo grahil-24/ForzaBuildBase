@@ -6,7 +6,7 @@ import { BACKEND } from '../../config/env';
 interface User {
     user_id: number,
     username: string,
-    email?: string,
+    email: string,
     profile_pic: string
 }
 
@@ -17,40 +17,6 @@ export function AuthProvider({children}: {children: React.ReactNode}){
     const [accessToken, setAccessToken] = useState<string | null>(null);
     //restore auth state on app load
     useEffect(() => {
-        // const token = localStorage.getItem('access_token')
-        // if(accessToken){
-        //     //validate access token with backend
-        //     fetch(`${BACKEND}/auth/verify`, {
-        //         headers: {Authorization: `Bearer ${accessToken}`},
-        //         credentials: 'include'
-        //     })
-        //     .then((response) => response.json())
-        //         //valid access token or successfully refreshed token
-        //     .then((userData) => {
-        //         if(userData.status === 'success'){
-        //         //if access token got refreshed, update it in localstorage
-        //             if(userData.access_token){
-        //                 localStorage.setItem('access_token', userData.access_token);
-        //             }
-        //             setAccessToken(localStorage.getItem('access_token'));
-        //             setUser(userData.user);
-        //             setIsAuthenticated(true);
-        //         }else{
-        //             setAccessToken(null);
-        //             localStorage.removeItem('access_token');
-        //         }
-        //     })
-        //     .catch(() => {
-        //         setAccessToken(null);
-        //         localStorage.removeItem('access_token');
-        //     })
-        //     .finally(() => {
-        //         setIsLoading(false);
-        //     })
-        // }else{
-        //     setIsLoading(false);
-        // }
-    
         fetch(`${BACKEND}/auth/refresh`,
             {
                 method: 'GET',

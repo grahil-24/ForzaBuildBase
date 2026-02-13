@@ -4,6 +4,33 @@ import { User } from "../entities/User";
 import { SavedTunes } from "../entities/SavedTunes";
 import { RequestContext } from "@mikro-orm/core";
 import { AppError } from "../utils/AppError";
+import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
+import { PutObjectCommand, S3Client } from "@aws-sdk/client-s3";
+import path from "path";
+
+const S3 = new S3Client({
+    region: "auto",
+    endpoint: `https://${process.env.R2_ACCT_ID}.r2.cloudflarestorage.com`,
+    credentials: {
+        accessKeyId: process.env.R2_ACCESS_KEY as string,
+        secretAccessKey: process.env.R2_SECRET_KEY as string
+    }  
+})
+
+export const getPresignedURL = catchAsync(async(req: Request, res: Response, next: NextFunction) => {
+    const image_name = req.body.image_name;
+    const file_type = req.body.file_type;
+    const ext = path.extname(image_name).slice(1);
+    const presignedURL = await getSignedUrl(S3, 
+        new PutObjectCommand({
+            Bucket: process.env.R2_BUCKET, 
+            Key: `profile_pic/${image_name}`,
+            ContentType: file_type
+        }),
+        {expiresIn: 3600}
+    )
+    res.status(200).json({status:"success", presigned_url: presignedURL});
+});
 
 export const getRecentTunes = catchAsync(async(req: Request, res: Response, next: NextFunction) => {
     const user = new User({user_id: req.user_id});
@@ -38,5 +65,20 @@ export const me = catchAsync(async(req: Request, res: Response, next: NextFuncti
         return next(new AppError('User not found!', 404));
     }
 
-    res.status(200).json({user_id: user.user_id, username: user.username, profile_pic: user.profile_pic});
+    res.status(200).json({user_id: user.user_id, username: user.username, email: user.email, profile_pic: user.profile_pic});
+});
+
+export const updateProfilePicture = catchAsync(async(req: Request, res: Response, next: NextFunction) => {
+    const {user_id} = req;
+    const {profile_pic} = req.body;
+
+    const em = RequestContext.getEntityManager();
+    if (!em) {
+        return next(new AppError("Entity manager not available", 500));
+    }
+
+    const user = em.getReference(User, {user_id});
+    em.assign(user, {profile_pic})
+    em.persistAndFlush(user);
+    res.status(204).json({status: "success"})
 });

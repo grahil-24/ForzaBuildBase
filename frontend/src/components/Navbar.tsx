@@ -45,7 +45,7 @@ function Nav() {
               
               {/* User Menu */}
               <Menu as="div" className="relative ml-auto">
-                <MenuButton className="focus:outline-none text-black relative flex items-center gap-2 rounded-full mr-10 transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-500">
+                <MenuButton className="cursor-pointer focus:outline-none text-black relative flex items-center gap-2 rounded-full mr-10 transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-500">
                   {/* <span className="text-sm font-medium">{authContext.user?.username}</span> */}
                    <img 
                       src={`${PROFILE_PIC}/${authContext.user!.profile_pic}`}
