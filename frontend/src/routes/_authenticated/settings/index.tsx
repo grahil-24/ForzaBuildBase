@@ -1,10 +1,12 @@
-import { createFileRoute } from '@tanstack/react-router'
+import { createFileRoute, useNavigate, useRouter } from '@tanstack/react-router'
 import { CameraIcon, UserCircleIcon, LockClosedIcon, TrashIcon, EyeIcon, EyeSlashIcon, CheckIcon, XMarkIcon} from '@heroicons/react/24/outline';
 import { useState, useRef, useEffect } from 'react';
 import { BACKEND, PROFILE_PIC } from '../../../config/env';
 import Croppie from 'croppie'; 
 import 'croppie/croppie.css';
 import { authFetch } from '../../../api/authFetch';
+import { toast } from 'react-toastify';
+import ButtonSpinner from '../../../components/ButtonSpinner';
 
 interface UserProfile {
   username: string;
@@ -19,6 +21,8 @@ export const Route = createFileRoute('/_authenticated/settings/')({
 
 function RouteComponent (){
   const {auth} = Route.useRouteContext();
+  const router = useRouter();
+  const navigate = useNavigate();
   const [profile, setProfile] = useState<UserProfile>({
     username: auth.user!.username,
     email: auth.user!.email,
@@ -34,7 +38,7 @@ function RouteComponent (){
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [tempUsername, setTempUsername] = useState(profile.username);
   const [tempEmail, setTempEmail] = useState(profile.email);
-  const [isUploading, setIsUploading] = useState<boolean>(false);
+  const [isUpdatingProfilePic, setIsUpdatingProfilePic] = useState<boolean>(false);
   
   const [passwordData, setPasswordData] = useState({
     current: '',
@@ -99,7 +103,7 @@ function RouteComponent (){
         return;
       }
 
-      setSelectedFile(file); // Store the original file
+      setSelectedFile(file);
 
       const reader = new FileReader();
       reader.onloadend = () => {
@@ -113,46 +117,47 @@ function RouteComponent (){
   const handleCropSave = async () => {
     if (!croppieInstanceRef.current || !selectedFile) return;
     
-    setIsUploading(true);
+    setIsUpdatingProfilePic(true);
     
     try {
-      // Determine format from original file
-      const fileType = selectedFile.type;
-      const extension = selectedFile.name.split('.').pop()?.toLowerCase() || 'jpg';
+      const extension = 'jpg'
       
-      // Map MIME type to croppie format
-      let format: 'jpeg' | 'png' | 'webp' = 'jpeg';
-      let mimeType = 'image/jpeg';
-      
-      if (fileType === 'image/png') {
-        format = 'png';
-        mimeType = 'image/png';
-      } else if (fileType === 'image/webp') {
-        format = 'webp';
-        mimeType = 'image/webp';
-      }
+      // Always use JPEG format
+      const format = 'jpeg';
+      const mimeType = 'image/jpeg';
 
       // Get cropped image as blob with original format
       const blob = await croppieInstanceRef.current.result({
         type: 'blob',
         size: 'viewport',
-        format: format, // Use original format
+        format: format,
         quality: 1,
         circle: false,
       });
 
       // Create unique filename with correct extension
-      const filename = `${auth.user!.username}.${extension}`;
+      const filename = `${auth.user!.username}_${Date.now()}.${extension}`;
+
+      // Update backend with new profile picture filename
+      const updateResponse = await authFetch(`${BACKEND}/me/update-profile-picture`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ profile_pic: filename, old_profile_pic: auth.user!.profile_pic })
+      }, auth);
+
+      if (!updateResponse.ok) {
+        throw new Error('Failed to update profile picture');
+      }
 
       // Get presigned URL from backend
       const presignedResponse = await authFetch(`${BACKEND}/me/generate-presignedurl`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ image_name: filename, file_type: selectedFile.type})
+        body: JSON.stringify({ image_name: filename, file_type: 'image/jpeg'})
       }, auth);
 
       if (!presignedResponse.ok) {
-        throw new Error('Failed to get presigned URL');
+        throw new Error('Failed to update profile picture');
       }
 
       const { presigned_url } = await presignedResponse.json();
@@ -162,22 +167,12 @@ function RouteComponent (){
         method: 'PUT',
         body: blob,
         headers: {
-          'Content-Type': mimeType // Use original MIME type
+          'Content-Type': mimeType, // Use original MIME type,
+          'Cache-Control': 'no-cache, no-store, must-revalidate',
         }
       });
 
       if (!uploadResponse.ok) {
-        throw new Error('Failed to upload image');
-      }
-
-      // Update backend with new profile picture filename
-      const updateResponse = await authFetch(`${BACKEND}/me/update-profile-picture`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ profile_pic: filename })
-      }, auth);
-
-      if (!updateResponse.ok) {
         throw new Error('Failed to update profile picture');
       }
 
@@ -186,14 +181,12 @@ function RouteComponent (){
       setShowCropModal(false);
       setTempImageUrl('');
       setSelectedFile(null); // Clear selected file
-      
-      alert('Profile picture updated successfully!');
-      
-    } catch (error) {
-      console.error('Failed to upload profile picture:', error);
-      alert('Failed to upload profile picture. Please try again.');
+      toast.success('Profile picture updated successfully', {autoClose: 2000});
+      navigate({to: '.', replace: true})
+    } catch (error: any) {
+      toast.error(error.message, {autoClose: 2000})    
     } finally {
-      setIsUploading(false);
+      setIsUpdatingProfilePic(false);
     }
   };
 
@@ -298,6 +291,7 @@ function RouteComponent (){
                   <label htmlFor="profile-picture-upload" className="cursor-pointer block">
                     <div className="relative">
                       <img
+                        key={profile.profilePicture}
                         src={profile.profilePicture}
                         alt="Profile"
                         className="w-25 h-25 rounded-full object-cover border border-gray-200"
@@ -620,10 +614,21 @@ function RouteComponent (){
               <div className="flex gap-3 mt-6">
                 <button
                   onClick={handleCropSave}
+                  disabled={isUpdatingProfilePic}
                   className="flex-1 py-2.5 text-sm bg-gray-900 text-white rounded-md hover:bg-gray-800 transition-smooth flex items-center justify-center gap-1.5 font-medium"
                 >
-                  <CheckIcon className="w-4 h-4" />
-                  Save
+                  {isUpdatingProfilePic ? (
+                      <>
+                        Saving
+                        <ButtonSpinner />
+                      </>
+                    ) : (
+                      <>
+                        <CheckIcon className="w-4 h-4" />
+                        Save
+                      </>
+                    )
+                  }
                 </button>
                 <button
                   onClick={handleCropCancel}

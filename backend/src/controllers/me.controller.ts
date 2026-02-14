@@ -5,7 +5,7 @@ import { SavedTunes } from "../entities/SavedTunes";
 import { RequestContext } from "@mikro-orm/core";
 import { AppError } from "../utils/AppError";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
-import { PutObjectCommand, S3Client } from "@aws-sdk/client-s3";
+import { DeleteObjectCommand, PutObjectCommand, S3Client } from "@aws-sdk/client-s3";
 import path from "path";
 
 const S3 = new S3Client({
@@ -20,7 +20,6 @@ const S3 = new S3Client({
 export const getPresignedURL = catchAsync(async(req: Request, res: Response, next: NextFunction) => {
     const image_name = req.body.image_name;
     const file_type = req.body.file_type;
-    const ext = path.extname(image_name).slice(1);
     const presignedURL = await getSignedUrl(S3, 
         new PutObjectCommand({
             Bucket: process.env.R2_BUCKET, 
@@ -68,9 +67,10 @@ export const me = catchAsync(async(req: Request, res: Response, next: NextFuncti
     res.status(200).json({user_id: user.user_id, username: user.username, email: user.email, profile_pic: user.profile_pic});
 });
 
+
 export const updateProfilePicture = catchAsync(async(req: Request, res: Response, next: NextFunction) => {
     const {user_id} = req;
-    const {profile_pic} = req.body;
+    const {profile_pic, old_profile_pic} = req.body;
 
     const em = RequestContext.getEntityManager();
     if (!em) {
@@ -79,6 +79,13 @@ export const updateProfilePicture = catchAsync(async(req: Request, res: Response
 
     const user = em.getReference(User, {user_id});
     em.assign(user, {profile_pic})
-    em.persistAndFlush(user);
+    await em.persistAndFlush(user);
+    if(old_profile_pic !== 'def.jpg'){
+        console.log("old_profile_pic ", old_profile_pic);
+        await S3.send(new DeleteObjectCommand({
+            Bucket: process.env.R2_BUCKET,
+            Key: `profile_pic/${old_profile_pic}`
+        }));
+    }
     res.status(204).json({status: "success"})
 });

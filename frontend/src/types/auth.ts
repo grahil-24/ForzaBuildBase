@@ -6,6 +6,7 @@ interface AuthState {
   login: (email: string, password: string) => Promise<void>
   logout: () => Promise<void>
   signup: (username: string, email: string, password: string) => Promise<void>
+  refreshUserData: () => Promise<void>
 }
 
 export type {AuthState};

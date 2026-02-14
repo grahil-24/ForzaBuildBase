@@ -2,6 +2,7 @@ import React, {useState, useEffect} from 'react';
 import { AuthContext } from './AuthContext';
 import {PulseLoader} from 'react-spinners';
 import { BACKEND } from '../../config/env';
+import { authFetch } from '../../api/authFetch';
 
 interface User {
     user_id: number,
@@ -118,8 +119,21 @@ export function AuthProvider({children}: {children: React.ReactNode}){
         window.location.href = '/';
     }
 
+    const refreshUserData = async () => {
+        try {
+            const response = await authFetch(`${BACKEND}/me`, {
+            method: 'GET'},
+            {accessToken, logout, setAccessToken});
+            const userData = await response.json();
+            setUser(userData);
+        } catch (error) {
+            console.error('Failed to refresh user data:', error);
+        }
+    }
+
+
     return (
-        <AuthContext.Provider value={{isAuthenticated, user, setAccessToken: setAccessTokenOnly, login, logout, signup, accessToken}}>
+        <AuthContext.Provider value={{isAuthenticated, user, setAccessToken: setAccessTokenOnly, login, logout, signup, accessToken, refreshUserData}}>
             {children}
         </AuthContext.Provider>
     )
