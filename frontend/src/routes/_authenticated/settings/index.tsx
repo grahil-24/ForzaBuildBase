@@ -1,18 +1,14 @@
 import { createFileRoute, useNavigate, useRouter } from '@tanstack/react-router'
 import { CameraIcon, UserCircleIcon, LockClosedIcon, TrashIcon, EyeIcon, EyeSlashIcon, CheckIcon, XMarkIcon} from '@heroicons/react/24/outline';
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, useContext } from 'react';
 import { BACKEND, PROFILE_PIC } from '../../../config/env';
 import Croppie from 'croppie'; 
 import 'croppie/croppie.css';
 import { authFetch } from '../../../api/authFetch';
 import { toast } from 'react-toastify';
 import ButtonSpinner from '../../../components/ButtonSpinner';
-
-interface UserProfile {
-  username: string;
-  email: string;
-  profilePicture: string;
-}
+import type { User } from '../../../types/user';
+import { AuthContext } from '../../../contexts/Auth/AuthContext';
 
 export const Route = createFileRoute('/_authenticated/settings/')({
   component: RouteComponent,
@@ -20,14 +16,12 @@ export const Route = createFileRoute('/_authenticated/settings/')({
 
 
 function RouteComponent (){
-  const {auth} = Route.useRouteContext();
+  // const {auth} = Route.useRouteContext();
   const router = useRouter();
   const navigate = useNavigate();
-  const [profile, setProfile] = useState<UserProfile>({
-    username: auth.user!.username,
-    email: auth.user!.email,
-    profilePicture: `${PROFILE_PIC}/${auth.user!.profile_pic}`,
-  });
+  const auth = useContext(AuthContext);
+  // const [profile, setProfile] = useState<User>(() => auth.user!);
+  const profile = auth!.user!;
 
   const [isEditingUsername, setIsEditingUsername] = useState(false);
   const [isEditingEmail, setIsEditingEmail] = useState(false);
@@ -136,14 +130,14 @@ function RouteComponent (){
       });
 
       // Create unique filename with correct extension
-      const filename = `${auth.user!.username}_${Date.now()}.${extension}`;
+      const filename = `${profile.username}_${Date.now()}.${extension}`;
 
       // Update backend with new profile picture filename
       const updateResponse = await authFetch(`${BACKEND}/me/update-profile-picture`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ profile_pic: filename, old_profile_pic: auth.user!.profile_pic })
-      }, auth);
+        body: JSON.stringify({ profile_pic: filename, old_profile_pic: profile.profile_pic })
+      }, auth!);
 
       if (!updateResponse.ok) {
         throw new Error('Failed to update profile picture');
@@ -154,7 +148,7 @@ function RouteComponent (){
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ image_name: filename, file_type: 'image/jpeg'})
-      }, auth);
+      }, auth!);
 
       if (!presignedResponse.ok) {
         throw new Error('Failed to update profile picture');
@@ -177,12 +171,13 @@ function RouteComponent (){
       }
 
       // Update local state
-      setProfile({ ...profile, profilePicture: `${PROFILE_PIC}/${filename}` });
+      const updatedProfile = { ...profile, profile_pic: filename };
+      // setProfile(updatedProfile);
+      auth!.updateUserProfile(updatedProfile);
       setShowCropModal(false);
       setTempImageUrl('');
       setSelectedFile(null); // Clear selected file
       toast.success('Profile picture updated successfully', {autoClose: 2000});
-      navigate({to: '.', replace: true})
     } catch (error: any) {
       toast.error(error.message, {autoClose: 2000})    
     } finally {
@@ -224,6 +219,8 @@ function RouteComponent (){
       setShowDeleteAccount(false);
     }
   };
+
+  console.log("profile pic url ", profile.profile_pic);
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -291,8 +288,8 @@ function RouteComponent (){
                   <label htmlFor="profile-picture-upload" className="cursor-pointer block">
                     <div className="relative">
                       <img
-                        key={profile.profilePicture}
-                        src={profile.profilePicture}
+                        key={profile.profile_pic}
+                        src={`${PROFILE_PIC}/${profile.profile_pic}`}
                         alt="Profile"
                         className="w-25 h-25 rounded-full object-cover border border-gray-200"
                       />

@@ -3,13 +3,7 @@ import { AuthContext } from './AuthContext';
 import {PulseLoader} from 'react-spinners';
 import { BACKEND } from '../../config/env';
 import { authFetch } from '../../api/authFetch';
-
-interface User {
-    user_id: number,
-    username: string,
-    email: string,
-    profile_pic: string
-}
+import type {User} from '../../types/user';
 
 export function AuthProvider({children}: {children: React.ReactNode}){
     const [user, setUser] = useState<User | null>(null);
@@ -131,9 +125,12 @@ export function AuthProvider({children}: {children: React.ReactNode}){
         }
     }
 
+    const updateUserProfile = (profile: User | null) => {
+        setUser(profile);
+    };
 
     return (
-        <AuthContext.Provider value={{isAuthenticated, user, setAccessToken: setAccessTokenOnly, login, logout, signup, accessToken, refreshUserData}}>
+        <AuthContext.Provider value={{isAuthenticated, user, updateUserProfile, setAccessToken: setAccessTokenOnly, login, logout, signup, accessToken, refreshUserData}}>
             {children}
         </AuthContext.Provider>
     )

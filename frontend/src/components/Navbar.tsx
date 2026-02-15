@@ -1,17 +1,21 @@
-import { useState } from "react";
-import { Transition, Menu, MenuButton, MenuItem, MenuItems, Button} from "@headlessui/react";
+import { useContext, useState } from "react";
+import { Transition, Menu, MenuButton, MenuItem, MenuItems} from "@headlessui/react";
 import { Link} from "@tanstack/react-router";
-import { Route } from "../routes/__root";
+// import { Route } from "../routes/__root";
 import { Cog8ToothIcon, ArrowRightStartOnRectangleIcon } from "@heroicons/react/24/outline";
 import { PROFILE_PIC } from "../config/env";
+import { AuthContext } from "../contexts/Auth/AuthContext";
 
 function Nav() {
-  const authContext = Route.useRouteContext().auth;
+  const authContext = useContext(AuthContext);
   const handleLogout = async() => {
     //set accesstoken, user, isauth to false  
-    await authContext.logout();
+    if(authContext){
+      await authContext.logout();
+    }
   };
   const [isOpen, setIsOpen] = useState(false);
+
   return (
     <nav className="fixed bg-white w-full shadow-sm z-10">
       <div className="h-16 flex items-center justify-between px-4 sm:px-6 lg:px-10">
@@ -21,7 +25,7 @@ function Nav() {
         </div>
         
         {/* Desktop Navigation */}
-        {authContext.isAuthenticated ? ( 
+        {authContext?.isAuthenticated ? ( 
             <div className="hidden sm:flex items-center space-x-4 flex-1 ml-6 lg:ml-10">
               <Link
                 to="/dashboard"
@@ -49,7 +53,8 @@ function Nav() {
                   {/* <span className="text-sm font-medium">{authContext.user?.username}</span> */}
                    <img 
                       src={`${PROFILE_PIC}/${authContext.user!.profile_pic}`}
-                      alt={`${authContext.user!.profile_pic}'s profile`}
+                      alt={`${authContext.user!.username}'s profile`}
+                      key={authContext.user!.profile_pic}
                       className='size-5 sm:size-8 rounded-full object-cover'
                     />
                   {/* <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -154,7 +159,7 @@ function Nav() {
     >
       {(ref) => (
         <div className="md:hidden border-t border-gray-200" id="mobile-menu">
-          {authContext.isAuthenticated ? (
+          {authContext?.isAuthenticated ? (
             <div
               ref={ref as React.RefObject<HTMLDivElement>}
               className="px-4 pt-2 pb-3 space-y-1"
