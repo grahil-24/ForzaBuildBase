@@ -70,32 +70,34 @@ const EmblaCarousel: React.FC<PropType> = (props) => {
                       />
                     </div>
 
-                    {/* Text + Menu */}
-                    <div className="flex items-start mt-auto">
-                      <div className="flex-col min-w-0 w-[65%]">
-                        <h3 className="cursor-pointer hover:underline text-xl font-semibold truncate">
-                          <Link to='/view/tune/$tuneId' params={{tuneId: tune.tune.tune_id.toString()}}>{tune.tune?.tune_name}</Link>
-                        </h3>
-                        <p className="text-sm text-gray-600">
-                          Saved on: {new Date(tune.saved_on).toLocaleString('en-GB',{day: 'numeric', month: 'short', year: 'numeric' })}
-                        </p>
-                      </div>
-                      
-                      <div className='mx-auto'>
-                        <div>Created by:</div>
-                        <Link to='/u/$user' params={{user: tune.tune.creator.username}}>
-                          <div className='cursor-pointer flex gap-1 group'>
-                            <img 
-                                src={`${PROFILE_PIC}/${tune.tune.creator.profile_pic}`}
-                                alt={`${tune.tune.creator.username}'s profile`}
-                                className='size-5 sm:size-6 rounded-full object-cover'
-                              />
-                              <p className='group-hover:underline'>{tune.tune.creator.username}</p>
-                          </div>
-                        </Link>
-                      </div>
-
-                    </div>
+                    <div className="flex flex-col gap-2 mt-auto">
+  {/* Tune name and date */}
+  <div className="flex-col min-w-0">
+    <h3 className="cursor-pointer hover:underline text-xl font-semibold truncate">
+      <Link to='/view/tune/$tuneId' params={{tuneId: tune.tune.tune_id.toString()}}>
+        {tune.tune?.tune_name}
+      </Link>
+    </h3>
+    <p className="text-sm text-gray-600">
+      Saved on: {new Date(tune.saved_on).toLocaleString('en-GB',{day: 'numeric', month: 'short', year: 'numeric' })}
+    </p>
+  </div>
+  
+  {/* Created by section - now full width */}
+  <div className='flex gap-3'>
+    <div className='text-sm text-gray-600'>Created by:</div>
+    <Link to='/u/$user' params={{user: tune.tune.creator.username}}>
+      <div className='cursor-pointer flex gap-2 items-center group'>
+        <img 
+          src={`${PROFILE_PIC}/${tune.tune.creator.profile_pic}`}
+          alt={`${tune.tune.creator.username}'s profile`}
+          className='size-5 sm:size-6 rounded-full object-cover'
+        />
+        <p className='group-hover:underline truncate'>{tune.tune.creator.username}</p>
+      </div>
+    </Link>
+  </div>
+</div>
                   </div>
                 </div>
               </div>

@@ -6,7 +6,7 @@ import { RequestContext } from "@mikro-orm/core";
 import { AppError } from "../utils/AppError";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import { DeleteObjectCommand, PutObjectCommand, S3Client } from "@aws-sdk/client-s3";
-import path from "path";
+import { validateUsername } from "../utils/Validator";
 
 const S3 = new S3Client({
     region: "auto",
@@ -16,6 +16,39 @@ const S3 = new S3Client({
         secretAccessKey: process.env.R2_SECRET_KEY as string
     }  
 })
+
+export const updateUsername = catchAsync(async(req: Request, res: Response, next: NextFunction) => {
+    const {user_id} = req;
+    const newUsername = req.body.new_username;
+
+    if(!validateUsername(newUsername)){
+        return next(new AppError('Username must be 4-20 characters and not start with a hyphen', 400));
+    }
+
+    const em = RequestContext.getEntityManager();
+    if(!em){
+        return next(new AppError("Entity manager not available", 500));
+    }  
+
+    const user = await em.findOne(User, {user_id});
+    if(!user){
+        return next(new AppError('User does not exist', 404));
+    }
+    if(user?.username === newUsername){
+        return next(new AppError('Username is the same as current username', 400));
+    }
+    user!.username = newUsername;
+    try {
+        await em.persistAndFlush(user);
+        res.status(200).json({status: 'success', username: newUsername});
+    }catch(error: any){
+        if(error.errno === 1062){
+            return next(new AppError('Username already exists! Please choose another one', 409));
+        }
+        return next(new AppError('An unexpected error occurred. Please try again later', 500));
+    }
+
+});
 
 export const getPresignedURL = catchAsync(async(req: Request, res: Response, next: NextFunction) => {
     const image_name = req.body.image_name;
@@ -81,7 +114,6 @@ export const updateProfilePicture = catchAsync(async(req: Request, res: Response
     em.assign(user, {profile_pic})
     await em.persistAndFlush(user);
     if(old_profile_pic !== 'def.jpg'){
-        console.log("old_profile_pic ", old_profile_pic);
         await S3.send(new DeleteObjectCommand({
             Bucket: process.env.R2_BUCKET,
             Key: `profile_pic/${old_profile_pic}`

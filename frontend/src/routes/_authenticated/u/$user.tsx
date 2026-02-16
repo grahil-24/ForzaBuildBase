@@ -66,7 +66,8 @@ interface InfiniteQueryPageType {
   hasNextPage: boolean, 
   nextCursor: string | undefined,
   pages: Tune[],
-  totalCount: number
+  totalCount: number,
+  profile_pic: string
 }
 
 //weights for the different search parameters
@@ -237,7 +238,6 @@ function RouteComponent() {
   }, [sortBy])
 
   const processedTunes = useMemo(() => {
-    console.log("data ", data);
     if (!data?.pages) return [];
     
     let allTunes = data.pages.flatMap((page) => page.pages);
@@ -261,11 +261,18 @@ function RouteComponent() {
       <div className='top-0 bg-white border-b border-gray-200 shadow-sm'>
         <div className='max-w-4xl mx-auto px-4 py-6'>
           <div className='flex items-center justify-between flex-wrap gap-4'>
-            <div>
-              <h1 className='text-3xl font-bold text-gray-900'>Saved Tunes</h1>
-              <p className='text-sm text-gray-600 mt-1'>
-                {data?.pages[0]?.totalCount || 0} {(data?.pages[0]?.totalCount || 0) === 1 ? 'tune' : 'tunes'} in {user === auth.user?.username ? 'your' : `${user}'s`} collection
-              </p>
+           <div className='flex items-center gap-4'>
+              <img 
+                src={`${PROFILE_PIC}/${data?.pages[0]?.profile_pic}`}
+                alt={`${user}'s profile`}
+                className='size-16 sm:size-20 rounded-full object-cover border-2 border-gray-200'
+              />
+              <div>
+                <h1 className='text-3xl font-bold text-gray-900'>{user}'s Tunes</h1>
+                <p className='text-sm text-gray-600 mt-1'>
+                  {data?.pages[0]?.totalCount || 0} {(data?.pages[0]?.totalCount || 0) === 1 ? 'tune' : 'tunes'} saved
+                </p>
+              </div>
             </div>
     
             <div className='flex items-center gap-4'>

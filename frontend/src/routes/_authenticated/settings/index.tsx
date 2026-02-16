@@ -7,8 +7,8 @@ import 'croppie/croppie.css';
 import { authFetch } from '../../../api/authFetch';
 import { toast } from 'react-toastify';
 import ButtonSpinner from '../../../components/ButtonSpinner';
-import type { User } from '../../../types/user';
 import { AuthContext } from '../../../contexts/Auth/AuthContext';
+import { useMutation } from '@tanstack/react-query';
 
 export const Route = createFileRoute('/_authenticated/settings/')({
   component: RouteComponent,
@@ -17,8 +17,8 @@ export const Route = createFileRoute('/_authenticated/settings/')({
 
 function RouteComponent (){
   // const {auth} = Route.useRouteContext();
-  const router = useRouter();
-  const navigate = useNavigate();
+  // const router = useRouter();
+  // const navigate = useNavigate();
   const auth = useContext(AuthContext);
   // const [profile, setProfile] = useState<User>(() => auth.user!);
   const profile = auth!.user!;
@@ -191,11 +191,40 @@ function RouteComponent (){
     setTempImageUrl('');
   };
 
-  const handleUsernameUpdate = () => {
-    if (tempUsername.trim()) {
-      setProfile({ ...profile, username: tempUsername });
+  const updateUsernameMutation = useMutation({
+    mutationFn: async(newUsername: string) => {
+      const res = await authFetch(`${BACKEND}/me/update-username`, 
+        {
+          method: 'PATCH', 
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({new_username: newUsername})
+        }, auth!)
+      const data = await res.json();
+      if(res.ok){
+        return data;
+      }else{
+        throw Error(data.message);
+      }
+    },
+    onError: (error) => {
+      toast.error(error.message);
+    },
+    onSuccess: (data) => {
+      toast.success('Username updated successfully!');
       setIsEditingUsername(false);
+      auth?.updateUserProfile({...profile, username: data.username});
     }
+  })
+
+  const handleUsernameUpdate = () => {
+    const newUsername = tempUsername.trim();
+    if(newUsername.length < 4 || newUsername.length > 30 || newUsername.startsWith('-')){
+      toast.error('The username must be in between 4 and 30 characters and must not start with a hyphen');
+      return;
+    }
+    updateUsernameMutation.mutate(newUsername);
   };
 
   const handleEmailUpdate = () => {
@@ -331,7 +360,7 @@ function RouteComponent (){
                       setIsEditingUsername(true);
                       setTempUsername(profile.username);
                     }}
-                    className="px-3 py-1 text-sm bg-white border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50 transition-smooth font-medium"
+                    className="cursor-pointer px-3 py-1 text-sm bg-white border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50 transition-smooth font-medium"
                   >
                     Edit
                   </button>
@@ -347,15 +376,26 @@ function RouteComponent (){
                   />
                   <div className="flex gap-2">
                     <button
+                      disabled={updateUsernameMutation.isPending}
                       onClick={handleUsernameUpdate}
-                      className="flex-1 py-2 text-sm bg-gray-900 text-white rounded-md hover:bg-gray-800 transition-smooth flex items-center justify-center gap-1.5 font-medium"
+                      className="cursor-pointer flex-1 py-2 text-sm bg-gray-900 text-white rounded-md hover:bg-gray-800 transition-smooth flex items-center justify-center gap-1.5 font-medium"
                     >
-                      <CheckIcon className="w-4 h-4" />
-                      Save
+                      {updateUsernameMutation.isPending ? (
+                          <>
+                            Saving...
+                            <ButtonSpinner />
+                          </>
+                        ) : (
+                          <>
+                            <CheckIcon className="w-4 h-4" />
+                            Save
+                          </>
+                        )
+                      }
                     </button>
                     <button
                       onClick={() => setIsEditingUsername(false)}
-                      className="px-4 py-2 text-sm bg-white border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50 transition-smooth flex items-center gap-1.5 font-medium"
+                      className="cursor-pointer px-4 py-2 text-sm bg-white border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50 transition-smooth flex items-center gap-1.5 font-medium"
                     >
                       <XMarkIcon className="w-4 h-4" />
                       Cancel
@@ -612,7 +652,7 @@ function RouteComponent (){
                 <button
                   onClick={handleCropSave}
                   disabled={isUpdatingProfilePic}
-                  className="flex-1 py-2.5 text-sm bg-gray-900 text-white rounded-md hover:bg-gray-800 transition-smooth flex items-center justify-center gap-1.5 font-medium"
+                  className="cursor-pointer flex-1 py-2.5 text-sm bg-gray-900 text-white rounded-md hover:bg-gray-800 transition-smooth flex items-center justify-center gap-1.5 font-medium"
                 >
                   {isUpdatingProfilePic ? (
                       <>
@@ -629,7 +669,7 @@ function RouteComponent (){
                 </button>
                 <button
                   onClick={handleCropCancel}
-                  className="px-6 py-2.5 text-sm bg-white border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50 transition-smooth flex items-center gap-1.5 font-medium"
+                  className="cursor-pointer px-6 py-2.5 text-sm bg-white border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50 transition-smooth flex items-center gap-1.5 font-medium"
                 >
                   <XMarkIcon className="w-4 h-4" />
                   Cancel

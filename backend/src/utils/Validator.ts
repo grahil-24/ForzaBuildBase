@@ -11,8 +11,10 @@ const validatePassword = (password?: string): boolean => {
 }
 
 const validateUsername = (username?: string): boolean => {
-    if(username) return validator.isLength(username, {min: 4, max: 30});
-    return false
+    if(username) {
+        return validator.isLength(username, {min: 4, max: 30}) && !username.startsWith('-');
+    }
+    return false;
 }
 
 const validateTuneName = (name?: string) : boolean => {

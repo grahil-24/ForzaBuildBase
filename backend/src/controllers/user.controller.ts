@@ -58,6 +58,7 @@ export const getUserTunes = catchAsync(async(req: Request, res: Response, next: 
         pages: pagesWithSaveStatus,
         nextCursor: savedTunes.endCursor,
         hasNextPage: savedTunes.hasNextPage,
-        totalCount: savedTunes.totalCount
+        totalCount: savedTunes.totalCount,
+        profile_pic: targetUser.profile_pic
     });
 });

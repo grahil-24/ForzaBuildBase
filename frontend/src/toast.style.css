@@ -3,7 +3,7 @@
 /* Toast Container Styles */
 .Toastify__toast-container {
   width: auto !important;
-  max-width: 500px;
+  max-width: 500px !important;
 }
 
 /* Base Toast Styles */
@@ -32,6 +32,7 @@
   color: #ce5858 !important;
   border-color: #d6a5a5;
   border-width: 1px;
+  width: fit-content;
 }
 
 .Toastify__toast--error .Toastify__toast-icon svg {

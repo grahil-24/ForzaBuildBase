@@ -30,6 +30,6 @@ export const globalErrorHandler = (
   // Generic error response
   res.status(500).json({
     status: 'error',
-    message: 'Something went wrong!',
+    message: 'An unexpected error occurred. Please try again later!',
   });
 }
