@@ -29,7 +29,7 @@ const ScrollToTop = ({visiblePosition = 30}: {visiblePosition?: number}) => {
     return (
         scrollPosition > visiblePosition && (
             <div 
-            className='cursor-pointer shadow-xl bg-gray-200 rounded-full p-3 mb-10 fixed bottom-0 right-30'
+            className=' shadow-xl bg-gray-200 rounded-full p-3 mb-10 fixed bottom-0 right-30'
             onClick={scrollToTop}
             >
             <FontAwesomeIcon size='xl' icon={faAngleUp} />

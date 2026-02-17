@@ -44,13 +44,13 @@ export const RenameDialogModal = ({openModal, onClose,onSubmit,isLoading,isSucce
                 }
               <div className="mt-4 flex justify-end gap-2">
                 <Button
-                  className="cursor-pointer inline-flex items-center gap-2 rounded-md bg-red-700 px-3 py-1.5 text-sm/6 font-semibold text-white shadow-inner shadow-white/10 focus:not-data-focus:outline-none data-focus:outline data-focus:outline-white data-open:bg-gray-700"
+                  className=" inline-flex items-center gap-2 rounded-md bg-red-700 px-3 py-1.5 text-sm/6 font-semibold text-white shadow-inner shadow-white/10 focus:not-data-focus:outline-none data-focus:outline data-focus:outline-white data-open:bg-gray-700"
                   onClick={close}
                 >
                   Cancel
                 </Button>
                 <Button
-                  className="cursor-pointer inline-flex items-center gap-2 rounded-md bg-green-700 px-3 py-1.5 text-sm/6 font-semibold text-white shadow-inner shadow-white/10 focus:not-data-focus:outline-none data-focus:outline data-focus:outline-white data-open:bg-gray-700"
+                  className=" inline-flex items-center gap-2 rounded-md bg-green-700 px-3 py-1.5 text-sm/6 font-semibold text-white shadow-inner shadow-white/10 focus:not-data-focus:outline-none data-focus:outline data-focus:outline-white data-open:bg-gray-700"
                   onClick={() => onSubmit(name)}
                 >
                     {isLoading ? (

@@ -444,7 +444,7 @@ function RouteComponent() {
                       {/* Menu  */}
                       <div className='relative z-2 flex items-center pr-3 md:pr-4 pointer-events-auto'>
                         <Menu as="div" className="relative">
-                          <MenuButton className="p-1 cursor-pointer focus:outline-none mt-2 sm:mt-0 rounded-2xl">
+                          <MenuButton className="p-1  focus:outline-none mt-2 sm:mt-0 rounded-2xl">
                             <FontAwesomeIcon 
                               icon={faEllipsisH} 
                               className="text-gray-600 text-lg md:text-xl" 
@@ -460,7 +460,7 @@ function RouteComponent() {
                               <MenuItem>
                                 <button 
                                   onClick={() => handleOpenRenameModal(tune.tune.tune_id)} 
-                                  className='cursor-pointer group flex w-full items-center gap-2 sm:gap-3 px-3 sm:px-4 py-2 sm:py-3 text-xs sm:text-sm font-medium transition-colors hover:bg-blue-100/50'
+                                  className=' group flex w-full items-center gap-2 sm:gap-3 px-3 sm:px-4 py-2 sm:py-3 text-xs sm:text-sm font-medium transition-colors hover:bg-blue-100/50'
                                 >
                                   <PencilIcon className="size-4 sm:size-5 text-gray-600 transition-colors group-hover:text-blue-600" />
                                   <span className='text-gray-700 transition-colors group-hover:text-blue-600'>Rename</span>
@@ -471,7 +471,7 @@ function RouteComponent() {
                               <MenuItem>
                                 <button 
                                   onClick={() => handleOpenDeleteModal(tune.tune.tune_id)} 
-                                  className='cursor-pointer group flex w-full items-center gap-2 sm:gap-3 px-3 sm:px-4 py-2 sm:py-3 text-xs sm:text-sm font-medium transition-colors hover:bg-red-100/50'
+                                  className=' group flex w-full items-center gap-2 sm:gap-3 px-3 sm:px-4 py-2 sm:py-3 text-xs sm:text-sm font-medium transition-colors hover:bg-red-100/50'
                                 >
                                   <TrashIcon className="transition-colors size-4 sm:size-5 text-gray-600 group-hover:text-red-600" />
                                   <span className='transition-colors text-gray-700 group-hover:text-red-600'>Delete</span>
@@ -481,7 +481,7 @@ function RouteComponent() {
                               <MenuItem>
                                 <button 
                                   onClick={() => handleOpenRemoveModal(tune.tune.tune_id)} 
-                                  className='cursor-pointer group flex w-full items-center gap-2 sm:gap-3 px-3 sm:px-4 py-2 sm:py-3 text-xs sm:text-sm font-medium transition-colors hover:bg-red-100/50'
+                                  className=' group flex w-full items-center gap-2 sm:gap-3 px-3 sm:px-4 py-2 sm:py-3 text-xs sm:text-sm font-medium transition-colors hover:bg-red-100/50'
                                 >
                                   <MinusCircleIcon className="transition-colors size-4 sm:size-5 text-gray-600 group-hover:text-red-600" />
                                   <span className='transition-colors text-gray-700 group-hover:text-red-600'>Remove</span>
@@ -491,7 +491,7 @@ function RouteComponent() {
                               <MenuItem>
                                 <button 
                                   onClick={() => handleSaveTune(tune.tune.tune_id)} 
-                                  className='cursor-pointer group flex w-full items-center gap-2 sm:gap-3 px-3 sm:px-4 py-2 sm:py-3 text-xs sm:text-sm font-medium transition-colors hover:bg-green-100/50'
+                                  className=' group flex w-full items-center gap-2 sm:gap-3 px-3 sm:px-4 py-2 sm:py-3 text-xs sm:text-sm font-medium transition-colors hover:bg-green-100/50'
                                 >
                                   <FontAwesomeIcon icon={faBookmark} />
                                   <span className='transition-colors text-gray-700 group-hover:text-green-600'>Save</span>
@@ -501,7 +501,7 @@ function RouteComponent() {
                             <MenuItem>
                               <button 
                                 onClick={() => setShareDialogTuneId(tune.tune.tune_id)} 
-                                className='cursor-pointer group flex w-full items-center gap-2 sm:gap-3 px-3 sm:px-4 py-2 sm:py-3 text-xs sm:text-sm font-medium transition-colors hover:bg-gray-200/50'
+                                className=' group flex w-full items-center gap-2 sm:gap-3 px-3 sm:px-4 py-2 sm:py-3 text-xs sm:text-sm font-medium transition-colors hover:bg-gray-200/50'
                               >
                                 {shareIcon}
                                 <span className='transition-colors text-gray-700'>Share</span>
@@ -519,7 +519,7 @@ function RouteComponent() {
             
             <div className='flex justify-center'>
               <button
-                className={`${hasNextPage ? 'border cursor-pointer hover:bg-gray-50' : 'border-0'} border-gray-300 rounded-lg px-6 py-3 mt-5 font-medium text-gray-700 transition-colors`}
+                className={`${hasNextPage ? 'border  hover:bg-gray-50' : 'border-0'} border-gray-300 rounded-lg px-6 py-3 mt-5 font-medium text-gray-700 transition-colors`}
                 onClick={async() => await fetchNextPage()}
                 disabled={!hasNextPage || isFetching}
               >

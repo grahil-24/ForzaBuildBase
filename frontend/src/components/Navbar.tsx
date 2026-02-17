@@ -49,7 +49,7 @@ function Nav() {
               
               {/* User Menu */}
               <Menu as="div" className="relative ml-auto">
-                <MenuButton className="cursor-pointer focus:outline-none text-black relative flex items-center gap-2 rounded-full mr-10 transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-500">
+                <MenuButton className=" focus:outline-none text-black relative flex items-center gap-2 rounded-full mr-10 transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-500">
                   {/* <span className="text-sm font-medium">{authContext.user?.username}</span> */}
                    <img 
                       src={`${PROFILE_PIC}/${authContext.user!.profile_pic}`}
@@ -77,7 +77,7 @@ function Nav() {
                   <MenuItem>
                   <Link 
                     to='/settings'
-                    className="flex gap-2 cursor-pointer items-center w-full text-left px-2 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded border-0 bg-transparent"
+                    className="flex gap-2  items-center w-full text-left px-2 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded border-0 bg-transparent"
                   >
                     <Cog8ToothIcon className="size-6"/>
                     Settings
@@ -86,7 +86,7 @@ function Nav() {
                   <MenuItem>
                     <button
                       onClick={handleLogout}
-                      className="flex items-center group hover:bg-red-100/50 transition-colors duration-300 gap-2 px-2 w-full text-left cursor-pointer py-2 text-sm text-gray-700"
+                      className="flex items-center group hover:bg-red-100/50 transition-colors duration-300 gap-2 px-2 w-full text-left  py-2 text-sm text-gray-700"
                     >
                       <ArrowRightStartOnRectangleIcon className='group-hover:text-red-600 transition-colors duration-300 size-6' />
                       <p className="group-hover:text-red-600 transition-colors duration-300">Sign out</p>

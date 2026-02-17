@@ -25,7 +25,7 @@ export const SearchBar = ({onChange}: {onChange: (input: string) => void}) => {
             placeholder="Search..."
         />
         <div className="absolute right-0 inset-y-0 flex items-center">
-            <button onClick={clearInput} className="cursor-pointer">
+            <button onClick={clearInput} className="">
             <svg
             xmlns="http://www.w3.org/2000/svg"
             className="-ml-1 mr-3 h-5 w-5 text-gray-400 hover:text-gray-500"

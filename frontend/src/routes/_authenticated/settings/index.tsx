@@ -227,16 +227,43 @@ function RouteComponent (){
     updateUsernameMutation.mutate(newUsername);
   };
 
-  const handleEmailUpdate = () => {
-    if (tempEmail.trim() && tempEmail.includes('@')) {
-      setProfile({ ...profile, email: tempEmail });
-      setIsEditingEmail(false);
+  // const handleEmailUpdate = () => {
+  //   if (tempEmail.trim() && tempEmail.includes('@')) {
+  //     setProfile({ ...profile, email: tempEmail });
+  //     setIsEditingEmail(false);
+  //   }
+  // };
+
+  const updatePasswordMutation = useMutation({
+    mutationFn: async({newPassword, currentPassword} : {newPassword: string, currentPassword: string}) => {
+      const res = await authFetch(`${BACKEND}/me/update-password`, 
+        {
+          method: 'PATCH', 
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({new_password: newPassword, current_password: currentPassword})
+        }, auth!)
+      // const data = await res.json();
+      if(!res.ok){
+        const error = await res.json();
+        throw Error(error.message);
+      }
+    },
+    onError: (error) => {
+      toast.error(error.message);
+    },
+    onSuccess: () => {
+      toast.success('Password updated successfully! Please login with the new one!', {autoClose: 3000});
+      setTimeout(() => {
+        auth?.logout();
+      }, 3000);
     }
-  };
+  })
+
 
   const handlePasswordChange = () => {
     if (passwordData.current && passwordData.new && passwordData.new === passwordData.confirm) {
-      console.log('Password changed successfully');
       setShowChangePassword(false);
       setPasswordData({ current: '', new: '', confirm: '' });
     }
@@ -244,12 +271,9 @@ function RouteComponent (){
 
   const handleDeleteAccount = () => {
     if (deleteConfirmation === 'DELETE') {
-      console.log('Account deleted');
       setShowDeleteAccount(false);
     }
   };
-
-  console.log("profile pic url ", profile.profile_pic);
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -306,7 +330,7 @@ function RouteComponent (){
             {/* Profile Picture */}
             <div className="flex items-start gap-6">
               <div className="shrink-0">
-                <div className="relative group cursor-pointer">
+                <div className="relative group ">
                   <input
                     type="file"
                     accept="image/*"
@@ -314,7 +338,7 @@ function RouteComponent (){
                     className="hidden"
                     id="profile-picture-upload"
                   />
-                  <label htmlFor="profile-picture-upload" className="cursor-pointer block">
+                  <label htmlFor="profile-picture-upload" className=" block">
                     <div className="relative">
                       <img
                         key={profile.profile_pic}
@@ -338,7 +362,7 @@ function RouteComponent (){
                 <p className="text-sm text-gray-500 mb-3">JPG, PNG. Max size 5MB.</p>
                 <label
                   htmlFor="profile-picture-upload"
-                  className="inline-flex items-center gap-2 px-3 py-1.5 text-sm bg-white border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50 transition-smooth cursor-pointer font-medium"
+                  className="cursor-pointer inline-flex items-center gap-2 px-3 py-1.5 text-sm bg-white border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50 transition-smooth  font-medium"
                 >
                   Choose File
                 </label>
@@ -360,7 +384,7 @@ function RouteComponent (){
                       setIsEditingUsername(true);
                       setTempUsername(profile.username);
                     }}
-                    className="cursor-pointer px-3 py-1 text-sm bg-white border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50 transition-smooth font-medium"
+                    className=" px-3 py-1 text-sm bg-white border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50 transition-smooth font-medium"
                   >
                     Edit
                   </button>
@@ -378,7 +402,7 @@ function RouteComponent (){
                     <button
                       disabled={updateUsernameMutation.isPending}
                       onClick={handleUsernameUpdate}
-                      className="cursor-pointer flex-1 py-2 text-sm bg-gray-900 text-white rounded-md hover:bg-gray-800 transition-smooth flex items-center justify-center gap-1.5 font-medium"
+                      className=" flex-1 py-2 text-sm bg-gray-900 text-white rounded-md hover:bg-gray-800 transition-smooth flex items-center justify-center gap-1.5 font-medium"
                     >
                       {updateUsernameMutation.isPending ? (
                           <>
@@ -395,7 +419,7 @@ function RouteComponent (){
                     </button>
                     <button
                       onClick={() => setIsEditingUsername(false)}
-                      className="cursor-pointer px-4 py-2 text-sm bg-white border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50 transition-smooth flex items-center gap-1.5 font-medium"
+                      className=" px-4 py-2 text-sm bg-white border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50 transition-smooth flex items-center gap-1.5 font-medium"
                     >
                       <XMarkIcon className="w-4 h-4" />
                       Cancel
@@ -436,7 +460,7 @@ function RouteComponent (){
                   />
                   <div className="flex gap-2">
                     <button
-                      onClick={handleEmailUpdate}
+                      // onClick={handleEmailUpdate}
                       className="flex-1 py-2 text-sm bg-gray-900 text-white rounded-md hover:bg-gray-800 transition-smooth flex items-center justify-center gap-1.5 font-medium"
                     >
                       <CheckIcon className="w-4 h-4" />
@@ -473,7 +497,7 @@ function RouteComponent (){
               {!showChangePassword ? (
                 <button
                   onClick={() => setShowChangePassword(true)}
-                  className="w-full py-2.5 text-sm bg-white border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50 transition-smooth font-medium"
+                  className=" w-full py-2.5 text-sm bg-white border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50 transition-smooth font-medium"
                 >
                   Update Password
                 </button>
@@ -547,7 +571,7 @@ function RouteComponent (){
                     <button
                       onClick={handlePasswordChange}
                       disabled={!passwordData.current || !passwordData.new || passwordData.new !== passwordData.confirm}
-                      className="flex-1 py-2 text-sm bg-gray-900 text-white rounded-md hover:bg-gray-800 transition-smooth flex items-center justify-center gap-1.5 disabled:opacity-50 disabled:cursor-not-allowed font-medium"
+                      className=" flex-1 py-2 text-sm bg-gray-900 text-white rounded-md hover:bg-gray-800 transition-smooth flex items-center justify-center gap-1.5 disabled:opacity-50 disabled:cursor-not-allowed font-medium"
                     >
                       <CheckIcon className="w-4 h-4" />
                       Update Password
@@ -652,7 +676,7 @@ function RouteComponent (){
                 <button
                   onClick={handleCropSave}
                   disabled={isUpdatingProfilePic}
-                  className="cursor-pointer flex-1 py-2.5 text-sm bg-gray-900 text-white rounded-md hover:bg-gray-800 transition-smooth flex items-center justify-center gap-1.5 font-medium"
+                  className=" flex-1 py-2.5 text-sm bg-gray-900 text-white rounded-md hover:bg-gray-800 transition-smooth flex items-center justify-center gap-1.5 font-medium"
                 >
                   {isUpdatingProfilePic ? (
                       <>
@@ -669,7 +693,7 @@ function RouteComponent (){
                 </button>
                 <button
                   onClick={handleCropCancel}
-                  className="cursor-pointer px-6 py-2.5 text-sm bg-white border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50 transition-smooth flex items-center gap-1.5 font-medium"
+                  className=" px-6 py-2.5 text-sm bg-white border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50 transition-smooth flex items-center gap-1.5 font-medium"
                 >
                   <XMarkIcon className="w-4 h-4" />
                   Cancel

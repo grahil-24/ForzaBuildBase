@@ -187,8 +187,8 @@ function Signup(): React.ReactElement {
                     className="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"
                     onChange={handlePasswordAndStrength}
                     />
-                    <div className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 cursor-pointer">
-                        <FontAwesomeIcon className="cursor-pointer" onClick={() => setShowPassword(prev => !prev)} icon={showPassword ? faEyeSlash : faEye} />
+                    <div className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 ">
+                        <FontAwesomeIcon className="" onClick={() => setShowPassword(prev => !prev)} icon={showPassword ? faEyeSlash : faEye} />
                     </div>
                 </div>
                 <div className="pt-2">

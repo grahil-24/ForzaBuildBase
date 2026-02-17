@@ -48,7 +48,7 @@ export const TuneSlider = ({
           step={step}
           value={value}
           onChange={(e) => onChange(parseFloat(e.target.value))}
-          className="flex-1 h-2 bg-gray-600 rounded-lg appearance-none cursor-pointer slider min-w-20"
+          className="flex-1 h-2 bg-gray-600 rounded-lg appearance-none  slider min-w-20"
           style={{
             background: `linear-gradient(to right, #ec4899 0%, #ec4899 ${((value - min) / (max - min)) * 100}%, #4b5563 ${((value - min) / (max - min)) * 100}%, #4b5563 100%)`
           }}

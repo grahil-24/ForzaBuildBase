@@ -271,7 +271,7 @@ function RouteComponent() {
                 <button
                   ref={classButtonRef}
                   onClick={handleClassButtonClick}
-                  className={`${classColors[carClass]} cursor-pointer relative z-2 h-12 w-12 rounded-full font-black italic text-white shadow-lg outline-none`}
+                  className={`${classColors[carClass]}  relative z-2 h-12 w-12 rounded-full font-black italic text-white shadow-lg outline-none`}
                 >
                   {carClass}
                 </button>
@@ -286,7 +286,7 @@ function RouteComponent() {
                     resultant_rank: carClass
                   }
                 }))
-              }} className='border-2 border-black px-2 py-2 rounded-sm hover:bg-black hover:text-white duration-200 cursor-pointer'>
+              }} className='border-2 border-black px-2 py-2 rounded-sm hover:bg-black hover:text-white duration-200 '>
                 {createTune.isPending ? ( 
                   <p>Saving...</p>
                 ) : (
@@ -330,7 +330,7 @@ function RouteComponent() {
               <button
                 onClick={handlePreviousTab}
                 disabled={activeIndex === 0}
-                className="cursor-pointer shrink-0 h-10 w-8 flex items-center justify-center bg-white border border-slate-200 shadow-sm rounded-lg disabled:opacity-30"
+                className=" shrink-0 h-10 w-8 flex items-center justify-center bg-white border border-slate-200 shadow-sm rounded-lg disabled:opacity-30"
               >
                 &lt;
               </button>
@@ -347,7 +347,7 @@ function RouteComponent() {
                       key={name}
                       ref={(el) => {tabRefs.current[index]= el}}
                       className={({ selected }) => `
-                        focus:outline-none cursor-pointer px-4 py-2 text-xs sm:text-sm font-bold rounded-lg transition-colors
+                        focus:outline-none  px-4 py-2 text-xs sm:text-sm font-bold rounded-lg transition-colors
                         ${selected 
                           ? 'bg-slate-900 text-white' 
                           : 'bg-white text-slate-600 border border-slate-200 hover:bg-slate-100'}
@@ -362,7 +362,7 @@ function RouteComponent() {
               <button
                 onClick={handleNextTab}
                 disabled={activeIndex === numOfTabs - 1}
-                className="cursor-pointer shrink-0 h-10 w-8 flex items-center justify-center bg-white border border-slate-200 shadow-sm rounded-lg disabled:opacity-30"
+                className=" shrink-0 h-10 w-8 flex items-center justify-center bg-white border border-slate-200 shadow-sm rounded-lg disabled:opacity-30"
               >
                 &gt;
               </button>

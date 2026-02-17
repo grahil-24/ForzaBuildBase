@@ -285,7 +285,7 @@ const FilterSidebar = () => {
                                     </div>
                                     <label
                                       htmlFor={`manufacturer-${brand}`}
-                                      className="text-sm text-gray-700 cursor-pointer truncate"
+                                      className="text-sm text-gray-700  truncate"
                                     >
                                       {brand}
                                     </label>

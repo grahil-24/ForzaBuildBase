@@ -158,7 +158,7 @@ function RouteComponent() {
                       onChange={e => setUnit(e.target.value as Unit)}
                       name="unit" 
                       id="unit"
-                      className="px-3 py-2 bg-white border border-gray-300 rounded-lg shadow-sm hover:border-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent cursor-pointer transition-all text-sm"
+                      className="px-3 py-2 bg-white border border-gray-300 rounded-lg shadow-sm hover:border-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent  transition-all text-sm"
                     >
                       <option value="imperial">Imperial</option>
                       <option value="metric">Metric</option>
@@ -252,7 +252,7 @@ function RouteComponent() {
       <div className='flex'>
         <Link 
           className='mx-auto mt-5 bg-white font-black text-[18px] px-[1.3em] py-[0.6em]
-            border-[3px] border-black rounded-[0.4em] shadow-[0.1em_0.1em_0_#000] cursor-pointer
+            border-[3px] border-black rounded-[0.4em] shadow-[0.1em_0.1em_0_#000] 
             transition-all hover:-translate-x-[0.05em] hover:-translate-y-[0.05em] hover:shadow-[0.15em_0.15em_0_#000]
             active:translate-x-[0.05em] active:translate-y-[0.05em] active:shadow-[0.05em_0.05em_0_#000]
             inline-block'

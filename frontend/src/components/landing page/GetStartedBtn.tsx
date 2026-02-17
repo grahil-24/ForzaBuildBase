@@ -9,7 +9,7 @@ const GetStartedBtn = (): React.ReactElement => {
     return (
         <a href="/login">
             <Button className="
-            cursor-pointer group hover:scale-103 duration-100 inline-flex items-center gap-2
+             group hover:scale-103 duration-100 inline-flex items-center gap-2
             px-4 py-3 
             bg-green-500 rounded-3xl 
             whitespace-nowrap

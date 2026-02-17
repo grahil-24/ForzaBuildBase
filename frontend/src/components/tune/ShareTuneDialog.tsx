@@ -30,7 +30,7 @@ const ShareTuneDialogComponent = ({isShareDialogOpen, handleDialogClose, url}: {
                     </DialogTitle>
                     <button
                         onClick={handleDialogClose}
-                        className="ml-auto cursor-pointer text-slate-400 hover:text-slate-600 transition-colors"
+                        className="ml-auto  text-slate-400 hover:text-slate-600 transition-colors"
                         aria-label="Close dialog"
                     >
                         <XMarkIcon className="h-6 w-6" />
@@ -42,7 +42,7 @@ const ShareTuneDialogComponent = ({isShareDialogOpen, handleDialogClose, url}: {
                         {url}
                         </code>
                     </div>
-                    <button onClick={() => copyURLToClipboard(url)}className='cursor-pointer bg-blue-600 text-white px-4 py-2 rounded-3xl font-bold'>
+                    <button onClick={() => copyURLToClipboard(url)}className=' bg-blue-600 text-white px-4 py-2 rounded-3xl font-bold'>
                         {copied ? '✓ Copied' : 'Copy'}
                     </button>
                     </div>

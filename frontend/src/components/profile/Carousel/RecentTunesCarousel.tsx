@@ -73,7 +73,7 @@ const EmblaCarousel: React.FC<PropType> = (props) => {
                     <div className="flex flex-col gap-2 mt-auto">
   {/* Tune name and date */}
   <div className="flex-col min-w-0">
-    <h3 className="cursor-pointer hover:underline text-xl font-semibold truncate">
+    <h3 className=" hover:underline text-xl font-semibold truncate">
       <Link to='/view/tune/$tuneId' params={{tuneId: tune.tune.tune_id.toString()}}>
         {tune.tune?.tune_name}
       </Link>
@@ -87,7 +87,7 @@ const EmblaCarousel: React.FC<PropType> = (props) => {
   <div className='flex gap-3'>
     <div className='text-sm text-gray-600'>Created by:</div>
     <Link to='/u/$user' params={{user: tune.tune.creator.username}}>
-      <div className='cursor-pointer flex gap-2 items-center group'>
+      <div className=' flex gap-2 items-center group'>
         <img 
           src={`${PROFILE_PIC}/${tune.tune.creator.profile_pic}`}
           alt={`${tune.tune.creator.username}'s profile`}

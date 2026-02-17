@@ -1,4 +1,4 @@
-import {createFileRoute, useNavigate, type ParsedLocation} from '@tanstack/react-router'
+import {createFileRoute, useNavigate, type ParsedLocation, Link} from '@tanstack/react-router'
 import CarTiles from '../../components/browse/CarTiles';
 import FilterSidebar from '../../components/browse/FilterSidebar';
 import React, { useEffect, useState } from 'react';
@@ -140,13 +140,16 @@ function BrowseComponent(): React.ReactElement {
 
           {/* Pagination */}
           <div className="flex justify-center items-center mt-12 space-x-4">
-            <button
-              onClick={() => goToPage(page - 1)}
+            <Link
+              // onClick={() => goToPage(page - 1)}
+              to='/browse'
+              preload='intent'
+              search={{ ...search, page: page - 1 }}
               disabled={page <= 1}
               className="px-4 py-2 bg-slate-800 text-white rounded-md disabled:opacity-30 transition-opacity hover:bg-slate-700"
             >
               Prev
-            </button>
+            </Link>
             <div className="flex items-center gap-2">
               <input 
                 className="w-12 text-center border rounded-md p-1"
@@ -157,13 +160,16 @@ function BrowseComponent(): React.ReactElement {
               />
               <span className="text-gray-500">/ {totalPages}</span>
             </div>
-            <button
-              onClick={() => goToPage(page + 1)}
+            <Link
+              // onClick={() => goToPage(page + 1)}
+              to='/browse'
+              preload='intent'
+              search={{...search, page: page + 1}}
               disabled={page >= totalPages}
               className="px-4 py-2 bg-slate-800 text-white rounded-md disabled:opacity-30 transition-opacity hover:bg-slate-700"
             >
               Next
-            </button>
+            </Link>
           </div>
         </div>
       </div>

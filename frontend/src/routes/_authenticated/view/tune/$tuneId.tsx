@@ -218,7 +218,7 @@ function RouteComponent() {
                       to='/tune/edit/$tuneId' 
                       params={{tuneId: tuneDetails!.tune_id.toString()}} 
                       state={{tuneDetails}}
-                      className="cursor-pointer bg-blue-600 hover:bg-blue-700 text-white pl-2 pr-3 py-2 rounded-lg font-semibold transition-colors flex items-center gap-2"
+                      className=" bg-blue-600 hover:bg-blue-700 text-white pl-2 pr-3 py-2 rounded-lg font-semibold transition-colors flex items-center gap-2"
                     >
                       <PencilIcon className='size-4'/>
                       Edit Tune
@@ -236,23 +236,23 @@ function RouteComponent() {
                     isLoading={removeTune.isPending}
                   />
                   {tuneDetails?.creator === auth.user?.username ? (
-                    <button onClick={() => setRemoveModalOpen(true)} className="cursor-pointer bg-red-600 hover:bg-red-700 text-white px-3 py-2 rounded-lg font-semibold transition-colors flex items-center gap-2">
+                    <button onClick={() => setRemoveModalOpen(true)} className=" bg-red-600 hover:bg-red-700 text-white px-3 py-2 rounded-lg font-semibold transition-colors flex items-center gap-2">
                       <TrashIcon className='size-5'/>
                       Delete
                     </button>
                   ) : (
-                    <button onClick={() => setRemoveModalOpen(true)} className="cursor-pointer bg-red-600 hover:bg-red-700 text-white px-3 py-2 rounded-lg font-semibold transition-colors flex items-center gap-2">
+                    <button onClick={() => setRemoveModalOpen(true)} className=" bg-red-600 hover:bg-red-700 text-white px-3 py-2 rounded-lg font-semibold transition-colors flex items-center gap-2">
                       <MinusCircleIcon className='size-5'/>
                       Remove
                     </button>
                   )}
-                  <button onClick={() => setIsShareDialogOpen(true)}className="cursor-pointer bg-slate-200 hover:bg-slate-300 text-slate-700 px-3 py-2 rounded-lg font-semibold transition-colors flex items-center gap-2">
+                  <button onClick={() => setIsShareDialogOpen(true)}className=" bg-slate-200 hover:bg-slate-300 text-slate-700 px-3 py-2 rounded-lg font-semibold transition-colors flex items-center gap-2">
                     <ShareIcon className='size-5'/>
                     Share
                   </button>
                 </>
               ) : (
-                  <button  onClick={handleSaveTuneClick} className='border-2 border-black px-2 py-2 rounded-sm hover:bg-black hover:text-white duration-200 cursor-pointer'>
+                  <button  onClick={handleSaveTuneClick} className='border-2 border-black px-2 py-2 rounded-sm hover:bg-black hover:text-white duration-200 '>
                     {saveTune.isPending ? 
                       'Saving ...' : 
                       <><FontAwesomeIcon icon={faBookmark} /> Save to profile</>

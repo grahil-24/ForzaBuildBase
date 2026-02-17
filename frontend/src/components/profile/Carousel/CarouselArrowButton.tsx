@@ -56,7 +56,7 @@ export const PrevButton: React.FC<PropType> = (props) => {
 
   return (
     <button
-      className="appearance-none bg-transparent touch-manipulation inline decoration-0 cursor-pointer 
+      className="appearance-none bg-transparent touch-manipulation inline decoration-0  
       border-2 p-0 m-0 w-[2.6rem] h-[2.6rem] z-1 rounded-[10%] items-center justify-center border-black"
       type="button"
       {...restProps}
@@ -77,7 +77,7 @@ export const NextButton: React.FC<PropType> = (props) => {
 
   return (
     <button
-      className="appearance-none bg-transparent touch-manipulation inline decoration-0 cursor-pointer 
+      className="appearance-none bg-transparent touch-manipulation inline decoration-0  
       border-2 p-0 m-0 w-[2.6rem] h-[2.6rem] z-1 rounded-[10%] items-center justify-center border-black"
       type="button"
       {...restProps}

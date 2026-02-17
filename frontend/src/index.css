@@ -1,7 +1,6 @@
 @import "tailwindcss";
 
 @theme {
-  /* This defines the custom animation for Tailwind to pick up */
   --animate-rotate: rotate-border 10s linear infinite;
 
   @keyframes rotate-border {
@@ -10,6 +9,14 @@
   }
 }
 
+@layer base {
+  button, [role="button"] {
+    cursor: pointer;
+  }
+  button:is([disabled]) {
+    cursor: not-allowed;
+  }
+}
 
 :root {
   font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;

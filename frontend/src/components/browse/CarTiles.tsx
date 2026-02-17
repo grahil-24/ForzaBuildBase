@@ -54,14 +54,14 @@ const drivetrainSVG = (drivetrain: DrivetrainType): React.ReactElement => {
 
 
 const CarTile = ({car}: {car: Car}): React.ReactElement => {
-    const imageUrl = formatS3BucketURL({manufacturer: car.Manufacturer, image_filename: car.image_filename, size: "medium"});
+    const imageUrl = formatS3BucketURL({manufacturer: car.Manufacturer, image_filename: car.image_filename, size: 'small'});
     const rank_color: string = rank_to_color[car.Rank!];
 
     return (
         <Link to="/view/car/$carId" params={{carId: car.id.toString()}}>
         <div
           key={car.id}
-          className="cursor-pointer hover:scale-103 duration-100 relative w-full h-60 bg-gray-200 rounded-lg shadow overflow-hidden flex flex-col justify-end"
+          className=" hover:scale-103 duration-100 relative w-full h-60 bg-gray-200 rounded-lg shadow overflow-hidden flex flex-col justify-end"
           style={{ minWidth: '220px', maxWidth: '300px' }}
         >
             <div className="absolute top-5 left-5">{drivetrainSVG(car.Drivetrain!)}</div>

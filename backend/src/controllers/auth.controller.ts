@@ -90,7 +90,7 @@ export const login = catchAsync(async(req: Request, res: Response, next: NextFun
     const accessToken = signToken(Number(userFromDB.user_id), JWT_EXPIRATION);
     const refreshToken = signToken(Number(userFromDB.user_id), JWT_REFRESH_EXPIRATION);
     res.cookie('refresh_token', refreshToken, {httpOnly: true, sameSite: "strict", secure, expires: new Date(Date.now() + ms(JWT_REFRESH_EXPIRATION as ms.StringValue))});
-    res.status(200).json({status: "success",message: "logged in successfully", access_token: accessToken, user: {user_id:userFromDB.user_id, username: userFromDB.username, email: userFromDB.email,profile_pic: user.profile_pic}});       
+    res.status(200).json({status: "success",message: "logged in successfully", access_token: accessToken, user: {user_id:userFromDB.user_id, username: userFromDB.username, email: userFromDB.email,profile_pic: userFromDB.profile_pic}});       
 });
 
 export const logout = catchAsync(async(req: Request, res: Response, next: NextFunction): Promise<void> => {
