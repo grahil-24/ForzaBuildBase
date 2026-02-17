@@ -9,6 +9,8 @@ import { toast } from 'react-toastify';
 import ButtonSpinner from '../../../components/ButtonSpinner';
 import { AuthContext } from '../../../contexts/Auth/AuthContext';
 import { useMutation } from '@tanstack/react-query';
+import { usePasswordStrength } from '../../../hooks/usePasswordStrength';
+import { PasswordStrengthChecklist } from '../../../components/PasswordStrengthChecklist';
 
 export const Route = createFileRoute('/_authenticated/settings/')({
   component: RouteComponent,
@@ -33,7 +35,8 @@ function RouteComponent (){
   const [tempUsername, setTempUsername] = useState(profile.username);
   const [tempEmail, setTempEmail] = useState(profile.email);
   const [isUpdatingProfilePic, setIsUpdatingProfilePic] = useState<boolean>(false);
-  
+  const {pwdStrength, validatePassword, isPasswordValid} = usePasswordStrength();  
+
   const [passwordData, setPasswordData] = useState({
     current: '',
     new: '',
@@ -274,6 +277,12 @@ function RouteComponent (){
       setShowDeleteAccount(false);
     }
   };
+
+  const handleNewPasswordInput = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const newPassword = e.target.value;
+    setPasswordData({ ...passwordData, new: newPassword });
+    validatePassword(newPassword);
+  }
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -523,13 +532,13 @@ function RouteComponent (){
                     </div>
                   </div>
                   
-                  <div>
+                 <div>
                     <label className="block text-xs font-medium text-gray-700 mb-1.5">New Password</label>
                     <div className="relative">
                       <input
                         type={showPasswords.new ? 'text' : 'password'}
                         value={passwordData.new}
-                        onChange={(e) => setPasswordData({ ...passwordData, new: e.target.value })}
+                        onChange={handleNewPasswordInput}
                         className="w-full px-3 py-2 pr-10 text-sm bg-white border border-gray-300 rounded-md focus:border-gray-900 focus:outline-none focus:ring-1 focus:ring-gray-900 transition-smooth"
                         placeholder="Enter new password"
                       />
@@ -541,6 +550,7 @@ function RouteComponent (){
                         {showPasswords.new ? <EyeSlashIcon className="w-4 h-4" /> : <EyeIcon className="w-4 h-4" />}
                       </button>
                     </div>
+                    <PasswordStrengthChecklist strength={pwdStrength} />
                   </div>
                   
                   <div>
