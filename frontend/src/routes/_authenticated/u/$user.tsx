@@ -31,25 +31,6 @@ export const Route = createFileRoute('/_authenticated/u/$user')({
     }
   },
   component: RouteComponent,
-  loader: async ({ params, context }) => {
-    const { user } = params;
-    const { auth } = context;
-    
-    // Check if user exists by fetching first page
-    const url = `${BACKEND}/profile/${user}/tunes`;
-    const res = await authFetch(url, { method: 'GET' }, auth);
-    
-    if (res.status === 404) {
-      throw notFound();
-    }
-    
-    if (!res.ok) {
-      throw new Error('Something went wrong! Please try again later');
-    }
-    
-    // Return the initial data (optional - can be used to prevent duplicate fetch)
-    return await res.json();
-  },
   errorComponent: ErrorToast,
   head: () => ({
     meta: [
@@ -262,11 +243,15 @@ function RouteComponent() {
         <div className='max-w-4xl mx-auto px-4 py-6'>
           <div className='flex items-center justify-between flex-wrap gap-4'>
            <div className='flex items-center gap-4'>
-              <img 
-                src={`${PROFILE_PIC}/${data?.pages[0]?.profile_pic}`}
-                alt={`${user}'s profile`}
-                className='size-16 sm:size-20 rounded-full object-cover border-2 border-gray-200'
-              />
+             {data?.pages[0]?.profile_pic ? (
+                <img 
+                  src={`${PROFILE_PIC}/${data.pages[0].profile_pic}`}
+                  alt={`${user}'s profile`}
+                  className='size-16 sm:size-20 rounded-full object-cover border-2 border-gray-200'
+                />
+              ) : (
+                <div className='size-16 sm:size-20 rounded-full bg-gray-200 border-2 border-gray-200' />
+              )}
               <div>
                 <h1 className='text-3xl font-bold text-gray-900'>{user}'s Tunes</h1>
                 <p className='text-sm text-gray-600 mt-1'>

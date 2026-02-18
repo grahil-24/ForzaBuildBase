@@ -247,7 +247,6 @@ function RouteComponent (){
           },
           body: JSON.stringify({new_password: newPassword, current_password: currentPassword})
         }, auth!)
-      // const data = await res.json();
       if(!res.ok){
         const error = await res.json();
         throw Error(error.message);
@@ -258,18 +257,15 @@ function RouteComponent (){
     },
     onSuccess: () => {
       toast.success('Password updated successfully! Please login with the new one!', {autoClose: 3000});
-      setTimeout(() => {
-        auth?.logout();
+      setTimeout(async() => {
+        await auth?.logout();
       }, 3000);
     }
   })
 
 
   const handlePasswordChange = () => {
-    if (passwordData.current && passwordData.new && passwordData.new === passwordData.confirm) {
-      setShowChangePassword(false);
-      setPasswordData({ current: '', new: '', confirm: '' });
-    }
+      updatePasswordMutation.mutate({newPassword: passwordData.new, currentPassword: passwordData.current});
   };
 
   const handleDeleteAccount = () => {
@@ -580,7 +576,7 @@ function RouteComponent (){
                   <div className="flex gap-2 pt-1">
                     <button
                       onClick={handlePasswordChange}
-                      disabled={!passwordData.current || !passwordData.new || passwordData.new !== passwordData.confirm}
+                      disabled={!passwordData.current || !passwordData.new || passwordData.new !== passwordData.confirm || !isPasswordValid()}
                       className=" flex-1 py-2 text-sm bg-gray-900 text-white rounded-md hover:bg-gray-800 transition-smooth flex items-center justify-center gap-1.5 disabled:opacity-50 disabled:cursor-not-allowed font-medium"
                     >
                       <CheckIcon className="w-4 h-4" />

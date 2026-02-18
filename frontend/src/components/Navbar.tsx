@@ -55,7 +55,7 @@ function Nav() {
                       src={`${PROFILE_PIC}/${authContext.user!.profile_pic}`}
                       alt={`${authContext.user!.username}'s profile`}
                       key={authContext.user!.profile_pic}
-                      className='size-5 sm:size-8 rounded-full object-cover'
+                      className='size-5 sm:size-8 rounded-full object-cover bg-gray-200'
                     />
                   {/* <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />

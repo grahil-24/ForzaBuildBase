@@ -6,7 +6,9 @@ import { RequestContext } from "@mikro-orm/core";
 import { AppError } from "../utils/AppError";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import { DeleteObjectCommand, PutObjectCommand, S3Client } from "@aws-sdk/client-s3";
-import { validateUsername } from "../utils/Validator";
+import { validateUsername, validatePassword } from "../utils/Validator";
+import bcrypt from 'bcrypt';
+import { hashPassword } from "../utils/passwordUtils";
 
 const S3 = new S3Client({
     region: "auto",
@@ -48,6 +50,44 @@ export const updateUsername = catchAsync(async(req: Request, res: Response, next
         return next(new AppError('An unexpected error occurred. Please try again later', 500));
     }
 
+});
+
+export const updatePassword = catchAsync(async(req: Request, res: Response, next: NextFunction) => {
+    const {user_id} = req;
+    const {new_password, current_password} = req.body;
+
+    if(!validatePassword(current_password)){
+        return next(new AppError("Try again - that's not your current password", 422));
+    }
+    if(!validatePassword(new_password)){
+        return next(new AppError("New password does not match the criteria", 422));
+    }
+
+    const em = RequestContext.getEntityManager();
+    if(!em){
+        return next(new AppError("Entity manager not available", 500));
+    }  
+
+    const user = await em.findOne(User, {user_id});
+    if(!user){
+        return next(new AppError('User does not exist', 404));
+    }
+    if(!await bcrypt.compare(current_password, user.password!)){
+        return next(new AppError("Try again - that's not your current password", 422));
+    }
+
+    if(await bcrypt.compare(new_password, user.password!)){
+        return next(new AppError("New password must be different from current password", 409));
+    }
+
+    user.password = await hashPassword(new_password);
+
+    try {
+        await em.persistAndFlush(user);
+        res.status(200).end();
+    }catch(error: any){
+        return next(new AppError('An unexpected error occurred. Please try again later', 500));
+    }
 });
 
 export const getPresignedURL = catchAsync(async(req: Request, res: Response, next: NextFunction) => {
