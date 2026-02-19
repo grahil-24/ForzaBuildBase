@@ -1,5 +1,5 @@
-import { createFileRoute, useNavigate, useRouter } from '@tanstack/react-router'
-import { CameraIcon, UserCircleIcon, LockClosedIcon, TrashIcon, EyeIcon, EyeSlashIcon, CheckIcon, XMarkIcon} from '@heroicons/react/24/outline';
+import { createFileRoute} from '@tanstack/react-router'
+import { CameraIcon, UserCircleIcon, LockClosedIcon, TrashIcon, EnvelopeIcon, EyeIcon, EyeSlashIcon, CheckIcon, XMarkIcon} from '@heroicons/react/24/outline';
 import { useState, useRef, useEffect, useContext } from 'react';
 import { BACKEND, PROFILE_PIC } from '../../../config/env';
 import Croppie from 'croppie'; 
@@ -22,7 +22,6 @@ function RouteComponent (){
   // const router = useRouter();
   // const navigate = useNavigate();
   const auth = useContext(AuthContext);
-  // const [profile, setProfile] = useState<User>(() => auth.user!);
   const profile = auth!.user!;
 
   const [isEditingUsername, setIsEditingUsername] = useState(false);
@@ -32,11 +31,10 @@ function RouteComponent (){
   const [showCropModal, setShowCropModal] = useState(false);
   const [tempImageUrl, setTempImageUrl] = useState<string>('');
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
-  const [tempUsername, setTempUsername] = useState(profile.username);
-  const [tempEmail, setTempEmail] = useState(profile.email);
+  const [tempUsername, setTempUsername] = useState(profile?.username ?? '');
+  const [tempEmail, setTempEmail] = useState(profile?.email ?? '');
   const [isUpdatingProfilePic, setIsUpdatingProfilePic] = useState<boolean>(false);
   const {pwdStrength, validatePassword, isPasswordValid} = usePasswordStrength();  
-
   const [passwordData, setPasswordData] = useState({
     current: '',
     new: '',
@@ -51,6 +49,77 @@ function RouteComponent (){
 
   const [deleteConfirmation, setDeleteConfirmation] = useState('');
   
+  const updateUsernameMutation = useMutation({
+    mutationFn: async(newUsername: string) => {
+      const res = await authFetch(`${BACKEND}/me/update-username`, 
+        {
+          method: 'PATCH', 
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({new_username: newUsername})
+        }, auth!)
+      const data = await res.json();
+      if(res.ok){
+        return data;
+      }else{
+        throw Error(data.message);
+      }
+    },
+    onError: (error) => {
+      toast.error(error.message);
+    },
+    onSuccess: (data) => {
+      toast.success('Username updated successfully!');
+      setIsEditingUsername(false);
+      auth?.updateUserProfile({...profile, username: data.username});
+    }
+  })
+
+  const updatePasswordMutation = useMutation({
+    mutationFn: async({newPassword, currentPassword} : {newPassword: string, currentPassword: string}) => {
+      const res = await authFetch(`${BACKEND}/me/update-password`, 
+        {
+          method: 'PATCH', 
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({new_password: newPassword, current_password: currentPassword})
+        }, auth!)
+      if(!res.ok){
+        const error = await res.json();
+        throw Error(error.message);
+      }
+    },
+    onError: (error) => {
+      toast.error(error.message);
+    },
+    onSuccess: () => {
+      toast.success('Password updated successfully! Please login with the new one!', {autoClose: 3000});
+      setTimeout(async() => {
+        await auth?.logout();
+      }, 3000);
+    }
+  })
+
+  const deleteAccountMutation = useMutation({
+    mutationFn: async() => {
+      const res = await authFetch(`${BACKEND}/me/delete`, {method: 'DELETE'}, auth!);
+      if(!res.ok){
+        throw Error((await res.json()).message);
+      }
+    },
+    onError: (error) => {
+      toast.error(error.message)
+    },
+    onSuccess: () => {
+      toast.success('Account deleted successfully!', {autoClose: 3000});
+      setTimeout(async() => {
+        await auth?.logout();
+      }, 3000);
+    }
+  })
+
   const croppieRef = useRef<HTMLDivElement>(null);
   const croppieInstanceRef = useRef<Croppie | null>(null);
 
@@ -84,6 +153,8 @@ function RouteComponent (){
       }
     };
   }, [showCropModal, tempImageUrl]);
+
+  if (!profile) return null;
 
   const handleProfilePictureChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -194,33 +265,6 @@ function RouteComponent (){
     setTempImageUrl('');
   };
 
-  const updateUsernameMutation = useMutation({
-    mutationFn: async(newUsername: string) => {
-      const res = await authFetch(`${BACKEND}/me/update-username`, 
-        {
-          method: 'PATCH', 
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({new_username: newUsername})
-        }, auth!)
-      const data = await res.json();
-      if(res.ok){
-        return data;
-      }else{
-        throw Error(data.message);
-      }
-    },
-    onError: (error) => {
-      toast.error(error.message);
-    },
-    onSuccess: (data) => {
-      toast.success('Username updated successfully!');
-      setIsEditingUsername(false);
-      auth?.updateUserProfile({...profile, username: data.username});
-    }
-  })
-
   const handleUsernameUpdate = () => {
     const newUsername = tempUsername.trim();
     if(newUsername.length < 4 || newUsername.length > 30 || newUsername.startsWith('-')){
@@ -237,33 +281,6 @@ function RouteComponent (){
   //   }
   // };
 
-  const updatePasswordMutation = useMutation({
-    mutationFn: async({newPassword, currentPassword} : {newPassword: string, currentPassword: string}) => {
-      const res = await authFetch(`${BACKEND}/me/update-password`, 
-        {
-          method: 'PATCH', 
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({new_password: newPassword, current_password: currentPassword})
-        }, auth!)
-      if(!res.ok){
-        const error = await res.json();
-        throw Error(error.message);
-      }
-    },
-    onError: (error) => {
-      toast.error(error.message);
-    },
-    onSuccess: () => {
-      toast.success('Password updated successfully! Please login with the new one!', {autoClose: 3000});
-      setTimeout(async() => {
-        await auth?.logout();
-      }, 3000);
-    }
-  })
-
-
   const handlePasswordChange = () => {
       updatePasswordMutation.mutate({newPassword: passwordData.new, currentPassword: passwordData.current});
   };
@@ -271,6 +288,7 @@ function RouteComponent (){
   const handleDeleteAccount = () => {
     if (deleteConfirmation === 'DELETE') {
       setShowDeleteAccount(false);
+      deleteAccountMutation.mutate();
     }
   };
 
@@ -343,25 +361,20 @@ function RouteComponent (){
                     className="hidden"
                     id="profile-picture-upload"
                   />
-                  <label htmlFor="profile-picture-upload" className=" block">
-                    <div className="relative">
-                      <img
-                        key={profile.profile_pic}
-                        src={`${PROFILE_PIC}/${profile.profile_pic}`}
-                        alt="Profile"
-                        className="w-25 h-25 rounded-full object-cover border border-gray-200"
-                      />
-                      <div className="absolute inset-0 rounded-lg bg-opacity-0 group-hover:bg-opacity-40 flex items-center justify-center transition-smooth">
-                        <CameraIcon className="w-5 h-5 text-white opacity-0 group-hover:opacity-100 transition-smooth" />
-                      </div>
-                    </div>
-                  </label>
+                  <div className="relative">
+                    <img
+                      key={profile.profile_pic}
+                      src={`${PROFILE_PIC}/${profile.profile_pic}`}
+                      alt="Profile"
+                      className="w-25 h-25 rounded-full object-cover border border-gray-200"
+                    />
+                  </div>
                 </div>
               </div>
               
               <div className="flex-1">
                 <div className="flex items-center gap-3 mb-1">
-                  <CameraIcon className="w-4 h-4 text-gray-500" />
+                  <CameraIcon className="w-6 h-6 text-gray-500" />
                   <h3 className="text-sm font-medium text-gray-900">Profile Picture</h3>
                 </div>
                 <p className="text-sm text-gray-500 mb-3">JPG, PNG. Max size 5MB.</p>
@@ -369,15 +382,15 @@ function RouteComponent (){
                   htmlFor="profile-picture-upload"
                   className="cursor-pointer inline-flex items-center gap-2 px-3 py-1.5 text-sm bg-white border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50 transition-smooth  font-medium"
                 >
-                  Choose File
+                  Choose Image
                 </label>
               </div>
             </div>
 
             {/* Username */}
             <div>
-              <div className="flex items-center gap-3 mb-3">
-                <UserCircleIcon className="w-4 h-4 text-gray-500" />
+              <div className="flex items-center gap-1 mb-3">
+                <UserCircleIcon className="w-6 h-6 text-gray-500" />
                 <h3 className="text-sm font-medium text-gray-900">Username</h3>
               </div>
               
@@ -436,15 +449,15 @@ function RouteComponent (){
 
             {/* Email */}
             <div>
-              <div className="flex items-center gap-3 mb-3">
-                {/* <Mail className="w-4 h-4 text-gray-500" /> */}
+              <div className="flex items-center gap-2 mb-3">
+                <EnvelopeIcon className="w-6 h-6 text-gray-500" />
                 <h3 className="text-sm font-medium text-gray-900">Email Address</h3>
               </div>
               
               {!isEditingEmail ? (
                 <div className="flex items-center justify-between bg-gray-50 rounded-md px-4 py-2.5 border border-gray-200">
                   <span className="text-sm text-gray-900">{profile.email}</span>
-                  <button
+                  {/* <button
                     onClick={() => {
                       setIsEditingEmail(true);
                       setTempEmail(profile.email);
@@ -452,7 +465,7 @@ function RouteComponent (){
                     className="px-3 py-1 text-sm bg-white border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50 transition-smooth font-medium"
                   >
                     Edit
-                  </button>
+                  </button> */}
                 </div>
               ) : (
                 <div className="space-y-2">
@@ -494,8 +507,8 @@ function RouteComponent (){
           <div className="p-6">
             {/* Change Password */}
             <div>
-              <div className="flex items-center gap-3 mb-3">
-                <LockClosedIcon className="w-4 h-4 text-gray-500" />
+              <div className="flex items-center gap-1 mb-3">
+                <LockClosedIcon className="w-6 h-6 text-gray-500" />
                 <h3 className="text-sm font-medium text-gray-900">Change Password</h3>
               </div>
               
@@ -576,11 +589,21 @@ function RouteComponent (){
                   <div className="flex gap-2 pt-1">
                     <button
                       onClick={handlePasswordChange}
-                      disabled={!passwordData.current || !passwordData.new || passwordData.new !== passwordData.confirm || !isPasswordValid()}
+                      disabled={updatePasswordMutation.isPending || !passwordData.current || !passwordData.new || passwordData.new !== passwordData.confirm || !isPasswordValid()}
                       className=" flex-1 py-2 text-sm bg-gray-900 text-white rounded-md hover:bg-gray-800 transition-smooth flex items-center justify-center gap-1.5 disabled:opacity-50 disabled:cursor-not-allowed font-medium"
                     >
-                      <CheckIcon className="w-4 h-4" />
-                      Update Password
+                      {!updatePasswordMutation.isPending ? (
+                        <>
+                          <CheckIcon className="w-4 h-4" />
+                          Update Password
+                        </>
+                      ) : (
+                        <>
+                          Updating...
+                          <ButtonSpinner />
+                        </>
+                        )
+                      }
                     </button>
                     <button
                       onClick={() => {
@@ -606,8 +629,8 @@ function RouteComponent (){
           </div>
           
           <div className="p-6">
-            <div className="flex items-start gap-3 mb-3">
-              <TrashIcon className="w-4 h-4 text-red-600 mt-0.5" />
+            <div className="flex items-start gap-2 mb-3">
+              <TrashIcon className="w-6 h-6 text-red-600 mt-0.5" />
               <div className="flex-1">
                 <h3 className="text-sm font-medium text-gray-900 mb-1">Delete Account</h3>
                 <p className="text-xs text-gray-600">
@@ -644,11 +667,21 @@ function RouteComponent (){
                 <div className="flex gap-2">
                   <button
                     onClick={handleDeleteAccount}
-                    disabled={deleteConfirmation !== 'DELETE'}
+                    disabled={deleteAccountMutation.isPending || deleteConfirmation !== 'DELETE'}
                     className="flex-1 py-2 text-sm bg-red-600 text-white rounded-md hover:bg-red-700 transition-smooth disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-1.5 font-medium"
                   >
-                    <TrashIcon className="w-4 h-4" />
-                    Permanently Delete
+                    {!deleteAccountMutation.isPending ? (
+                        <>
+                          <TrashIcon className="w-4 h-4" />
+                          Permanently Delete
+                        </>
+                      ) : (
+                        <>
+                          Deleting...
+                          <ButtonSpinner />
+                        </>
+                      )
+                    } 
                   </button>
                   <button
                     onClick={() => {

@@ -1,4 +1,4 @@
-import { HeadContent, Outlet, createRootRouteWithContext, useMatchRoute } from '@tanstack/react-router'
+import { HeadContent, Outlet, createRootRouteWithContext, redirect, useMatchRoute } from '@tanstack/react-router'
 import type { AuthState } from '../types/auth'
 import ErrorComponent from '../components/ErrorComponent'
 import NotFoundComponent from '../components/NotFoundComponent'
@@ -10,6 +10,13 @@ interface MyRouterContext {
 }
 
 export const Route = createRootRouteWithContext<MyRouterContext>()({
+  beforeLoad: ({context, location}) => {
+    if(context.auth.isAuthenticated && location.pathname === '/'){
+      return redirect({
+        to: '/dashboard'
+      })
+    }
+  },
   head: () => ({
     meta: [
       {

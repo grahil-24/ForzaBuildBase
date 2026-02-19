@@ -55,7 +55,7 @@ function RouteComponent() {
                                 <p>no tunes created yet.</p>
                             </div>
                             <div className='flex items-center justify-center'>
-                                <button className=' hover:bg-black hover:text-white duration-200 border-black border-2 p-3 mt-4'>Create tune</button>
+                                <Link to='/browse' className=' hover:bg-black hover:text-white duration-200 border-black border-2 p-3 mt-4'>Create tune</Link>
                             </div>
                         </div>
                     )

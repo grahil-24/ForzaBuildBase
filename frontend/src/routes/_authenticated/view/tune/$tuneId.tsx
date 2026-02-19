@@ -180,7 +180,7 @@ function RouteComponent() {
           </div>
 
           {/* METADATA SECTION - Below image, starts from left margin */}
-          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mt-6 border-t border-slate-100">
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mt-6">
             
             {/* Left side - Created info + Class */}
             <div className="flex flex-wrap items-center gap-4">
@@ -190,7 +190,7 @@ function RouteComponent() {
                   <img 
                     src={`${PROFILE_PIC}/${tuneDetails?.profile_pic}`}
                     alt={`${tuneDetails?.creator}'s profile`}
-                    className='size-5 sm:size-6 rounded-full object-cover'
+                    className='size-5 sm:size-9 rounded-full object-cover'
                   />
                   <strong className="hover:underline text-slate-900">{tuneDetails?.creator}</strong>
                 </Link>

@@ -6,7 +6,7 @@ import ErrorComponent from "../components/ErrorComponent";
 export const Route = createFileRoute('/_authenticated')({
     beforeLoad: ({context, location}) => {
         if(!context.auth.isAuthenticated){
-            throw redirect({
+            return redirect({
                 to: '/login',
                 search: {
                     // save current location for redirect after login

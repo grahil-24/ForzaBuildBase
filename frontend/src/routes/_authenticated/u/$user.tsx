@@ -410,7 +410,7 @@ function RouteComponent() {
                             <img 
                               src={`${PROFILE_PIC}/${tune.tune.creator.profile_pic}`}
                               alt={`${tune.tune.creator.username}'s profile`}
-                              className='size-5 sm:size-6 rounded-full object-cover'
+                              className='size-5 sm:size-9 rounded-full object-cover'
                             />
                             <span className='hover:underline font-semibold text-gray-800'>{tune.tune.creator.username}</span>
                           </Link>

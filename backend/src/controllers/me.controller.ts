@@ -90,6 +90,21 @@ export const updatePassword = catchAsync(async(req: Request, res: Response, next
     }
 });
 
+export const deleteAccount = catchAsync(async(req: Request, res: Response, next: NextFunction) => {
+    const {user_id} = req;
+
+    const em = RequestContext.getEntityManager();
+    if(!em){
+        return next(new AppError("Entity manager not available", 500));
+    }  
+
+    const user = em.getReference(User, {user_id});
+
+    await em.removeAndFlush(user);
+
+    res.status(204).end();
+});
+
 export const getPresignedURL = catchAsync(async(req: Request, res: Response, next: NextFunction) => {
     const image_name = req.body.image_name;
     const file_type = req.body.file_type;

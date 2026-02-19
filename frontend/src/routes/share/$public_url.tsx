@@ -2,7 +2,7 @@ import { createFileRoute, notFound, useNavigate } from '@tanstack/react-router'
 import TuneDetailsComponent from '../../components/tune/TuneDetailsComponent';
 import NotFoundComponent from '../../components/NotFoundComponent';
 import { useEffect } from 'react';
-import { BACKEND } from '../../config/env';
+import { BACKEND, PROFILE_PIC } from '../../config/env';
 import type { RankType } from '../../types/car';
 import { formatS3BucketURL } from '../../util/urlFormatter';
 import { Link } from '@tanstack/react-router';
@@ -56,7 +56,7 @@ function RouteComponent() {
   const imageUrl = formatS3BucketURL({manufacturer: tuneDetails.car.Manufacturer!, image_filename: tuneDetails.car.image_filename!, size: "medium"});
 
   return (
-    <div className="min-h-screen w-full flex justify-center px-2 sm:px-4 py-4 md:py-8 bg-slate-50">
+    <div className="min-h-screen w-full flex justify-center px-19 sm:px-21 py-21 md:py-25 bg-slate-50">
       <div className="w-full max-w-6xl">
         
         {/* Header Section */}
@@ -100,12 +100,20 @@ function RouteComponent() {
           </div>
 
           {/* METADATA SECTION - Below image, starts from left margin */}
-          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mt-6 border-t border-slate-100 pt-4">
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mt-6">
             
             {/* Left side - Created info + Class */}
             <div className="flex flex-wrap items-center gap-4">
               <div className="flex items-center gap-2">
-                <Link to='/u/$user' params={{user: tuneDetails.creator}}><span className="text-slate-600">Created by: <strong className="hover:underline text-slate-900">{tuneDetails?.creator}</strong></span></Link>
+                <Link to='/u/$user' params={{user: tuneDetails.creator}} className="flex items-center gap-2">
+                  <span className="text-slate-600">Created by:</span>
+                  <img 
+                    src={`${PROFILE_PIC}/${tuneDetails.profile_pic}`}
+                    alt={`${tuneDetails.creator}'s profile`}
+                    className='size-5 sm:size-9 rounded-full object-cover'
+                  />
+                  <strong className="hover:underline text-slate-900">{tuneDetails.creator}</strong>
+                </Link>
               </div>
               
               <div className="flex items-center gap-2">
@@ -120,18 +128,13 @@ function RouteComponent() {
                 </div>
               </div>
             </div>
-
-            {/* Right side - Login prompt */}
-            <div className="text-center md:text-right">
-              <p className="text-slate-600 text-sm mb-2">Want to save this tune?</p>
-              <Link 
-                to='/login' 
-                search={{redirect: `/view/tune/${tuneDetails.tune_id}`}}
-                className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-semibold transition-colors inline-block"
-              >
-                Login to Save
-              </Link>
-            </div>
+            <Link 
+              to='/login' 
+              search={{redirect: `/view/tune/${tuneDetails.tune_id}`}}
+              className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-semibold transition-colors inline-block"
+            >
+              Login to Save
+            </Link>
           </div>
         </div>
 

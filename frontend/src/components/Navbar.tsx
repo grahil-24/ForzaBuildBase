@@ -166,18 +166,21 @@ function Nav() {
             >
               <Link
                 to="/dashboard"
+                onClick={() => setIsOpen(false)}
                 className="text-gray-900 hover:bg-gray-100 block px-3 py-2 rounded-md text-base font-medium"
               >
                 Dashboard
               </Link>
               <Link
                 to="/browse"
+                onClick={() => setIsOpen(false)}
                 className="text-gray-700 hover:bg-gray-100 hover:text-gray-900 block px-3 py-2 rounded-md text-base font-medium"
               >
                 Browse
               </Link>
               <Link
                 to="/u/$user"
+                onClick={() => setIsOpen(false)}
                 params={{user: authContext.user!.username}}
                 className="text-gray-700 hover:bg-gray-100 hover:text-gray-900 block px-3 py-2 rounded-md text-base font-medium"
               >
@@ -196,11 +199,13 @@ function Nav() {
                   >
                     Your profile
                   </Link> */}
-                  <button
+                  <Link
+                    to='/settings'
+                    onClick={() => setIsOpen(false)}
                     className="w-full text-left text-gray-700 hover:bg-gray-100 hover:text-gray-900 block px-3 py-2 rounded-md text-base font-medium"
                   >
                     Settings
-                  </button>
+                  </Link>
                   <button
                     onClick={handleLogout}
                     className="w-full text-left text-gray-700 hover:bg-gray-100 hover:text-gray-900 block px-3 py-2 rounded-md text-base font-medium"

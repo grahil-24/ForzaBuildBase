@@ -101,16 +101,19 @@ export function AuthProvider({children}: {children: React.ReactNode}){
     }
 
     const logout = async() => {
-        setUser(null);
-        setIsAuthenticated(false);
-        setAccessToken(null);
         //call backend logout api to invalidate refresh cookie
-        await fetch(`${BACKEND}/auth/logout`,
+        const res = await fetch(`${BACKEND}/auth/logout`,
             {
                 credentials: "include"
             }
         );
+        if(!res.ok){
+            throw new Error('Failed to logout! Please try again');
+        }
         window.location.href = '/';
+        setUser(null);
+        setIsAuthenticated(false);
+        setAccessToken(null);
     }
 
     const refreshUserData = async () => {
