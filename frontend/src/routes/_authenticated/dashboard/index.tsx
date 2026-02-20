@@ -36,32 +36,39 @@ function RouteComponent() {
     const recentTunes: Tune[] = Route.useLoaderData();
 
     return (
-        <div> 
-            
-            <div className='max-w-4/5 pt-10 min-w-sm'>
-                <div className='flex justify-between'>
-                    <div className='text-2xl ml-10'>Recent Tunes</div>
-                    <div className='group inline-block'>
-                        <div><Link to={'/u/$user'} params={{user: auth.user!.username}}>View all</Link></div>
-                        <div className='w-0 h-0.5 duration-300 group-hover:w-full bg-black'></div>
+        <div className="bg-slate-50/50 min-h-screen"> 
+            <div className='max-w-7xl mr-auto pt-12 px-6'>
+                <div className='flex items-end justify-between mb-8'>
+                    <div>
+                        <h2 className='text-3xl font-bold text-slate-900 tracking-tight'>Recent Tunes</h2>
+                        <p className='text-slate-500 mt-1'>Continue where you left off with your latest builds.</p>
+                    </div>
+                    
+                    <div className='flex items-center gap-6'>
+                        <div className='group relative'>
+                            <Link 
+                                to={'/u/$user'} 
+                                params={{user: auth.user!.username}}
+                                className="text-sm font-semibold text-slate-600 hover:text-black transition-colors"
+                            >
+                                View all builds
+                            </Link>
+                            <div className='absolute -bottom-1 left-0 w-0 h-0.5 duration-300 group-hover:w-full bg-black'></div>
+                        </div>
                     </div>
                 </div>
+
                 {recentTunes.length > 0 ? (
-                        <Carousel user={auth.user!.username} recentTunes={recentTunes} />   
-                    ) :
-                    (
-                        <div className='mt-4 flex-row items-center'>
-                            <div className='flex justify-center'>
-                                <p>no tunes created yet.</p>
-                            </div>
-                            <div className='flex items-center justify-center'>
-                                <Link to='/browse' className=' hover:bg-black hover:text-white duration-200 border-black border-2 p-3 mt-4'>Create tune</Link>
-                            </div>
-                        </div>
-                    )
-                }
+                    <Carousel user={auth.user!.username} recentTunes={recentTunes} />   
+                ) : (
+                    <div className='mt-12 py-20 border-2 border-dashed border-slate-200 rounded-2xl flex flex-col items-center justify-center bg-white'>
+                        <p className="text-slate-400 font-medium">No tunes created yet.</p>
+                        <Link to='/browse' className='bg-slate-900 text-white px-6 py-2 rounded-full font-medium mt-4 hover:bg-slate-800 transition-all active:scale-95'>
+                            Create your first tune
+                        </Link>
+                    </div>
+                )}
             </div>
         </div>
     )
-
 }

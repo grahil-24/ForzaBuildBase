@@ -42,8 +42,8 @@ const filters = [
   },
 ]
 
-const FilterSidebar = () => {
-  const [filtersOpen, setFiltersOpen] = useState<boolean>(false)
+const FilterSidebar = ({isFilterOpen, handleFilterButtonClick}: {isFilterOpen: boolean, handleFilterButtonClick: () => void}) => {
+  // const [filtersOpen, setFiltersOpen] = useState<boolean>(isFilterOpen)
   const [brandDialogOpen, setBrandDialogOpen] = useState<boolean>(false);
   const [brandSearchQuery, setBrandSearchQuery] = useState<string>('');
   const [activateClearFilterButton, setActivateClearFilterButton] = useState<boolean>(false);
@@ -106,7 +106,7 @@ const FilterSidebar = () => {
     }
     searchParams.page = 1;
     navigate({ to: '/browse', search: searchParams});
-    setFiltersOpen(false);
+    handleFilterButtonClick();
   }
 
   // Filter brands based on search query
@@ -117,17 +117,17 @@ const FilterSidebar = () => {
   return (
     <>
       {/* Main Filters Dialog */}
-      <Dialog open={filtersOpen} onClose={setFiltersOpen} className="relative z-40">
+      <Dialog open={isFilterOpen} onClose={handleFilterButtonClick} className="relative z-40">
         <div className="fixed inset-0 z-40 flex">
           <DialogPanel
             transition
-            className="relative mt-16 mr-auto flex min-w-2xs transform flex-col bg-white pt-4 pb-6 shadow-xl transition duration-300 ease-in-out data-closed:-translate-x-full"
+            className="relative mt-17 mr-auto flex min-w-2xs transform flex-col bg-white pt-4 pb-6 shadow-xl transition duration-300 ease-in-out data-closed:-translate-x-full"
           >
             <div className="flex items-center justify-between px-4">
               <h2 className="text-lg font-medium text-gray-900">Filters</h2>
               <button
                 type="button"
-                onClick={() => setFiltersOpen(false)}
+                onClick={handleFilterButtonClick}
                 className="relative -mr-2 flex size-10 items-center justify-center rounded-md bg-white p-2 text-gray-400 hover:bg-gray-50 focus:ring-2 focus:ring-indigo-500 focus:outline-hidden"
               >
                 <span className="absolute -inset-0.5" />
@@ -332,16 +332,6 @@ const FilterSidebar = () => {
       </Dialog>
 
       {/* Filter Button */}
-     <button
-      type="button"
-      onClick={() => setFiltersOpen(true)}
-      className="p-2 text-gray-500 hover:text-gray-700 border border-gray-200 rounded-md hover:bg-gray-50 transition-colors w-fit flex items-center justify-center"
-      >
-        <span className="sr-only">Filters</span>
-        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-6">
-          <path strokeLinecap="round" strokeLinejoin="round" d="M10.5 6h9.75M10.5 6a1.5 1.5 0 1 1-3 0m3 0a1.5 1.5 0 1 0-3 0M3.75 6H7.5m3 12h9.75m-9.75 0a1.5 1.5 0 0 1-3 0m3 0a1.5 1.5 0 0 0-3 0m-3.75 0H7.5m9-6h3.75m-3.75 0a1.5 1.5 0 0 1-3 0m3 0a1.5 1.5 0 0 0-3 0m-9.75 0h9.75" />
-        </svg>
-      </button>
     </>
   )
 }

@@ -26,7 +26,7 @@ const rank_to_color: Record<RankType, string> = {
 }
 
 const EmblaCarousel: React.FC<PropType> = (props) => {
-  const { slides, options} = props
+  const { slides, options } = props
   const [emblaRef, emblaApi] = useEmblaCarousel(options)
 
   const {
@@ -36,67 +36,62 @@ const EmblaCarousel: React.FC<PropType> = (props) => {
     onNextButtonClick
   } = usePrevNextButtons(emblaApi)
 
-  if (!slides) {
-    return (
-      <div className="text-center text-black py-8">
-        No recent tunes found
-      </div>
-    )
-  }
-
   return (
-    <section className="max-w-280 m-auto">
+    <section className="relative group/carousel">
       <div className="overflow-hidden" ref={emblaRef}>
-        <div className="flex p-2 touch-pan-y touch-pinch-zoom -ml-4 sm:-ml-6 lg:-ml-8 backface-hidden">
-          { 
-          slides.map((tune) => {
+        <div className="flex -ml-6">
+          {slides.map((tune) => {
             const imageURL = formatS3BucketURL({
               manufacturer: tune.tune.car.Manufacturer,
               image_filename: tune.tune.car.image_filename,
             })
-
             return (
-              <div className="min-w-0 flex-[0_0_100%] pl-4 sm:flex-[0_0_50%] sm:pl-6 lg:flex-[0_0_calc(100%/3)] lg:pl-8" key={tune.tune.tune_id}>
-                <div>
-                  {/* Tune Card */}
-                  <div className="relative w-full rounded-lg overflow-visible bg-white p-4 text-black shadow-sm hover:shadow-md transition h-full flex flex-col">
-                    <div className={`bg-white pl-3 pr-3 pt-1 pb-1 rounded-md absolute top-5 right-5 text-lg ${rank_to_color[tune.tune.resultant_rank]} text-center font-bold`}>{tune.tune.resultant_rank}</div>
-                    {/* Car Image */}
-                    <div className="w-full h-32 mb-4 flex items-center justify-center">
-                      <img
-                        src={imageURL}
-                        alt={tune.tune?.tune_name}
-                        className="w-full h-full object-contain"
-                      />
-                    </div>
+              <div className="min-w-0 flex-[0_0_100%] pl-6 sm:flex-[0_0_50%] lg:flex-[0_0_33.33%]" key={tune.tune.tune_id}>
+                <div className="group relative bg-white border border-slate-100 rounded-2xl p-5 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 h-full flex flex-col">
+                  
+                  {/* Rank Badge */}
+                  <div className={`absolute top-4 right-4 px-3 py-1 rounded-full text-md font-black backdrop-blur-md bg-white/80 shadow-sm border border-slate-100 ${rank_to_color[tune.tune.resultant_rank]}`}>
+                    {tune.tune.resultant_rank}
+                  </div>
 
-                    <div className="flex flex-col gap-2 mt-auto">
-                      {/* Tune name and date */}
-                      <div className="flex-col min-w-0">
-                        <h3 className=" hover:underline text-xl font-semibold truncate">
-                          <Link to='/view/tune/$tuneId' params={{tuneId: tune.tune.tune_id.toString()}}>
-                            {tune.tune?.tune_name}
-                          </Link>
-                        </h3>
-                        <p className="text-sm text-gray-600">
-                          Saved on: {new Date(tune.saved_on).toLocaleString('en-GB',{day: 'numeric', month: 'short', year: 'numeric' })}
-                        </p>
-                      </div>
-                      
-                      {/* Created by section - now full width */}
-                      <div className='flex items-center gap-3'>
-                        <div className='text-sm text-gray-600'>Created by:</div>
-                        <Link to='/u/$user' params={{user: tune.tune.creator.username}}>
-                          <div className=' flex gap-2 items-center group'>
-                            <img 
-                              src={`${PROFILE_PIC}/${tune.tune.creator.profile_pic}`}
-                              alt={`${tune.tune.creator.username}'s profile`}
-                              className='size-5 sm:size-9 rounded-full object-cover'
-                            />
-                            <p className='group-hover:underline truncate'>{tune.tune.creator.username}</p>
-                          </div>
-                        </Link>
-                      </div>
+                  {/* Car Image */}
+                  <div className="relative w-full h-40 mb-6 flex items-center justify-center bg-radial-gradient from-slate-50 to-transparent rounded-xl overflow-hidden">
+                    <img
+                      src={imageURL}
+                      alt={tune.tune?.tune_name}
+                      className="w-full h-full object-contain drop-shadow-2xl group-hover:scale-110 transition-transform duration-500"
+                    />
+                  </div>
+
+                  <div className="flex flex-col flex-1">
+                    <Link 
+                        to='/view/tune/$tuneId' 
+                        params={{tuneId: tune.tune.tune_id.toString()}}
+                        className="text-lg font-bold text-slate-800 leading-tight hover:text-indigo-600 transition-colors line-clamp-1"
+                    >
+                        {tune.tune?.tune_name}
+                    </Link>
+                    
+                    <p className="text-[11px] font-bold uppercase tracking-wider text-slate-400 mt-1">
+                      {new Date(tune.saved_on).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' })}
+                    </p>
+
+                    {/* Creator Section */}
+                    <div className='mt-6 border-t border-slate-50 flex items-center justify-between'>
+                      <Link 
+                        to='/u/$user' 
+                        params={{user: tune.tune.creator.username}}
+                        className="flex items-center gap-2 group/user"
+                      >
+                        <img 
+                          src={`${PROFILE_PIC}/${tune.tune.creator.profile_pic}`}
+                          alt=""
+                          className='size-8 rounded-full object-cover ring-2 ring-white shadow-sm'
+                        />
+                        <span className='text-md font-medium text-slate-600 group-hover/user:text-indigo-600 transition-colors'>
+                          {tune.tune.creator.username}
+                        </span>
+                      </Link>
                     </div>
                   </div>
                 </div>
@@ -105,23 +100,21 @@ const EmblaCarousel: React.FC<PropType> = (props) => {
           })}
         </div>
       </div>
-
-      <div className="flex-row">
-        <div className="flex m-auto w-1/13 gap-1">
-          <div className='mr-auto'>
-            {!prevBtnDisabled && 
-              <PrevButton onClick={onPrevButtonClick} disabled={prevBtnDisabled} />
-            }
+      <div className='flex mt-5'>
+        <div className='flex gap-2 mx-auto'>
+          <PrevButton 
+                onClick={onPrevButtonClick} 
+                disabled={prevBtnDisabled} 
+                className="size-10 rounded-full border border-slate-200 bg-white flex items-center justify-center hover:bg-slate-50 disabled:opacity-30 transition-all shadow-sm"
+            />
+          <NextButton 
+              onClick={onNextButtonClick} 
+              disabled={nextBtnDisabled} 
+              className="size-10 rounded-full border border-slate-200 bg-white flex items-center justify-center hover:bg-slate-50 disabled:opacity-30 transition-all shadow-sm"
+          />
           </div>
-          <div className='ml-auto'>
-            {!nextBtnDisabled && 
-              <NextButton onClick={onNextButtonClick} disabled={nextBtnDisabled} />
-            }
-          </div>
-        </div>
       </div>
     </section>
   )
 }
-
 export default EmblaCarousel

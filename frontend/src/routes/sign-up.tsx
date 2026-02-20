@@ -8,7 +8,7 @@ import { usePasswordStrength } from "../hooks/usePasswordStrength";
 import { PasswordStrengthChecklist } from "../components/PasswordStrengthChecklist";
 
 export const Route = createFileRoute('/sign-up')({
-    validateSearch: (search)=> ({
+    validateSearch: (search): {redirect?: string} => ({
         redirect: (search.redirect as string) || '/dashboard'
     }),
     beforeLoad: ({context, search}) => {

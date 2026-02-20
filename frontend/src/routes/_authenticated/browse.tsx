@@ -88,6 +88,7 @@ function BrowseComponent(): React.ReactElement {
   const page = search.page ?? 1;
   const [pageInputField, setPageInputField] = useState<number>(page);
   const [searchBarText, setSearchBarText] = useState<string>("");
+  const [isfilterOpen, setIsFilterOpen] = useState<boolean>(false);
 
   useEffect(() => {
     setPageInputField(page);
@@ -102,32 +103,51 @@ function BrowseComponent(): React.ReactElement {
     });
   };
 
+  const handleFilterButtonClick = () => {
+    setIsFilterOpen(prev => !prev);
+  }
+
   return (
     <div className="w-full max-w-(--break-2xl) mx-auto">
       {/* Header Section */}
-      <div className='px-6 mt-5 grid grid-cols-1 md:grid-cols-3 items-center gap-4'>
-        
-        {/* 1. Filter: Left aligned. On mobile, we keep it inline-block */}
-        <div className='flex justify-start order-1'>
-          <FilterSidebar />
-        </div>
+      <div className='px-6 mt-5'>
+        {/* justify-between pushes the three children to the left, center, and right on md+ */}
+        <div className='flex flex-wrap items-center justify-between gap-y-4 gap-x-2'>
+          
+          {/* 1. Filter Button - Left End */}
+          <div className='flex items-center order-1'>
+            {!isfilterOpen && 
+              <button
+                type="button"
+                onClick={handleFilterButtonClick}
+                className="p-2 text-gray-500 hover:text-gray-700 border border-gray-200 rounded-md hover:bg-gray-50 transition-colors"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-6">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M10.5 6h9.75M10.5 6a1.5 1.5 0 1 1-3 0m3 0a1.5 1.5 0 1 0-3 0M3.75 6H7.5m3 12h9.75m-9.75 0a1.5 1.5 0 0 1-3 0m3 0a1.5 1.5 0 0 0-3 0m-3.75 0H7.5m9-6h3.75m-3.75 0a1.5 1.5 0 0 1-3 0m3 0a1.5 1.5 0 0 0-3 0m-9.75 0h9.75" />
+                </svg>
+              </button>
+            } 
+          </div>
+          <FilterSidebar isFilterOpen={isfilterOpen} handleFilterButtonClick={handleFilterButtonClick} />
+          {/* 2. Results Text - Middle (Centered) */}
+          {/* On mobile, it takes available space; on desktop, it sits in the middle */}
+          <div className='flex-1 md:flex-initial text-center order-2'>
+            <p className='md:text-xl text-lg font-semibold whitespace-nowrap'>
+              Showing <span className="text-lime-600">{total}</span> results
+            </p>
+          </div>
 
-        {/* 2. Results: Dead Center on desktop. Order 2 */}
-        <div className='text-center order-2'>
-          <p className='text-lg font-semibold whitespace-nowrap'>
-            Showing <span className="text-lime-600">{total}</span> results
-          </p>
-        </div>
-
-        {/* 3. Search: Right aligned on desktop. Full width on mobile. Order 3 */}
-        <div className='flex justify-center md:justify-end order-3 w-full'>
-          <Searchbar 
-            handleSearchbar={(e) => setSearchBarText(e.target.value)} 
-            handleSearch={() => navigate({to: '/browse', search: {search: searchBarText, page: 1}})}
-          />
+          {/* 3. Search Bar - Right End */}
+          {/* w-full on mobile to prevent overflow; specific width on md+ */}
+          <div className='w-full md:w-auto md:min-w-[300px] lg:min-w-[400px] order-3 flex justify-end'>
+            <Searchbar
+              handleSearchbar={(e) => setSearchBarText(e.target.value)}
+              handleSearch={() => navigate({ to: '/browse', search: { ...search, search: searchBarText, page: 1 } })}
+            />
+          </div>
+          
         </div>
       </div>
-
       {/* Main Content */}
       <div className='p-6'>
         {/* Removed ml-15 as it's not standard Tailwind and causes off-centering */}
@@ -174,9 +194,7 @@ function BrowseComponent(): React.ReactElement {
         </div>
       </div>
       
-      <div className='md:hidden'>
         <ScrollToTop />
-      </div>
     </div>
   )
 }

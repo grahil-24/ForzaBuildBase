@@ -634,7 +634,7 @@ function RouteComponent (){
               <div className="flex-1">
                 <h3 className="text-sm font-medium text-gray-900 mb-1">Delete Account</h3>
                 <p className="text-xs text-gray-600">
-                  Once you delete your account, there is no going back. Please be certain.
+                  Once you delete your account, there is no going back.
                 </p>
               </div>
             </div>

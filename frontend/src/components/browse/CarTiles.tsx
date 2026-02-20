@@ -59,31 +59,31 @@ const CarTile = ({car}: {car: Car}): React.ReactElement => {
 
     return (
         <Link to="/view/car/$carId" params={{carId: car.id.toString()}}>
-        <div
-          key={car.id}
-          className=" hover:scale-103 duration-100 relative w-full h-60 bg-gray-200 rounded-lg shadow overflow-hidden flex flex-col justify-end"
-          style={{ minWidth: '220px', maxWidth: '300px' }}
-        >
-            <div className="absolute top-5 left-5">{drivetrainSVG(car.Drivetrain!)}</div>
-            <div className={`bg-white pl-3 pr-3 pt-1 pb-1 rounded-md absolute top-5 right-5 text-lg ${rank_color} text-center font-bold`}>{car.Rank}</div>
-            <img
-                    loading="eager"
-                    src={imageUrl}
-                    alt={car.Model}
-                    // onLoad={() => setIsLoaded(true)}
-                    // onError={() => setIsLoaded(true)} // Show the tile even if image fails (to show alt text/error)
-                    className="inline-block -mt-2 absolute inset-0 w-full h-full object-contain p-2"
-                />
-            <div className="absolute inset-0 bg-linear-to-t from-black/10 via-black/30 to-transparent" />
-            <div className="relative z-10 p-3">
-                <div
-                  className="text-white font-semibold text-center text-base overflow-hidden text-ellipsis whitespace-nowrap w-full"
-                  title={`${car.Year} - ${car.Manufacturer} ${car.Model}`}
-                >
-                  {car.Year} - {car.Manufacturer} {car.Model}
-                </div>
-            </div>
-        </div>
+          <div
+            key={car.id}
+            className="hover:scale-103 duration-100 relative w-full h-60 bg-gray-200 rounded-lg shadow overflow-hidden flex flex-col justify-end"
+            style={{ minWidth: '220px', maxWidth: '300px' }}
+          >
+              <div className="absolute top-5 left-5">{drivetrainSVG(car.Drivetrain!)}</div>
+              <div className={`bg-white pl-3 pr-3 pt-1 pb-1 rounded-md absolute top-5 right-5 text-lg ${rank_color} text-center font-bold`}>{car.Rank}</div>
+              <img
+                      loading="eager"
+                      src={imageUrl}
+                      alt={car.Model}
+                      // onLoad={() => setIsLoaded(true)}
+                      // onError={() => setIsLoaded(true)} // Show the tile even if image fails (to show alt text/error)
+                      className="inline-block -mt-2 absolute inset-0 w-full h-full object-contain p-2"
+                  />
+              <div className="absolute inset-0 bg-linear-to-t from-black/10 via-black/30 to-transparent" />
+              <div className="relative z-10 p-3">
+                  <div
+                    className="text-white font-semibold text-center text-base overflow-hidden text-ellipsis whitespace-nowrap w-full"
+                    title={`${car.Year} - ${car.Manufacturer} ${car.Model}`}
+                  >
+                    {car.Year} - {car.Manufacturer} {car.Model}
+                  </div>
+              </div>
+          </div>
         </Link>
     )
 }

@@ -29,10 +29,11 @@ const ScrollToTop = ({visiblePosition = 30}: {visiblePosition?: number}) => {
     return (
         scrollPosition > visiblePosition && (
             <div 
-            className=' shadow-xl bg-gray-200 rounded-full p-3 mb-10 fixed bottom-0 right-30'
+            /* Changed right-30 to right-4 and adjusted bottom spacing */
+            className='cursor-pointer shadow-xl bg-gray-200 hover:bg-gray-300 text-gray-700 rounded-full p-3 fixed bottom-8 right-4 z-50 transition-all'
             onClick={scrollToTop}
             >
-            <FontAwesomeIcon size='xl' icon={faAngleUp} />
+                <FontAwesomeIcon size='xl' icon={faAngleUp} />
             </div>
         )
     )
