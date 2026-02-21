@@ -1,18 +1,26 @@
 import { useContext, useState } from "react";
 import { Transition, Menu, MenuButton, MenuItem, MenuItems} from "@headlessui/react";
-import { Link} from "@tanstack/react-router";
-import { Cog8ToothIcon, ArrowRightStartOnRectangleIcon } from "@heroicons/react/24/outline";
+import { Link, useNavigate} from "@tanstack/react-router";
+import { Cog8ToothIcon, ArrowRightStartOnRectangleIcon, MagnifyingGlassIcon } from "@heroicons/react/24/outline";
 import { PROFILE_PIC } from "../config/env";
 import { AuthContext } from "../contexts/Auth/AuthContext";
 
 function Nav() {
   const authContext = useContext(AuthContext);
+  const navigate = useNavigate();
+  const [query, setQuery] = useState('');
   const handleLogout = async() => {
     if(authContext){
       await authContext.logout();
     }
   };
   const [isOpen, setIsOpen] = useState(false);
+
+  const handleEnterKeyDownSearchbar = (e: React.KeyboardEvent<HTMLInputElement>)=> {
+    if(e.key === 'Enter' && query.trim()){
+      navigate({to: '/search', search: {q: query.trim()}});
+    }
+  }
 
   return (
     <nav className="fixed bg-white w-full shadow-sm z-10">
@@ -46,6 +54,20 @@ function Nav() {
                 My Tunes
               </Link>
               
+               <div className="mx-auto flex gap-1 border border-gray-300 rounded-lg p-2 bg-transparent outline-none
+                    text-sm
+                    caret-orange-500">
+                <MagnifyingGlassIcon className="size-5 text-gray-400"/>
+                <input
+                  type="text"
+                  value={query}
+                  onChange={(e) => setQuery(e.target.value)}
+                  onKeyDown={handleEnterKeyDownSearchbar}
+                  placeholder="Search tunes, users..."
+                  className="outline-none"
+                />
+              </div>
+
               {/* User Menu */}
               <Menu as="div" className="relative ml-auto">
                 <MenuButton className="focus:outline-none text-black relative flex items-center gap-2 rounded-full mr-10 transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-500">

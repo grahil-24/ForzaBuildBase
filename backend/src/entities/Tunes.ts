@@ -1,4 +1,4 @@
-import { Entity, PrimaryKey, Property, ManyToOne, SmallIntType, TinyIntType, Unique, OneToMany, Cascade, Collection, DecimalType } from '@mikro-orm/core';
+import { Entity, PrimaryKey, Index, Property, ManyToOne, SmallIntType, TinyIntType, Unique, OneToMany, Cascade, Collection, DecimalType } from '@mikro-orm/core';
 import { Car } from './Car';
 import { User } from './User';
 import { SavedTunes } from './SavedTunes';
@@ -7,6 +7,7 @@ import { DecimalLocale } from 'validator';
 
 @Entity({tableName: 'tunes'})
 @Unique({properties: ['creator', 'tune_name', 'public_url']})
+@Index({properties: ['tune_name'], type: 'fulltext', name: 'tune_search'})
 export class Tune {
     @PrimaryKey({type: "smallint", autoincrement: true, nullable: false})
     tune_id?: number

@@ -14,6 +14,7 @@ import { Route as LoginRouteImport } from './routes/login'
 import { Route as AuthenticatedRouteImport } from './routes/_authenticated'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as SharePublic_urlRouteImport } from './routes/share/$public_url'
+import { Route as AuthenticatedSearchRouteImport } from './routes/_authenticated/search'
 import { Route as AuthenticatedBrowseRouteImport } from './routes/_authenticated/browse'
 import { Route as AuthenticatedSettingsIndexRouteImport } from './routes/_authenticated/settings/index'
 import { Route as AuthenticatedDashboardIndexRouteImport } from './routes/_authenticated/dashboard/index'
@@ -46,6 +47,11 @@ const SharePublic_urlRoute = SharePublic_urlRouteImport.update({
   id: '/share/$public_url',
   path: '/share/$public_url',
   getParentRoute: () => rootRouteImport,
+} as any)
+const AuthenticatedSearchRoute = AuthenticatedSearchRouteImport.update({
+  id: '/search',
+  path: '/search',
+  getParentRoute: () => AuthenticatedRoute,
 } as any)
 const AuthenticatedBrowseRoute = AuthenticatedBrowseRouteImport.update({
   id: '/browse',
@@ -99,6 +105,7 @@ export interface FileRoutesByFullPath {
   '/login': typeof LoginRoute
   '/sign-up': typeof SignUpRoute
   '/browse': typeof AuthenticatedBrowseRoute
+  '/search': typeof AuthenticatedSearchRoute
   '/share/$public_url': typeof SharePublic_urlRoute
   '/u/$user': typeof AuthenticatedUUserRoute
   '/dashboard': typeof AuthenticatedDashboardIndexRoute
@@ -113,6 +120,7 @@ export interface FileRoutesByTo {
   '/login': typeof LoginRoute
   '/sign-up': typeof SignUpRoute
   '/browse': typeof AuthenticatedBrowseRoute
+  '/search': typeof AuthenticatedSearchRoute
   '/share/$public_url': typeof SharePublic_urlRoute
   '/u/$user': typeof AuthenticatedUUserRoute
   '/dashboard': typeof AuthenticatedDashboardIndexRoute
@@ -129,6 +137,7 @@ export interface FileRoutesById {
   '/login': typeof LoginRoute
   '/sign-up': typeof SignUpRoute
   '/_authenticated/browse': typeof AuthenticatedBrowseRoute
+  '/_authenticated/search': typeof AuthenticatedSearchRoute
   '/share/$public_url': typeof SharePublic_urlRoute
   '/_authenticated/u/$user': typeof AuthenticatedUUserRoute
   '/_authenticated/dashboard/': typeof AuthenticatedDashboardIndexRoute
@@ -145,6 +154,7 @@ export interface FileRouteTypes {
     | '/login'
     | '/sign-up'
     | '/browse'
+    | '/search'
     | '/share/$public_url'
     | '/u/$user'
     | '/dashboard'
@@ -159,6 +169,7 @@ export interface FileRouteTypes {
     | '/login'
     | '/sign-up'
     | '/browse'
+    | '/search'
     | '/share/$public_url'
     | '/u/$user'
     | '/dashboard'
@@ -174,6 +185,7 @@ export interface FileRouteTypes {
     | '/login'
     | '/sign-up'
     | '/_authenticated/browse'
+    | '/_authenticated/search'
     | '/share/$public_url'
     | '/_authenticated/u/$user'
     | '/_authenticated/dashboard/'
@@ -228,6 +240,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/share/$public_url'
       preLoaderRoute: typeof SharePublic_urlRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/_authenticated/search': {
+      id: '/_authenticated/search'
+      path: '/search'
+      fullPath: '/search'
+      preLoaderRoute: typeof AuthenticatedSearchRouteImport
+      parentRoute: typeof AuthenticatedRoute
     }
     '/_authenticated/browse': {
       id: '/_authenticated/browse'
@@ -290,6 +309,7 @@ declare module '@tanstack/react-router' {
 
 interface AuthenticatedRouteChildren {
   AuthenticatedBrowseRoute: typeof AuthenticatedBrowseRoute
+  AuthenticatedSearchRoute: typeof AuthenticatedSearchRoute
   AuthenticatedUUserRoute: typeof AuthenticatedUUserRoute
   AuthenticatedDashboardIndexRoute: typeof AuthenticatedDashboardIndexRoute
   AuthenticatedSettingsIndexRoute: typeof AuthenticatedSettingsIndexRoute
@@ -301,6 +321,7 @@ interface AuthenticatedRouteChildren {
 
 const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
   AuthenticatedBrowseRoute: AuthenticatedBrowseRoute,
+  AuthenticatedSearchRoute: AuthenticatedSearchRoute,
   AuthenticatedUUserRoute: AuthenticatedUUserRoute,
   AuthenticatedDashboardIndexRoute: AuthenticatedDashboardIndexRoute,
   AuthenticatedSettingsIndexRoute: AuthenticatedSettingsIndexRoute,

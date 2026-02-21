@@ -1,4 +1,4 @@
-import { Entity, PrimaryKey, Property, SmallIntType, Unique} from "@mikro-orm/core";
+import { Entity, Index, PrimaryKey, Property, SmallIntType, Unique} from "@mikro-orm/core";
 
 interface UserOptions {
     email?: string;
@@ -8,6 +8,7 @@ interface UserOptions {
 }
 
 @Entity({tableName: "users"})
+@Index({properties: ['username'], type: 'fulltext', name: 'user_search'})
 export class User{
     @PrimaryKey({type: "smallint", unsigned: true, autoincrement: true, nullable: false, hidden: true})
     user_id?:number

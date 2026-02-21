@@ -193,7 +193,6 @@ function BrowseComponent(): React.ReactElement {
           </div>
         </div>
       </div>
-      
         <ScrollToTop />
     </div>
   )
