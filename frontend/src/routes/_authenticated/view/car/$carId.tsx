@@ -131,7 +131,7 @@ function RouteComponent() {
   const displayWeight = unit === 'imperial' ? car.Weight : car.Weight! * 0.45
 
   return (
-   <div className="flex-row items-center justify-center min-h-screen bg-linear-to-br from-slate-50 via-white to-slate-100 px-7 py-2">
+   <div className="mx-auto flex-row items-center justify-center min-h-screen bg-linear-to-br from-slate-50 via-white to-slate-100 px-7 py-2">
       <div className="max-w-6xl mx-auto">
         {/* Main Card with Image */}
         <div className="flex flex-col md:flex-row items-center justify-between bg-white rounded-2xl shadow-lg border border-slate-200 overflow-hidden mb-6">

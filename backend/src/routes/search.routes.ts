@@ -5,6 +5,6 @@ import { searchUser } from "../controllers/search.controller";
 const router = Router();
 router.use(protect);
 
-router.get('/', searchUser);
+router.get('/user', searchUser);
 
 export default router;

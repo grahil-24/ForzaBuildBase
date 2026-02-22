@@ -19,7 +19,7 @@ export const Route = createFileRoute('/_authenticated')({
     errorComponent: ErrorComponent,
     component: () => (
         <div>
-            <div className="pt-17">
+            <div className="pt-17 flex">
                 <Outlet/>
             </div>
         </div>

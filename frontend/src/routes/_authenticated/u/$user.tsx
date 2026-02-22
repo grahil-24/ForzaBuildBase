@@ -238,7 +238,7 @@ function RouteComponent() {
   }
 
   return (
-    <div>
+    <div className='mx-auto w-full'>
       <div className='top-0 bg-white border-b border-gray-200 shadow-sm'>
         <div className='max-w-4xl mx-auto px-4 py-6'>
           <div className='flex items-center justify-between flex-wrap gap-4'>

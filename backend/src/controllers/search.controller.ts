@@ -32,8 +32,7 @@ const searchUser = catchAsync(async(req: Request, res: Response, next: NextFunct
             exclude: ['email', 'password']
         }
     );
-
-    res.status(200).json({users});
+    res.status(200).json({...users, nextCursor: users.endCursor});
 });
 
 export {searchUser};
