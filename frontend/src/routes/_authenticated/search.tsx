@@ -3,7 +3,7 @@ import { createFileRoute, Link, useNavigate } from '@tanstack/react-router'
 import type { AuthState } from '../../types/auth';
 import { authFetch } from '../../api/authFetch';
 import { BACKEND, PROFILE_PIC } from '../../config/env';
-import { ArrowLongRightIcon, ArrowLongLeftIcon } from '@heroicons/react/24/outline';
+import { ArrowLongRightIcon, ArrowLongLeftIcon, CalendarIcon } from '@heroicons/react/24/outline';
 import type { RankType } from '../../types/car';
 import { formatS3BucketURL } from '../../util/urlFormatter';
 import type { UseInfiniteQueryResult, InfiniteData } from '@tanstack/react-query';
@@ -26,7 +26,7 @@ type UserQueryResult = {
   nextCursor: string | undefined,
 }
 
-type Tune = {          // fixed: was accidentally typed as an array itself
+type Tune = {
   tune_id: number,
   tune_name: string,
   creator: User,
@@ -78,158 +78,193 @@ type LoadMoreProps = {
 }
 
 const LoadMoreButton = ({ query }: LoadMoreProps) => (
-  <button
-    className={`${query.hasNextPage ? 'border hover:bg-gray-50' : 'border-0'} border-gray-300 rounded-lg px-6 py-3 mt-5 font-medium text-gray-700 transition-colors`}
-    onClick={() => query.fetchNextPage()}
-    disabled={!query.hasNextPage || query.isFetching}
-  >
-    {query.isFetchingNextPage
-      ? 'Loading more...'
-      : query.hasNextPage
-        ? 'Load More'
-        : 'You have reached the end!'}
-  </button>
+  <div className="flex justify-center w-full py-8">
+    <button
+      className={`px-8 py-2.5 rounded-full font-semibold transition-all duration-200 
+        ${query.hasNextPage 
+          ? 'bg-blue-600 text-white hover:bg-blue-700 shadow-md hover:shadow-lg active:scale-95' 
+          : 'bg-gray-100 text-gray-400 cursor-not-allowed'}`}
+      onClick={() => query.fetchNextPage()}
+      disabled={!query.hasNextPage || query.isFetching}
+    >
+      {query.isFetchingNextPage
+        ? 'Loading more...'
+        : query.hasNextPage
+          ? 'Load More Results'
+          : 'End of Results'}
+    </button>
+  </div>
 );
-
 
 function RouteComponent() {
   const { auth } = Route.useRouteContext();
   const searchQuery = Route.useSearch();
   const navigate = useNavigate({ from: '/search' });
-
   const type = searchQuery.type;
 
   const userQuery = useInfiniteQuery({
     queryKey: ['users', searchQuery.q],
-    queryFn: async ({ pageParam }) => await fetchUsers(searchQuery.q, auth, pageParam),
+    queryFn: ({ pageParam }) => fetchUsers(searchQuery.q, auth, pageParam),
     initialPageParam: undefined as string | undefined,
     getNextPageParam: (lastPage) => lastPage.nextCursor,
   });
 
   const tuneQuery = useInfiniteQuery({
     queryKey: ['tunes', searchQuery.q],
-    queryFn: async ({ pageParam }) => await fetchTunes(searchQuery.q, auth, pageParam),
+    queryFn: ({ pageParam }) => fetchTunes(searchQuery.q, auth, pageParam),
     initialPageParam: undefined as string | undefined,
     getNextPageParam: (lastPage) => lastPage.nextCursor,
   });
 
-  const goToAll = (t: 'user' | 'tune') => {
-    navigate({ search: (prev) => ({ ...prev, type: t }) });
-  };
-
-  const goBack = () => {
-    navigate({ search: (prev) => ({ ...prev, type: undefined }) });
-  };
+  const goToAll = (t: 'user' | 'tune') => navigate({ search: (prev) => ({ ...prev, type: t }) });
+  const goBack = () => navigate({ search: (prev) => ({ ...prev, type: undefined }) });
 
   return (
-    <div className='w-3/4 mx-auto'>
-      {!type ? (
-        <h2>Results for "{searchQuery.q}"</h2>
-      ) : (
-        <p className='cursor-pointer hover:underline' onClick={goBack}>
-          <ArrowLongLeftIcon className="size-5 inline align-middle mr-1"/>
-          <span>Back to all results for "{searchQuery.q}"</span>
-        </p>
-      )}
+    <div className='max-w-5xl mx-auto px-4 py-8'>
+      {/* Header Section */}
+      <div className="mb-8">
+        {!type ? (
+          <h1 className='text-2xl font-bold text-gray-900'>Results for "{searchQuery.q}"</h1>
+        ) : (
+          <button 
+            onClick={goBack}
+            className='flex items-center text-blue-600 hover:text-blue-800 font-medium transition-colors group'
+          >
+            <ArrowLongLeftIcon className="size-5 mr-2 group-hover:-translate-x-1 transition-transform"/>
+            Back to all results
+          </button>
+        )}
+      </div>
 
-      {/* ── Users ── */}
+      {/* Users Section */}
       {type !== 'tune' && (
-        <div className='mt-5'>
-          <h2 className='font-bold text-2xl'>Users</h2>
-          <div className='mt-3'>
+  <section className='mb-12'>
+    <div className="flex items-baseline justify-between border-b border-gray-100 pb-2 mb-4">
+      <h2 className='font-bold text-xl text-gray-800'>Users</h2>
+      {!type && userQuery.data?.pages[0]?.hasNextPage && (
+        <button onClick={() => goToAll('user')} className="group text-sm text-blue-600 hover:text-blue-800 transition-colors flex items-center">
+          See all {userQuery.data.pages[0].totalCount} <ArrowLongRightIcon className="size-4 ml-1 group-hover:translate-x-1 transition-transform"/>
+        </button>
+      )}
+    </div>
+    
+    {/* Empty State */}
+    {userQuery.isSuccess && userQuery.data.pages[0]?.items?.length === 0 ? (
+      <div className="py-10 text-center border-2 border-dashed border-gray-100 rounded-xl">
+        <p className="text-gray-400 font-medium">No users found matching "{searchQuery.q}"</p>
+      </div>
+    ) : (
+      <div className='grid grid-cols-1 sm:grid-cols-2 gap-4'>
+        {(type === 'user'
+          ? userQuery.data?.pages.flatMap((page) => page.items)
+          : userQuery.data?.pages[0]?.items
+        )?.map((user) => (
+          <Link 
+            key={user.username} 
+            to='/u/$user' 
+            params={{ user: user.username }}
+            className='flex items-center gap-4 p-3 rounded-xl hover:bg-gray-50 border border-transparent hover:border-gray-200 transition-all'
+          >
+            <img
+              src={`${PROFILE_PIC}/${user.profile_pic}`}
+              alt={user.username}
+              className='w-14 h-14 rounded-full object-cover border-2 border-white shadow-sm'
+            />
+            <span className="font-semibold text-gray-700 text-lg">{user.username}</span>
+          </Link>
+        ))}
+      </div>
+    )}
+    {type === 'user' && <LoadMoreButton query={userQuery} />}
+  </section>
+)}
+
+{/* ── Tunes Section ── */}
+{type !== 'user' && (
+  <section>
+    <div className="flex items-baseline justify-between border-b border-gray-100 pb-2 mb-3">
+      <h2 className='font-bold text-lg text-gray-800'>Tunes</h2>
+      {!type && tuneQuery.data?.pages[0]?.hasNextPage && (
+        <button onClick={() => goToAll('tune')} className="group text-sm text-blue-600 hover:text-blue-800 transition-colors flex items-center">
+          See all {tuneQuery.data.pages[0].totalCount} <ArrowLongRightIcon className="size-4 ml-1 group-hover:translate-x-1 transition-transform"/>
+        </button>
+      )}
+    </div>
+
+    {/* Empty State */}
+   {tuneQuery.isSuccess && tuneQuery.data.pages[0]?.items?.length === 0 ? (
+      <div className="py-10 text-center border-2 border-dashed border-gray-100 rounded-xl">
+        <p className="text-gray-400 font-medium">No tunes found matching "{searchQuery.q}"</p>
+      </div>
+    ) : (
+      <div className='grid grid-cols-1 sm:grid-cols-2 gap-4'>
+        {(type === 'tune'
+          ? tuneQuery.data?.pages.flatMap((page) => page.items)
+          : tuneQuery.data?.pages[0]?.items
+        )?.map((tune) => {
+          const car_image_url = formatS3BucketURL({
+            manufacturer: tune.car.Manufacturer, 
+            image_filename: tune.car.image_filename, 
+            size: 'small'
+          });
+          
+          return (
             <div
-              style={{
-                display: type === 'user' ? "grid" : "flex",
-                flexDirection: type === 'user' ? undefined : "column",
-                gridTemplateColumns: type === 'user' ? "repeat(2, 1fr)" : undefined,
-              }}
+              key={tune.tune_id}
+              className='flex items-center gap-3 p-2 rounded-lg border border-gray-100 hover:border-blue-200 hover:bg-gray-50/50 transition-all group'
             >
-              {(type === 'user'
-                ? userQuery.data?.pages.flatMap((page) => page.items)
-                : userQuery.data?.pages[0]?.items
-              )?.map((user) => (
-                <div
-                  key={user.username}
-                  style={{ display: "flex", alignItems: "center", gap: "12px", padding: "8px 0" }}
-                >
-                  <img
-                    src={`${PROFILE_PIC}/${user.profile_pic}`}
-                    alt={user.username}
-                    style={{ width: "48px", height: "48px", borderRadius: "50%", objectFit: "cover" }}
-                  />
-                  <Link to='/u/$user' params={{ user: user.username }}>
-                    <span>{user.username}</span>
+              <div className="relative w-28 sm:w-32 aspect-video overflow-hidden rounded-md bg-gray-100 shrink-0 border border-gray-50">
+                <img
+                  className='w-full h-full object-cover group-hover:scale-105 transition-transform duration-300'
+                  src={car_image_url}
+                  alt={`${tune.car.Manufacturer} ${tune.car.Model}`}
+                />
+                <div className="absolute top-1 left-1 bg-black/70 text-[9px] text-white px-1.5 py-0.5 rounded font-bold uppercase tracking-wider">
+                  {tune.resultant_rank}
+                </div>
+              </div>
+
+              <div className='flex flex-col grow min-w-0'>
+                <Link to='/view/tune/$tuneId' params={{ tuneId: String(tune.tune_id) }}>
+                  <h3 className='font-bold text-sm sm:text-base text-gray-900 hover:text-blue-600 transition-colors truncate leading-tight'>
+                    {tune.tune_name}
+                  </h3>
+                </Link>
+                <p className='text-[11px] sm:text-xs text-gray-500 font-medium truncate'>
+                  {tune.car.Manufacturer} {tune.car.Model}
+                </p>
+
+                <div className="flex items-center gap-3 mt-1.5 text-[11px] text-gray-400">
+                  <Link 
+                    to='/u/$user' 
+                    params={{ user: tune.creator.username }}
+                    className="flex items-center gap-1.5 hover:text-blue-500 font-medium truncate group/user"
+                  >
+                    <img
+                      src={`${PROFILE_PIC}/${tune.creator.profile_pic}`}
+                      alt={tune.creator.username}
+                      className='w-4 h-4 rounded-full object-cover border border-gray-200'
+                    />
+                    <span className="truncate max-w-20 sm:max-w-[120px]">{tune.creator.username}</span>
                   </Link>
+                  <span className="flex items-center gap-1 shrink-0 border-l border-gray-200 pl-3">
+                    <CalendarIcon className="size-3" />
+                    {new Date(tune.created_on).toLocaleDateString(undefined, {
+                      month: 'short',
+                      day: 'numeric',
+                      year: '2-digit'
+                    })}
+                  </span>
                 </div>
-              ))}
+              </div>
             </div>
-
-            {userQuery.data?.pages[0]?.hasNextPage && !type && (
-              <p className='cursor-pointer hover:underline mt-2' onClick={() => goToAll('user')}>
-                <span>Show all {userQuery.data.pages[0].totalCount} users</span>
-                <ArrowLongRightIcon className="size-5 inline align-middle ml-1"/>
-              </p>
-            )}
-
-            {type === 'user' && <LoadMoreButton query={userQuery} />}
-          </div>
-        </div>
-      )}
-
-      {/* ── Tunes ── */}
-      {type !== 'user' && (
-        <div className='mt-8'>
-          <h2 className='font-bold text-2xl'>Tunes</h2>
-          <div className='mt-3'>
-            <div
-              style={{
-                display: type === 'tune' ? "grid" : "flex",
-                flexDirection: type === 'tune' ? undefined : "column",
-                gridTemplateColumns: type === 'tune' ? "repeat(2, 1fr)" : undefined,
-                gap: "8px",
-              }}
-            >
-              {(type === 'tune'
-                ? tuneQuery.data?.pages.flatMap((page) => page.items)
-                : tuneQuery.data?.pages[0]?.items
-              )?.map((tune) => {
-                const car_image_url = formatS3BucketURL({manufacturer: tune.car.Manufacturer, image_filename: tune.car.image_filename, size: 'small'});
-                return (
-                <div
-                  key={tune.tune_id}
-                  style={{ display: "flex", alignItems: "center", gap: "12px", padding: "8px 0" }}
-                >
-                  <img
-                    src={`${car_image_url}`}
-                    alt={`${tune.car.Manufacturer} ${tune.car.Model}`}
-                    style={{ width: "64px", height: "48px", borderRadius: "6px", objectFit: "cover" }}
-                  />
-                  <div style={{ display: "flex", flexDirection: "column", gap: "2px" }}>
-                    <Link to='/view/tune/$tuneId' params={{ tuneId: String(tune.tune_id) }}>
-                      <span className='font-medium hover:underline'>{tune.tune_name}</span>
-                    </Link>
-                    <span className='text-sm text-gray-500'>
-                      {tune.car.Manufacturer} {tune.car.Model} · {tune.resultant_rank}
-                    </span>
-                    <Link to='/u/$user' params={{ user: tune.creator.username }}>
-                      <span className='text-sm text-gray-400 hover:underline'>by {tune.creator.username}</span>
-                    </Link>
-                  </div>
-                </div>
-              )})}
-            </div>
-
-            {tuneQuery.data?.pages[0]?.hasNextPage && !type && (
-              <p className='cursor-pointer hover:underline mt-2' onClick={() => goToAll('tune')}>
-                <span>Show all {tuneQuery.data.pages[0].totalCount} tunes</span>
-                <ArrowLongRightIcon className="size-5 inline align-middle ml-1"/>
-              </p>
-            )}
-
-            {type === 'tune' && <LoadMoreButton query={tuneQuery} />}
-          </div>
-        </div>
-      )}
+          )
+        })}
+      </div>
+    )}
+    {type === 'tune' && <LoadMoreButton query={tuneQuery} />}
+  </section>
+)}
     </div>
   );
 }

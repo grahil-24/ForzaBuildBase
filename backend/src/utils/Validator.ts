@@ -18,7 +18,7 @@ const validateUsername = (username?: string): boolean => {
 }
 
 const validateTuneName = (name?: string) : boolean => {
-    if(name) return validator.isLength(name, {min: 3, max: 50});
+    if(name) return validator.isLength(name, {min: 3, max: 150});
     return false;
 }
 

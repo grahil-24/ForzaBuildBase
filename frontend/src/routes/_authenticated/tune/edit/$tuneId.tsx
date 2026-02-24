@@ -200,7 +200,7 @@ function RouteComponent() {
             <img 
               src={imageURL} 
               alt={`${tuneDetails!.car.Manufacturer} ${tuneDetails!.car.Model}`}
-              className="w-48 sm:w-56 md:w-60 md:-mt-8 h-auto object-contain drop-shadow-lg"
+              className="w-48 sm:w-56 md:w-60 h-auto object-contain drop-shadow-lg"
             />
             <div className="text-center sm:text-left flex-1 min-w-0">
               <div className="text-blue-600 text-xs md:text-sm font-bold uppercase tracking-wider">

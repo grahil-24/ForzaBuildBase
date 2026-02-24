@@ -148,7 +148,7 @@ function RouteComponent() {
               <img 
                 src={imageUrl} 
                 alt="Car"
-                className="w-64 md:w-72 md:-mt-8 h-auto object-contain drop-shadow-lg"
+                className="w-64 md:w-72 h-auto object-contain drop-shadow-lg"
               />
             </div>
 

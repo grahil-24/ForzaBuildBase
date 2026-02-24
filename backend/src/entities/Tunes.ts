@@ -12,7 +12,7 @@ export class Tune {
     @PrimaryKey({type: "smallint", autoincrement: true, nullable: false})
     tune_id?: number
 
-    @Property({type: "varchar", length: 50, nullable: false})
+    @Property({type: "varchar", length: 150, nullable: false})
     tune_name?: string
 
     @ManyToOne(() => User, {fieldName: 'creator_user_id', nullable: false})

@@ -68,6 +68,7 @@ const CarTile = ({car}: {car: Car}): React.ReactElement => {
               <div className={`bg-white pl-3 pr-3 pt-1 pb-1 rounded-md absolute top-5 right-5 text-lg ${rank_color} text-center font-bold`}>{car.Rank}</div>
               <img
                       loading="eager"
+                      fetchPriority="high"
                       src={imageUrl}
                       alt={car.Model}
                       // onLoad={() => setIsLoaded(true)}

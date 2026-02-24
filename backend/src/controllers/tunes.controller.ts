@@ -17,7 +17,7 @@ const createAndUpdateTune = catchAsync(async(req: Request, res: Response, next: 
     }
 
     if(!validateTuneName(tune_name)) {
-        res.status(422).json({status: 'error', message: 'Tune name needs to be between 3 and 50 characters'});
+        res.status(422).json({status: 'error', message: 'Tune name needs to be between 3 and 150 characters'});
         return;
     }
 
@@ -312,7 +312,7 @@ const renameTune = catchAsync(async(req: Request, res: Response, next: NextFunct
         return next(new AppError('You are not authorized to rename this tune', 403));
     }
     if(!validateTuneName(newName)){
-        res.status(422).json({status: 'error', message: 'Name needs to be in between 3 and 50 chars'});
+        res.status(422).json({status: 'error', message: 'Name needs to be in between 3 and 150 chars'});
         return;
     }
     const user = new User({user_id});

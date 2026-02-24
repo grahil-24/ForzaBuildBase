@@ -22,6 +22,7 @@ import ScrollToTop from '../../../components/ScrollToTop'
 import ShareTuneDialogComponent from '../../../components/tune/ShareTuneDialog'
 import NotFoundComponent from '../../../components/NotFoundComponent'
 import ErrorToast from '../../../components/ErrorToast'
+import Spinner from '../../../components/Spinner'
 
 
 export const Route = createFileRoute('/_authenticated/u/$user')({
@@ -221,7 +222,13 @@ function RouteComponent() {
   const processedTunes = useMemo(() => {
     if (!data?.pages) return [];
     
-    let allTunes = data.pages.flatMap((page) => page.pages);
+    // Flatten pages directly - each page is a Tune[] array
+    let allTunes: Tune[] = [];
+    data.pages.forEach((pageData) => {
+      if (pageData.pages && Array.isArray(pageData.pages)) {
+        allTunes = allTunes.concat(pageData.pages);
+      }
+    });
     
     // Apply search filter
     if (search.trim()) {
@@ -233,104 +240,95 @@ function RouteComponent() {
     return sortTunes(allTunes);
   }, [data, search, sortTunes]);
 
-  if (status === 'error' && (error as any)?.status === 404) {
-    return <NotFoundComponent />;
-  }
-
   return (
     <div className='mx-auto w-full'>
-      <div className='top-0 bg-white border-b border-gray-200 shadow-sm'>
-        <div className='max-w-4xl mx-auto px-4 py-6'>
-          <div className='flex items-center justify-between flex-wrap gap-4'>
-           <div className='flex items-center gap-4'>
-             {data?.pages[0]?.profile_pic ? (
-                <img 
-                  src={`${PROFILE_PIC}/${data.pages[0].profile_pic}`}
-                  alt={`${user}'s profile`}
-                  className='size-16 sm:size-20 rounded-full object-cover border-2 border-gray-200'
-                />
-              ) : (
-                <div className='size-16 sm:size-20 rounded-full bg-gray-200 border-2 border-gray-200' />
-              )}
-              <div>
-                <h1 className='text-3xl font-bold text-gray-900'>{user}'s Tunes</h1>
-                <p className='text-sm text-gray-600 mt-1'>
-                  {data?.pages[0]?.totalCount || 0} {(data?.pages[0]?.totalCount || 0) === 1 ? 'tune' : 'tunes'} saved
-                </p>
-              </div>
-            </div>
-    
+      {status === 'pending' ? (
+        <Spinner />
+        ) : (
+      <>
+        <div className='top-0 bg-white border-b border-gray-200 shadow-sm'>
+          <div className='max-w-4xl mx-auto px-4 py-6'>
+            <div className='flex items-center justify-between flex-wrap gap-4'>
             <div className='flex items-center gap-4'>
-              <SearchBar onChange={(input: string) => {setSearch(input)}}/>
-              <Menu as="div" className="relative inline-block text-left">
-                <MenuButton className="group inline-flex text-sm font-medium text-gray-700 hover:text-gray-900">
-                  Sort: {getSortLabel(sortBy)}
-                  <ChevronDownIcon 
-                    className="-mr-1 ml-1 h-5 w-5 shrink-0 text-gray-400 group-hover:text-gray-500" 
-                    aria-hidden="true"
+              {data?.pages[0]?.profile_pic ? (
+                  <img 
+                    src={`${PROFILE_PIC}/${data.pages[0].profile_pic}`}
+                    alt={`${user}'s profile`}
+                    className='size-16 sm:size-20 rounded-full object-cover border-2 border-gray-200'
                   />
-                </MenuButton>
-              
-                <MenuItems
-                  transition
-                  anchor="bottom end"
-                  className="absolute right-0 z-1 mt-2 w-30 origin-top-right rounded-md bg-white shadow-2xl ring-1 ring-black/5 focus:outline-none transition flex justify-center duration-100 ease-out data-closed:scale-95 data-closed:opacity-0"
-                >
-                  <div className="py-1">
-                    <MenuItem>
-                      {({ focus }) => (
-                        <button
-                          onClick={() => setSortBy('newest')}
-                          className={`block w-full text-left px-4 py-2 text-sm ${
-                            focus ? 'bg-gray-100' : ''
-                          } ${sortBy === 'newest' ? 'font-medium text-gray-900' : 'text-gray-500'}`}
-                        >
-                          Newest
-                        </button>
-                      )}
-                    </MenuItem>
-                    <MenuItem>
-                      {({ focus }) => (
-                        <button
-                          onClick={() => setSortBy('oldest')}
-                          className={`block w-full text-left px-4 py-2 text-sm ${
-                            focus ? 'bg-gray-100' : ''
-                          } ${sortBy === 'oldest' ? 'font-medium text-gray-900' : 'text-gray-500'}`}
-                        >
-                          Oldest
-                        </button>
-                      )}
-                    </MenuItem>
-                    <MenuItem>
-                      {({ focus }) => (
-                        <button
-                          onClick={() => setSortBy('alphabetical')}
-                          className={`block w-full text-left px-4 py-2 text-sm ${
-                            focus ? 'bg-gray-100' : ''
-                          } ${sortBy === 'alphabetical' ? 'font-medium text-gray-900' : 'text-gray-500'}`}
-                        >
-                          Alphabetical
-                        </button>
-                      )}
-                    </MenuItem>
-                  </div>
-                </MenuItems>
-              </Menu>
+                ) : (
+                  <div className='size-16 sm:size-20 rounded-full bg-gray-200 border-2 border-gray-200' />
+                )}
+                <div>
+                  <h1 className='text-3xl font-bold text-gray-900'>{user}'s Tunes</h1>
+                  <p className='text-sm text-gray-600 mt-1'>
+                    {data?.pages[0]?.totalCount || 0} {(data?.pages[0]?.totalCount || 0) === 1 ? 'tune' : 'tunes'} saved
+                  </p>
+                </div>
+              </div>
+      
+              <div className='flex items-center gap-4'>
+                <SearchBar onChange={(input: string) => {setSearch(input)}}/>
+                <Menu as="div" className="relative inline-block text-left">
+                  <MenuButton className="group inline-flex text-sm font-medium text-gray-700 hover:text-gray-900">
+                    Sort: {getSortLabel(sortBy)}
+                    <ChevronDownIcon 
+                      className="-mr-1 ml-1 h-5 w-5 shrink-0 text-gray-400 group-hover:text-gray-500" 
+                      aria-hidden="true"
+                    />
+                  </MenuButton>
+                
+                  <MenuItems
+                    transition
+                    anchor="bottom end"
+                    className="absolute right-0 z-1 mt-2 w-30 origin-top-right rounded-md bg-white shadow-2xl ring-1 ring-black/5 focus:outline-none transition flex justify-center duration-100 ease-out data-closed:scale-95 data-closed:opacity-0"
+                  >
+                    <div className="py-1">
+                      <MenuItem>
+                        {({ focus }) => (
+                          <button
+                            onClick={() => setSortBy('newest')}
+                            className={`block w-full text-left px-4 py-2 text-sm ${
+                              focus ? 'bg-gray-100' : ''
+                            } ${sortBy === 'newest' ? 'font-medium text-gray-900' : 'text-gray-500'}`}
+                          >
+                            Newest
+                          </button>
+                        )}
+                      </MenuItem>
+                      <MenuItem>
+                        {({ focus }) => (
+                          <button
+                            onClick={() => setSortBy('oldest')}
+                            className={`block w-full text-left px-4 py-2 text-sm ${
+                              focus ? 'bg-gray-100' : ''
+                            } ${sortBy === 'oldest' ? 'font-medium text-gray-900' : 'text-gray-500'}`}
+                          >
+                            Oldest
+                          </button>
+                        )}
+                      </MenuItem>
+                      <MenuItem>
+                        {({ focus }) => (
+                          <button
+                            onClick={() => setSortBy('alphabetical')}
+                            className={`block w-full text-left px-4 py-2 text-sm ${
+                              focus ? 'bg-gray-100' : ''
+                            } ${sortBy === 'alphabetical' ? 'font-medium text-gray-900' : 'text-gray-500'}`}
+                          >
+                            Alphabetical
+                          </button>
+                        )}
+                      </MenuItem>
+                    </div>
+                  </MenuItems>
+                </Menu>
+              </div>
             </div>
           </div>
         </div>
-      </div>
-      {/* Main Content */}
-      <div className='max-w-4xl mx-auto px-4 py-6 space-y-3'>
-        {status === 'pending' ? (
-          <div className='flex justify-center'>
-            <svg className="size-5 animate-spin" viewBox="0 0 24 24">
-              <path fill="currentColor" d="M12,1A11,11,0,1,0,23,12,11,11,0,0,0,12,1Zm0,19a8,8,0,1,1,8-8A8,8,0,0,1,12,20Z" opacity=".25"/>
-              <path fill="currentColor" d="M10.72,19.9a8,8,0,0,1-6.5-9.79A7.77,7.77,0,0,1,10.4,4.16a8,8,0,0,1,9.49,6.52A1.54,1.54,0,0,0,21.38,12h.13a1.37,1.37,0,0,0,1.38-1.54,11,11,0,1,0-12.7,12.39A1.54,1.54,0,0,0,12,21.34h0A1.47,1.47,0,0,0,10.72,19.9Z"></path>
-            </svg>  
-          </div>
-        )  : (
-          <>
+        {/* Main Content */}
+        <div className='max-w-4xl mx-auto px-4 py-6 space-y-3'>
             <RenameDialogModal 
               openModal={renameModalOpen}
               onClose={handleCloseRenameModal}
@@ -355,7 +353,6 @@ function RouteComponent() {
               mode={removeMode}
               isLoading={removeTune.isPending}
             />
-
             {processedTunes.length === 0 && search.trim() ? (
               <div className='flex flex-col items-center justify-center py-12 text-gray-500'>
                 <p className='text-lg'>No tunes found matching "{search}"</p>
@@ -364,7 +361,9 @@ function RouteComponent() {
             ) : processedTunes.length === 0 ? (
               <div className='flex flex-col items-center justify-center py-12 text-gray-500'>
                 <p className='text-lg'>No saved tunes yet</p>
-                <p className='text-sm mt-2'>Start browsing to save your first tune!</p>
+                {auth.user?.username === user && 
+                  <p className='text-sm mt-2'>Start browsing to save your first tune!</p>
+                }
               </div>
             ) : (
               processedTunes.map((tune, index) => {
@@ -516,10 +515,10 @@ function RouteComponent() {
               </button>
             </div>
             <div className='text-center text-gray-500 text-sm'>{isFetching && !isFetchingNextPage ? 'Fetching...' : null}</div>
-          </>
-        )}
-      </div>
-      <ScrollToTop visiblePosition={30}/>
+        </div>
+        <ScrollToTop visiblePosition={30}/>
+      </>
+      )}
     </div>
   )
 }
