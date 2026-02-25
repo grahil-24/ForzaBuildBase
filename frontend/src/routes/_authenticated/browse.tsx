@@ -109,14 +109,13 @@ function BrowseComponent(): React.ReactElement {
 
   return (
     <div className="w-full max-w-(--break-2xl) mx-auto">
+      <FilterSidebar isFilterOpen={isfilterOpen} handleFilterButtonClick={handleFilterButtonClick} />
+
       {/* Header Section */}
       <div className='px-6 mt-5'>
-        {/* justify-between pushes the three children to the left, center, and right on md+ */}
         <div className='flex flex-wrap items-center justify-between gap-y-4 gap-x-2'>
-          
-          {/* 1. Filter Button - Left End */}
-          <div className='flex items-center order-1'>
-            {!isfilterOpen && 
+            {/* Filter Button  */}
+            <div className='flex items-center order-1'>
               <button
                 type="button"
                 onClick={handleFilterButtonClick}
@@ -126,31 +125,23 @@ function BrowseComponent(): React.ReactElement {
                   <path strokeLinecap="round" strokeLinejoin="round" d="M10.5 6h9.75M10.5 6a1.5 1.5 0 1 1-3 0m3 0a1.5 1.5 0 1 0-3 0M3.75 6H7.5m3 12h9.75m-9.75 0a1.5 1.5 0 0 1-3 0m3 0a1.5 1.5 0 0 0-3 0m-3.75 0H7.5m9-6h3.75m-3.75 0a1.5 1.5 0 0 1-3 0m3 0a1.5 1.5 0 0 0-3 0m-9.75 0h9.75" />
                 </svg>
               </button>
-            } 
-          </div>
-          <FilterSidebar isFilterOpen={isfilterOpen} handleFilterButtonClick={handleFilterButtonClick} />
-          {/* 2. Results Text - Middle (Centered) */}
-          {/* On mobile, it takes available space; on desktop, it sits in the middle */}
-          <div className='flex-1 md:flex-initial text-center order-2'>
-            <p className='md:text-xl text-lg font-semibold whitespace-nowrap'>
-              Showing <span className="text-lime-600">{total}</span> results
-            </p>
-          </div>
-
-          {/* 3. Search Bar - Right End */}
-          {/* w-full on mobile to prevent overflow; specific width on md+ */}
-          <div className='w-full md:w-auto md:min-w-[300px] lg:min-w-[400px] order-3 flex justify-end'>
+            </div>
+            <div className='flex-1 md:flex-initial text-center order-2'>
+              <p className='md:text-xl text-lg font-semibold whitespace-nowrap'>
+                Showing <span className="text-lime-600">{total}</span> results
+              </p>
+            </div>
+          {/* Search Bar */}
+          <div className='w-full md:w-auto md:min-w-[200px] lg:min-w-[100px] order-3 flex justify-end'>
             <Searchbar
               handleSearchbar={(e) => setSearchBarText(e.target.value)}
               handleSearch={() => navigate({ to: '/browse', search: { ...search, search: searchBarText, page: 1 } })}
             />
           </div>
-          
         </div>
       </div>
       {/* Main Content */}
       <div className='p-6'>
-        {/* Removed ml-15 as it's not standard Tailwind and causes off-centering */}
         <div className="flex-1">
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5 gap-4">
             {cars.map((car) => (
@@ -161,7 +152,6 @@ function BrowseComponent(): React.ReactElement {
           {/* Pagination */}
           <div className="flex justify-center items-center mt-12 space-x-4">
             <Link
-              // onClick={() => goToPage(page - 1)}
               to='/browse'
               preload='intent'
               search={{ ...search, page: page - 1 }}
@@ -181,7 +171,6 @@ function BrowseComponent(): React.ReactElement {
               <span className="text-gray-500">/ {totalPages}</span>
             </div>
             <Link
-              // onClick={() => goToPage(page + 1)}
               to='/browse'
               preload='intent'
               search={{...search, page: page + 1}}

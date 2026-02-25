@@ -208,11 +208,11 @@ function RouteComponent() {
     <div className="min-h-screen w-full flex justify-center px-2 sm:px-4 py-4 md:py-8 bg-slate-50">
       <div className="w-full max-w-6xl">
         <div className="flex flex-col md:flex-row items-center md:items-start bg-white rounded-xl shadow-md border border-slate-200 p-4 mb-6 gap-4">
-          <div className="w-full md:w-auto flex items-center gap-4">
+          <div className="w-full md:w-auto flex-col sm:flex sm:flex-row items-center gap-4">
             <img 
               src={imageURL} 
               alt={`${car.Manufacturer} ${car.Model}`}
-              className="w-48 sm:w-56 md:w-60 md:-mt-8 h-auto object-contain drop-shadow-lg"
+              className="w-48 sm:w-56 md:w-60 md:-mt-8 h-auto mx-auto object-contain drop-shadow-lg"
             />
             <div className="text-center sm:text-left flex-1 min-w-0">
               <div className="text-blue-600 text-xs md:text-sm font-bold uppercase tracking-wider">

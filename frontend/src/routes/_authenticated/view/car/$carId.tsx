@@ -149,16 +149,16 @@ function RouteComponent() {
             <div className="flex items-start justify-between mb-6">
               <div className='w-full'>
                 <div className='flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-0'>
-                  <div className="text-blue-600 text-sm font-bold mb-2 uppercase tracking-wider">
+                  <div className="text-blue-600 text-sm font-bold sm:mb-2 uppercase tracking-wider">
                     {car.Manufacturer}
                   </div>
-                  <div className='mr-auto ml-auto flex items-center gap-2'>
+                  <div className='sm:mx-auto sm:p-0 py-2 flex items-center gap-2'>
                     <label htmlFor="unit" className='text-sm text-slate-600'>Unit</label>
                     <select 
                       onChange={e => setUnit(e.target.value as Unit)}
                       name="unit" 
                       id="unit"
-                      className="px-3 py-2 bg-white border border-gray-300 rounded-lg shadow-sm hover:border-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent  transition-all text-sm"
+                      className="px-3 py-2 bg-white border border-gray-300 rounded-lg shadow-sm hover:border-gray-400 focus:outline-none transition-all text-sm"
                     >
                       <option value="imperial">Imperial</option>
                       <option value="metric">Metric</option>

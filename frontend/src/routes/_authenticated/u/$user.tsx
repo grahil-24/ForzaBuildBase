@@ -221,7 +221,7 @@ function RouteComponent() {
 
   const processedTunes = useMemo(() => {
     if (!data?.pages) return [];
-    
+    console.log("data ", data);
     // Flatten pages directly - each page is a Tune[] array
     let allTunes: Tune[] = [];
     data.pages.forEach((pageData) => {
@@ -501,19 +501,21 @@ function RouteComponent() {
               })
             )}
             
-            <div className='flex justify-center'>
-              <button
-                className={`${hasNextPage ? 'border  hover:bg-gray-50' : 'border-0'} border-gray-300 rounded-lg px-6 py-3 mt-5 font-medium text-gray-700 transition-colors`}
-                onClick={async() => await fetchNextPage()}
-                disabled={!hasNextPage || isFetching}
-              >
-                {isFetchingNextPage
-                  ? 'Loading more...'
-                  : hasNextPage
-                    ? 'Load More'
-                    : 'You have reached the end!'}
-              </button>
-            </div>
+            {processedTunes.length > 0 && (
+              <div className='flex justify-center'>
+                <button
+                  className={`${hasNextPage ? 'border  hover:bg-gray-50' : 'border-0'} border-gray-300 rounded-lg px-6 py-3 mt-5 font-medium text-gray-700 transition-colors`}
+                  onClick={async() => await fetchNextPage()}
+                  disabled={!hasNextPage || isFetching}
+                >
+                  {isFetchingNextPage
+                    ? 'Loading more...'
+                    : hasNextPage
+                      ? 'Load More'
+                      : 'You have reached the end!'}
+                </button>
+              </div>
+            )}
             <div className='text-center text-gray-500 text-sm'>{isFetching && !isFetchingNextPage ? 'Fetching...' : null}</div>
         </div>
         <ScrollToTop visiblePosition={30}/>
