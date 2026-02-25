@@ -260,7 +260,7 @@ function RouteComponent() {
                   <div className='size-16 sm:size-20 rounded-full bg-gray-200 border-2 border-gray-200' />
                 )}
                 <div>
-                  <h1 className='text-3xl font-bold text-gray-900'>{user}'s Tunes</h1>
+                  <h1 className='sm:text-3xl text-xl font-bold text-gray-900'>{user}'s Tunes</h1>
                   <p className='text-sm text-gray-600 mt-1'>
                     {data?.pages[0]?.totalCount || 0} {(data?.pages[0]?.totalCount || 0) === 1 ? 'tune' : 'tunes'} saved
                   </p>
@@ -394,32 +394,33 @@ function RouteComponent() {
                       </div>
                       
                       {/* Content */}
-                      <div className='flex-1 px-4 py-2 md:px-6 flex flex-col justify-center min-w-0'>
-                        <h2 className='overflow-hidden text-xs sm:text-sm md:text-xl font-bold text-gray-900 mb-1 truncate'>
+                      <div className='flex-1 px-2 py-2 sm:px-4 md:px-6 pr-14 sm:pr-24 md:pr-28 flex flex-col justify-center min-w-0'>
+                        <h2 className='overflow-hidden text-[11px] sm:text-sm md:text-xl font-bold text-gray-900 mb-0.5 sm:mb-1 truncate'>
                           {tune.tune.car.Manufacturer} {tune.tune.car.Model}
                         </h2>
                         
-                        <p className='text-xs sm:text-sm md:text-base text-gray-600 mb-2 sm:mb-3 truncate'>
+                        <p className='text-[10px] sm:text-sm md:text-base text-gray-600 mb-1 sm:mb-2 truncate'>
                           {tune.tune.tune_name}
                         </p>
                         
-                        <div className='flex flex-wrap items-center gap-x-4 gap-y-2 text-xs md:text-sm text-gray-600'>
-                          <Link className='pointer-events-auto flex items-center gap-2' to='/u/$user' params={{user: tune.tune.creator.username}}>
-                            <span className='text-gray-600'>Creator:</span>
+                        <div className='flex flex-wrap items-center gap-x-2 sm:gap-x-4 gap-y-2 text-[10px] sm:text-xs md:text-sm text-gray-600'>
+                          <Link className='pointer-events-auto flex items-center gap-1 sm:gap-2' to='/u/$user' params={{user: tune.tune.creator.username}}>
+                            <span className='text-gray-600 hidden sm:inline'>Creator:</span>
                             <img 
                               src={`${PROFILE_PIC}/${tune.tune.creator.profile_pic}`}
                               alt={`${tune.tune.creator.username}'s profile`}
-                              className='size-5 sm:size-9 rounded-full object-cover'
+                              className='size-4 sm:size-5 md:size-9 rounded-full object-cover'
                             />
-                            <span className='hover:underline font-semibold text-gray-800'>{tune.tune.creator.username}</span>
+                            <span className='hover:underline font-semibold text-gray-800 truncate max-w-[80px] sm:max-w-none'>{tune.tune.creator.username}</span>
                           </Link>
                           <span className='hidden sm:inline text-gray-400'>•</span>
-                          <span>Created: {new Date(tune.saved_on).toLocaleString('en-GB',{day: 'numeric', month: 'short', year: 'numeric' })}</span>
+                          <span className='hidden sm:inline'>Created: {new Date(tune.saved_on).toLocaleString('en-GB',{day: 'numeric', month: 'short', year: 'numeric' })}</span>
+                          <span className='sm:hidden'>{new Date(tune.saved_on).toLocaleString('en-GB',{day: 'numeric', month: 'short', year: '2-digit' })}</span>
                         </div>
                       </div>
                       
                       {/* Class Badge - Top Right */}
-                      <div className='absolute top-2 right-2 sm:top-3 sm:right-16 md:right-20'>
+                      <div className='absolute top-2 right-2 sm:top-3 sm:right-16 md:right-10'>
                         <span className={`inline-block px-2 py-0.5 sm:px-3 sm:py-1 ${rank_to_color[tune.tune.resultant_rank as RankType]} text-white text-[10px] sm:text-xs md:text-sm font-bold shadow-md rounded`}>
                           CLASS {tune.tune.resultant_rank}
                         </span>

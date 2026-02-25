@@ -18,9 +18,6 @@ export const Route = createFileRoute('/_authenticated/settings/')({
 
 
 function RouteComponent (){
-  // const {auth} = Route.useRouteContext();
-  // const router = useRouter();
-  // const navigate = useNavigate();
   const auth = useContext(AuthContext);
   const profile = auth!.user!;
 

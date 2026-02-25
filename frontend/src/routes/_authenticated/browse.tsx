@@ -53,11 +53,7 @@ export const Route = createFileRoute('/_authenticated/browse')({
   errorComponent: ErrorToast,
   preload: true,
   loaderDeps: ({search: {page, rank, drivetrain, fuel_type, manufacturer, search}}) => ({page, rank, drivetrain, fuel_type, manufacturer, search}),
-  loader: async({ context, location }) => {
-    const res = await fetchCars(location, context.auth); 
-    // window.scrollTo(0, 0); 
-    return res
-  },
+  loader: ({ context, location }) => fetchCars(location, context.auth),
   staleTime: Infinity,
   component: BrowseComponent,
 })

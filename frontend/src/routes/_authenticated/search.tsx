@@ -7,6 +7,7 @@ import { ArrowLongRightIcon, ArrowLongLeftIcon, CalendarIcon } from '@heroicons/
 import type { RankType } from '../../types/car';
 import { formatS3BucketURL } from '../../util/urlFormatter';
 import type { UseInfiniteQueryResult, InfiniteData } from '@tanstack/react-query';
+import Spinner from '../../components/Spinner';
 
 type SearchQuery = {
   q: string, 
@@ -158,7 +159,9 @@ function RouteComponent() {
           </div>
           
           {/* Empty State */}
-          {userQuery.isSuccess && userQuery.data.pages[0]?.items?.length === 0 ? (
+          {userQuery.status === 'pending' ? (
+            <Spinner />
+          ) : userQuery.isSuccess && userQuery.data.pages[0]?.items?.length === 0 ? (
             <div className="py-5 text-center border-2 border-dashed border-gray-100 rounded-xl">
               <p className="text-gray-400 font-medium">No users found matching "{searchQuery.q}"</p>
             </div>
@@ -201,11 +204,13 @@ function RouteComponent() {
         </div>
 
         {/* Empty State */}
-      {tuneQuery.isSuccess && tuneQuery.data.pages[0]?.items?.length === 0 ? (
-          <div className="py-5 text-center border-2 border-dashed border-gray-100 rounded-xl">
-            <p className="text-gray-400 font-medium">No tunes found matching "{searchQuery.q}"</p>
-          </div>
-        ) : (
+      {tuneQuery.status === 'pending' ? (
+            <Spinner />
+          ) : tuneQuery.isSuccess && tuneQuery.data.pages[0]?.items?.length === 0 ? (
+            <div className="py-5 text-center border-2 border-dashed border-gray-100 rounded-xl">
+              <p className="text-gray-400 font-medium">No tunes found matching "{searchQuery.q}"</p>
+            </div>
+          ) : (
           <div className='grid grid-cols-1 sm:grid-cols-2 gap-4'>
             {(type === 'tune'
               ? tuneQuery.data?.pages.flatMap((page) => page.items)
@@ -228,9 +233,6 @@ function RouteComponent() {
                       src={car_image_url}
                       alt={`${tune.car.Manufacturer} ${tune.car.Model}`}
                     />
-                    {/* <div className="absolute top-1 left-1 text-sm text-black px-1.5 py-0.5 rounded font-bold uppercase tracking-wider">
-                      {tune.resultant_rank}
-                    </div> */}
                   </div>
 
                   <div className='flex flex-col grow min-w-0'>

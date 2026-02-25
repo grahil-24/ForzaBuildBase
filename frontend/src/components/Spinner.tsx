@@ -1,6 +1,6 @@
 const Spinner = ({size = 7} : {size?: number}) => {
     return (
-        <div className='flex mt-50 justify-center'>
+        <div className='flex justify-center'>
            <svg 
                 style={{width: `${size * 0.25}rem`, height: `${size * 0.25}rem`}} 
                 className="animate-spin" 
