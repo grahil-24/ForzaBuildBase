@@ -8,7 +8,6 @@ interface UsernameAvailabilityResponse {
 
 export const useUsernameAvailability = (username: string) => {
     const debouncedUsername = useDebounce(username, 500);
-    console.log("debounced username ", debouncedUsername);
 
     const query = useQuery({
         queryKey: ["username-availability", debouncedUsername],

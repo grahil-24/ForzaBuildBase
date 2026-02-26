@@ -5,7 +5,8 @@ import type { AuthState } from '../../../../types/auth';
 import { authFetch } from '../../../../api/authFetch';
 import { BACKEND, FRONTEND, PROFILE_PIC } from '../../../../config/env';
 import NotFoundComponent from '../../../../components/NotFoundComponent';
-import { ShareIcon, PencilIcon, TrashIcon, MinusCircleIcon } from '@heroicons/react/24/outline';
+import { ShareIcon, PencilIcon, TrashIcon, BookmarkIcon } from '@heroicons/react/24/outline';
+import { BookmarkIcon as BookMarkSolidIcon } from '@heroicons/react/20/solid';
 import { useRemoveTune } from '../../../../hooks/useRemoveTune';
 import { RemoveDialogModal } from '../../../../components/profile/RemoveDialogModal';
 import { useState, useEffect } from 'react';
@@ -148,31 +149,31 @@ function RouteComponent() {
               <img 
                 src={imageUrl} 
                 alt="Car"
-                className="w-64 md:w-72 h-auto object-contain drop-shadow-lg"
+                className="w-64 mx-auto md:w-72 h-auto object-contain drop-shadow-lg"
               />
             </div>
 
             {/* RIGHT SIDE - All Info */}
             <div className="flex-1 text-center md:text-left">
               {/* Car Manufacturer */}
-              <div className="text-blue-600 text-sm font-bold uppercase tracking-wider mb-1">
+              <div className="text-blue-600 text-xs sm:text-sm font-bold uppercase tracking-wider mb-1">
                 {tuneDetails?.car.Manufacturer}
               </div>
               
               {/* Car Model */}
-              <h1 className="text-3xl font-bold text-slate-900 mb-2">
+              <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-slate-900 mb-2">
                 {tuneDetails?.car.Model}
               </h1>
               
               {/* Year */}
-              <div className="text-slate-500 text-lg font-medium mb-4">
+              <div className="text-slate-500 text-sm sm:text-base md:text-lg font-medium mb-4">
                 {tuneDetails?.car.Year}
               </div>
 
               {/* Tune Name */}
               <div className="bg-slate-50 rounded-lg">
-                <div className="text-sm text-slate-600 font-semibold mb-1">Tune Name</div>
-                <h2 className="text-2xl font-bold text-slate-900">
+                <div className="text-xs sm:text-sm text-slate-600 font-semibold mb-1">Tune Name</div>
+                <h2 className="text-base sm:text-lg md:text-2xl font-bold text-slate-900">
                   {tuneDetails?.tune_name}
                 </h2>
               </div>
@@ -241,9 +242,9 @@ function RouteComponent() {
                       Delete
                     </button>
                   ) : (
-                    <button onClick={() => setRemoveModalOpen(true)} className=" bg-red-600 hover:bg-red-700 text-white px-3 py-2 rounded-lg font-semibold transition-colors flex items-center gap-2">
-                      <MinusCircleIcon className='size-5'/>
-                      Remove
+                    <button onClick={() => setRemoveModalOpen(true)} className=" bg-slate-200 hover:bg-slate-300 text-slate-700 px-3 py-2 rounded-lg font-semibold transition-colors flex items-center gap-2">
+                      <BookMarkSolidIcon className='size-5'/>
+                      Unsave
                     </button>
                   )}
                   <button onClick={() => setIsShareDialogOpen(true)}className=" bg-slate-200 hover:bg-slate-300 text-slate-700 px-3 py-2 rounded-lg font-semibold transition-colors flex items-center gap-2">
@@ -252,10 +253,15 @@ function RouteComponent() {
                   </button>
                 </>
               ) : (
-                  <button  onClick={handleSaveTuneClick} className='border-2 border-black px-2 py-2 rounded-sm hover:bg-black hover:text-white duration-200 '>
+                  <button
+                  disabled={saveTune.isPending} 
+                  onClick={handleSaveTuneClick} className='border-2 border-black px-2 py-2 rounded-sm hover:bg-black hover:text-white duration-200 '>
                     {saveTune.isPending ? 
                       'Saving ...' : 
-                      <><FontAwesomeIcon icon={faBookmark} /> Save to profile</>
+                      <span className="flex items-center gap-1">
+                        <BookmarkIcon className='size-5'/>
+                        <span>Save to profile</span>
+                      </span>
                     }
                   </button>
               )}

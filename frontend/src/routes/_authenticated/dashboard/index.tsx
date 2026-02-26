@@ -40,17 +40,17 @@ function RouteComponent() {
             <div className='max-w-7xl mr-auto pt-12 px-6'>
                 <div className='flex items-end justify-between mb-8'>
                     <div>
-                        <h2 className='text-3xl font-bold text-slate-900 tracking-tight'>Recent Tunes</h2>
-                        <p className='text-slate-500 mt-1'>Continue where you left off with your latest builds.</p>
+                        <h2 className='text-2xl sm:text-3xl font-bold text-slate-900 tracking-tight'>Recent Tunes</h2>
+                        <p className='text-xs sm:text-[15px] text-slate-500 mt-1'>Continue where you left off with your latest builds.</p>
                     </div>
                     
-                    <div className='flex items-center gap-6'>
+                    <div className='flex items-center mb-auto sm:m-0 gap-6'>
                         <div className='group relative'>
                             <Link 
                                 to={'/u/$user'} 
                                 params={{user: auth.user!.username}}
-                                className="text-sm font-semibold text-slate-600 hover:text-black transition-colors"
-                            >
+                                className="sm:text-sm font-semibold text-slate-600 hover:text-black transition-colors whitespace-nowrap"
+                                >
                                 View all builds
                             </Link>
                             <div className='absolute -bottom-1 left-0 w-0 h-0.5 duration-300 group-hover:w-full bg-black'></div>

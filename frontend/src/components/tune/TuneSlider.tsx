@@ -11,8 +11,8 @@ interface SliderInterface {
 }
 
 const countDecimals = (arg: number) => {
-    if(Math.floor(arg.valueOf()) === arg.valueOf()) return 0;
-    return arg.toString().split(".")[1].length || 0;
+  if(Math.floor(arg.valueOf()) === arg.valueOf()) return 0;
+  return arg.toString().split(".")[1].length || 0;
 }
 
 export const TuneSlider = ({ 
@@ -29,9 +29,9 @@ export const TuneSlider = ({
   const numOfDecimals = countDecimals(step);
   
   return (
-    <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 py-3 border-b border-purple-900/30 last:border-b-0">
+    <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 py-3 border-b border-gray-800/50 last:border-b-0">
       {/* Label */}
-      <div className="w-full sm:w-32 md:w-36 lg:w-40 text-pink-500 font-bold text-[11px] md:text-sm uppercase wrap-break-word">
+      <div className="w-full sm:w-32 md:w-36 lg:w-40 text-gray-100 font-bold text-[11px] md:text-sm uppercase wrap-break-word">
         {label}
       </div>
       
@@ -48,9 +48,9 @@ export const TuneSlider = ({
           step={step}
           value={value}
           onChange={(e) => onChange(parseFloat(e.target.value))}
-          className="flex-1 h-2 bg-gray-600 rounded-lg appearance-none  slider min-w-20"
+          className="flex-1 h-2 bg-gray-600 rounded-lg appearance-none slider min-w-20"
           style={{
-            background: `linear-gradient(to right, #ec4899 0%, #ec4899 ${((value - min) / (max - min)) * 100}%, #4b5563 ${((value - min) / (max - min)) * 100}%, #4b5563 100%)`
+            background: `linear-gradient(to right, #e5e7eb 0%, #e5e7eb ${((value - min) / (max - min)) * 100}%, #4b5563 ${((value - min) / (max - min)) * 100}%, #4b5563 100%)`
           }}
         />
         
@@ -59,7 +59,7 @@ export const TuneSlider = ({
         </span>
         
         {/* Value Display */}
-        <div className="w-20 sm:w-24 md:w-28 text-right shrink-0 flex items-baseline justify-end gap-1">
+        <div className="w-fit sm:w-24 md:w-28 text-right shrink-0 flex items-baseline justify-end gap-1">
           <span className="text-white font-bold text-xs sm:text-sm md:text-base">
             {value.toFixed(numOfDecimals)}
           </span>

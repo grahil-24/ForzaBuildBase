@@ -1,8 +1,9 @@
 import { createFileRoute, Link, notFound} from '@tanstack/react-router'
 import { Menu, MenuButton, MenuItem, MenuItems } from '@headlessui/react'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faEllipsisH, faBookmark } from '@fortawesome/free-solid-svg-icons'
-import { PencilIcon, TrashIcon, MinusCircleIcon, ChevronDownIcon } from '@heroicons/react/24/outline'
+import { faEllipsisH } from '@fortawesome/free-solid-svg-icons'
+import { PencilIcon, TrashIcon, ChevronDownIcon, BookmarkIcon } from '@heroicons/react/24/outline'
+import { BookmarkIcon as BookMarkSolidIcon } from '@heroicons/react/20/solid'
 import { BACKEND, FRONTEND, PROFILE_PIC } from '../../../config/env'
 import { useInfiniteQuery, useQueryClient, useMutation } from '@tanstack/react-query'
 import { authFetch } from '../../../api/authFetch'
@@ -267,8 +268,10 @@ function RouteComponent() {
                 </div>
               </div>
       
-              <div className='flex items-center gap-4'>
+              <div className='flex items-center gap-8'>
+                <div className='w-1/2 sm:w-full'>
                 <SearchBar onChange={(input: string) => {setSearch(input)}}/>
+                </div>
                 <Menu as="div" className="relative inline-block text-left">
                   <MenuButton className="group inline-flex text-sm font-medium text-gray-700 hover:text-gray-900">
                     Sort: {getSortLabel(sortBy)}
@@ -464,22 +467,24 @@ function RouteComponent() {
                               </MenuItem>
                             ) : tune.isSaved ? (
                               <MenuItem>
-                                <button 
+                                <button
                                   onClick={() => handleOpenRemoveModal(tune.tune.tune_id)} 
-                                  className=' group flex w-full items-center gap-2 sm:gap-3 px-3 sm:px-4 py-2 sm:py-3 text-xs sm:text-sm font-medium transition-colors hover:bg-red-100/50'
+                                  className=' group flex w-full items-center gap-2 sm:gap-3 px-3 sm:px-4 py-2 sm:py-3 text-xs sm:text-sm font-medium transition-colors hover:bg-gray-200/50'
                                 >
-                                  <MinusCircleIcon className="transition-colors size-4 sm:size-5 text-gray-600 group-hover:text-red-600" />
-                                  <span className='transition-colors text-gray-700 group-hover:text-red-600'>Remove</span>
+                                  <BookMarkSolidIcon className='size-4.5'/>
+                                  <span className='transition-colors text-gray-700'>Unsave</span>
                                 </button>
                               </MenuItem>
                             ) : (
                               <MenuItem>
-                                <button 
+                                <button
+                                  disabled={saveTune.isPending}
                                   onClick={() => handleSaveTune(tune.tune.tune_id)} 
-                                  className=' group flex w-full items-center gap-2 sm:gap-3 px-3 sm:px-4 py-2 sm:py-3 text-xs sm:text-sm font-medium transition-colors hover:bg-green-100/50'
+                                  className=' group flex w-full items-center gap-2 sm:gap-3 px-3 sm:px-4 py-2 sm:py-3 text-xs sm:text-sm font-medium transition-colors hover:bg-gray-200/50'
                                 >
-                                  <FontAwesomeIcon icon={faBookmark} />
-                                  <span className='transition-colors text-gray-700 group-hover:text-green-600'>Save</span>
+                                  {/* <FontAwesomeIcon icon={faBookmark} /> */}
+                                  <BookmarkIcon className='size-4.5'/>
+                                  <span className='transition-colors text-gray-700'>Save</span>
                                 </button>
                               </MenuItem>
                             )}

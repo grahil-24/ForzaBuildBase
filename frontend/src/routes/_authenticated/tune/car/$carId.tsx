@@ -277,7 +277,9 @@ function RouteComponent() {
                 </button>
               </div>
               </div>
-              <button onClick={() => {
+              <button
+              disabled={createTune.isPending} 
+              onClick={() => {
                 createTune.mutate(JSON.stringify({
                   tune_name: tuneName, 
                   car_id: car.id, 
@@ -372,13 +374,13 @@ function RouteComponent() {
           <TabPanels>
             {categories.map((name) => (
               <TabPanel key={name} className="focus:outline-none">
-                <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-3 sm:p-6 min-h-[400px]">
+                {/* <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-3 sm:p-6 min-h-[400px]"> */}
                   <TabForm
                     data={tuneData[name]}
                     onSliderChange={handleSliderChange}
                     sliderData={sliderData}
                   />
-                </div>
+                {/* </div> */}
               </TabPanel>
             ))}
           </TabPanels>

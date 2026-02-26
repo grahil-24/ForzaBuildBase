@@ -8,6 +8,9 @@ import jwtVerifyPromisifed from '../utils/jwtVerifier';
 import jwt from 'jsonwebtoken';
 import ms from 'ms';
 import { comparePasswords, hashPassword } from '../utils/passwordUtils';
+import { sendVerificationMail } from '../utils/verificationEmail';
+import { generateOTP } from '../utils/generateVerificationCode';
+import { stat } from 'fs';
 
 interface JwtPayload {
     id: number
@@ -40,11 +43,15 @@ export const signUp = catchAsync(async (req: Request, res: Response, next: NextF
         return next(new AppError("You have already registered with this email", 400));
     }
     newUser.password = await hashPassword(newUser.password!);
-    const result: number = Number(await em.insert(newUser));
-    const accessToken = signToken(result, JWT_EXPIRATION);
-    const refreshToken = signToken(result, JWT_REFRESH_EXPIRATION);
-    res.cookie('refresh_token', refreshToken, {httpOnly: true, sameSite: "strict", secure ,expires: new Date(Date.now() + ms(JWT_REFRESH_EXPIRATION as ms.StringValue))});
-    res.status(201).json({status: "success",message: "user created successfully", access_token: accessToken, user: {user_id:result, username: newUser.username, profile_pic: newUser.profile_pic, email: newUser.email}});
+    await em.insert(newUser);
+    const otp = generateOTP();
+    // const result: number = Number(await em.insert(newUser));
+    // const accessToken = signToken(result, JWT_EXPIRATION);
+    // const refreshToken = signToken(result, JWT_REFRESH_EXPIRATION);
+    // res.cookie('refresh_token', refreshToken, {httpOnly: true, sameSite: "strict", secure ,expires: new Date(Date.now() + ms(JWT_REFRESH_EXPIRATION as ms.StringValue))});
+    // res.status(201).json({status: "success",message: "user created successfully", access_token: accessToken, user: {user_id:result, username: newUser.username, profile_pic: newUser.profile_pic, email: newUser.email}});
+    await sendVerificationMail(otp, newUser.username!, newUser.email!);
+    res.status(201).json({status: "success", message: "Signed up successfully! Please verify your email"});
 });
 
 export const checkUsername = catchAsync(async (req, res, next) => {

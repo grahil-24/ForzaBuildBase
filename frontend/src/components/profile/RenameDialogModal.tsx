@@ -50,7 +50,7 @@ export const RenameDialogModal = ({openModal, onClose,onSubmit,isLoading,isSucce
                   Cancel
                 </Button>
                 <Button
-                  disabled={name.length === 0}
+                  disabled={name.length === 0 || isLoading}
                   className="disabled:bg-gray-400 disabled:cursor-not-allowed disabled:shadow-none transition-colors duration-200 inline-flex items-center gap-2 rounded-md bg-green-700 px-3 py-1.5 text-sm/6 font-semibold text-white shadow-inner shadow-white/10 focus:not-data-focus:outline-none data-focus:outline data-focus:outline-white data-open:bg-gray-700"
                   onClick={() => onSubmit(name)}
                 >
