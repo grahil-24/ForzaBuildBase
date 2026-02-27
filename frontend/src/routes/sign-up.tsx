@@ -1,11 +1,12 @@
 import { createFileRoute, redirect } from "@tanstack/react-router";
 import type React from "react";
-import { useState } from "react";
+import { useContext, useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEye, faEyeSlash } from "@fortawesome/free-solid-svg-icons";
 import { useUsernameAvailability } from "../hooks/useUsernameAvailability";
 import { usePasswordStrength } from "../hooks/usePasswordStrength";
 import { PasswordStrengthChecklist } from "../components/PasswordStrengthChecklist";
+import { AuthContext } from "../contexts/Auth/AuthContext";
 
 export const Route = createFileRoute('/sign-up')({
     validateSearch: (search): {redirect?: string} => ({
@@ -21,7 +22,7 @@ export const Route = createFileRoute('/sign-up')({
 })
 
 function Signup(): React.ReactElement {
-    const {auth} = Route.useRouteContext();
+    const auth = useContext(AuthContext);
     const {redirect} = Route.useSearch();
     const navigate = Route.useNavigate();
     const [email, setEmail] = useState<string>('');
@@ -51,8 +52,9 @@ function Signup(): React.ReactElement {
             setError('');
 
             try{
-                await auth.signup(username, email, password);
-                navigate({to: redirect as never});
+                const mail = email; 
+                await auth?.signup(username, email, password);
+                navigate({to: '/verify-email', search: {redirect}, state: {email: mail}});
             }catch(err: unknown){
                 if(err instanceof TypeError){
                     setError('Unable to connect to server. Please check your connection and try again.')
@@ -159,6 +161,7 @@ function Signup(): React.ReactElement {
                 <div>
                 <button
                     type="submit"
+                    disabled={loading}
                     className="flex w-full justify-center rounded-md bg-indigo-600 px-3 py-1.5 text-sm/6 font-semibold text-white shadow-xs hover:bg-indigo-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
                 >
                     {loading ? 'Signing up ...' : 'Sign up'}

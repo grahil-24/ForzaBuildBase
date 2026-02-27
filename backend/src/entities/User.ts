@@ -27,6 +27,18 @@ export class User{
     @Property({type: "varchar", default: 'def.jpg'})
     profile_pic?: string = 'def.jpg';
 
+    @Property({type: "boolean", default: false})
+    is_verified?: boolean
+
+    @Property({type: "timestamp", nullable: true})
+    expires_at?: Date | null
+
+    @Property({type: "timestamp", nullable: true})
+    created_at?: Date | null
+
+    @Property({type: "char", nullable: true, length: 6})
+    verification_code?: string | null
+
     constructor(options?: UserOptions) {
         this.email = options?.email;
         this.password = options?.password;

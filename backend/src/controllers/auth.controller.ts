@@ -26,7 +26,6 @@ const signToken = (user_id: number, expires: string): string => {
 }
 
 export const signUp = catchAsync(async (req: Request, res: Response, next: NextFunction): Promise<void> => {
-
     const newUser = new User({email: req.body.email, password: req.body.password, username: req.body.username});
 
     const em = RequestContext.getEntityManager();
@@ -43,16 +42,43 @@ export const signUp = catchAsync(async (req: Request, res: Response, next: NextF
         return next(new AppError("You have already registered with this email", 400));
     }
     newUser.password = await hashPassword(newUser.password!);
-    await em.insert(newUser);
     const otp = generateOTP();
-    // const result: number = Number(await em.insert(newUser));
-    // const accessToken = signToken(result, JWT_EXPIRATION);
-    // const refreshToken = signToken(result, JWT_REFRESH_EXPIRATION);
-    // res.cookie('refresh_token', refreshToken, {httpOnly: true, sameSite: "strict", secure ,expires: new Date(Date.now() + ms(JWT_REFRESH_EXPIRATION as ms.StringValue))});
-    // res.status(201).json({status: "success",message: "user created successfully", access_token: accessToken, user: {user_id:result, username: newUser.username, profile_pic: newUser.profile_pic, email: newUser.email}});
+    newUser.verification_code = otp;
+    newUser.created_at = new Date();
+    // Code expires in 10 mins
+    newUser.expires_at = new Date(newUser.created_at.getTime() + 10 * 60000);
+    await em.insert(newUser);
     await sendVerificationMail(otp, newUser.username!, newUser.email!);
     res.status(201).json({status: "success", message: "Signed up successfully! Please verify your email"});
 });
+
+export const verifyEmail = catchAsync(async(req: Request, res: Response, next: NextFunction) => {
+    const {email, verificationCode} = req.body; 
+    const em = RequestContext.getEntityManager();
+    if (!em) {
+        return next(new AppError("Entity manager not available", 500));
+    }
+    const user = await em.findOne(User, {email});
+    const now = new Date();
+    if(!user || 
+        user.is_verified || 
+        user.verification_code !== verificationCode || 
+        !user.expires_at || 
+        user.expires_at <= now){
+        return next(new AppError('The verification code provided is incorrect or has expired', 400));
+    }
+    user.is_verified = true;
+    user.verification_code = null;
+    user.created_at = null;
+    user.expires_at = null;
+    await em.persistAndFlush(user);
+    const accessToken = signToken(user.user_id!, JWT_EXPIRATION);
+    const refreshToken = signToken(user.user_id!, JWT_REFRESH_EXPIRATION);
+    res.cookie('refresh_token', refreshToken, {httpOnly: true, sameSite: "strict", secure ,expires: new Date(Date.now() + ms(JWT_REFRESH_EXPIRATION as ms.StringValue))});
+    res.status(201).json({status: "success",message: "user created successfully", access_token: accessToken, user: {user_id:user.user_id!, username: user.username, profile_pic: user.profile_pic, email: user.email}});
+});
+
+
 
 export const checkUsername = catchAsync(async (req, res, next) => {
   const em = RequestContext.getEntityManager();

@@ -84,7 +84,6 @@ export function AuthProvider({children}: {children: React.ReactNode}){
     const signup = async(username: string, email: string, password: string) => {
         const response = await fetch(`${BACKEND}/auth/sign-up`,{
             method: "POST",
-            credentials: "include",
             headers: {"Content-Type": "application/json"},
             body: JSON.stringify({username, email, password}),
         })
@@ -94,11 +93,29 @@ export function AuthProvider({children}: {children: React.ReactNode}){
         if(!response.ok){
             throw new Error(data.message || 'Login failed');
         }
-
-        setUser(data.user);
-        setIsAuthenticated(true);
-        setAccessToken(data.access_token);
+        // setUser(data.user);
+        // setIsAuthenticated(true);
+        // setAccessToken(data.access_token);
     }
+
+    const verifyEmail = async(email: string, verificationCode: string) => {
+        const res = await fetch(`${BACKEND}/auth/verify-email`, 
+            {
+                method: 'POST',
+                credentials: 'include',
+                headers: {"Content-Type": "application/json"},
+                body: JSON.stringify({email, verificationCode}),
+            }
+        )
+        const data = await res.json();
+        if(!res.ok){
+            throw new Error(data.message);
+        }
+        setUser(data.user);
+        setAccessToken(data.access_token);
+        setIsAuthenticated(true);
+    }
+
 
     const logout = async() => {
         //call backend logout api to invalidate refresh cookie
@@ -133,7 +150,7 @@ export function AuthProvider({children}: {children: React.ReactNode}){
     };
 
     return (
-        <AuthContext.Provider value={{isAuthenticated, user, updateUserProfile, setAccessToken: setAccessTokenOnly, login, logout, signup, accessToken, refreshUserData}}>
+        <AuthContext.Provider value={{isAuthenticated, user, updateUserProfile, setAccessToken: setAccessTokenOnly, login, logout, signup, accessToken, refreshUserData, verifyEmail}}>
             {children}
         </AuthContext.Provider>
     )

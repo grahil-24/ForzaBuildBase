@@ -11,8 +11,7 @@ const transport = nodemailer.createTransport({
 
 const sendVerificationMail = async (otp: string, username: string, email: string) => {
   // Add spaces between each digit for better readability
-  const formattedOTP = otp.split('').join(' ');
-  
+
   const mailOptions = {
     from: 'ForzaBuildBase <rahilganatra@gmail.com>',
     to: email,
@@ -68,12 +67,12 @@ const sendVerificationMail = async (otp: string, username: string, email: string
           .otp-code {
             font-size: 48px;
             font-weight: bold;
-            letter-spacing: 12px;
+            /* This creates the visual gap without adding actual characters */
+            letter-spacing: 12px; 
+            padding-left: 12px; /* Offsets the letter-spacing to keep it centered */
             color: #ffffff;
             user-select: all;
             -webkit-user-select: all;
-            -moz-user-select: all;
-            -ms-user-select: all;
             cursor: text;
             font-family: 'Courier New', monospace;
           }
@@ -121,7 +120,7 @@ const sendVerificationMail = async (otp: string, username: string, email: string
             </p>
             
             <div class="otp-container">
-              <div class="otp-code">${formattedOTP}</div>
+              <div class="otp-code">${otp}</div> 
               <p class="otp-label">Click to select and copy</p>
             </div>
             
@@ -150,10 +149,8 @@ const sendVerificationMail = async (otp: string, username: string, email: string
 
   try {
     const info = await transport.sendMail(mailOptions);
-    console.log('Email sent:', info.messageId);
     return { success: true, messageId: info.messageId };
   } catch (error) {
-    console.error('Error sending email:', error);
     throw error;
   }
 };

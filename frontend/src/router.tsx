@@ -30,6 +30,7 @@ declare module "@tanstack/react-router" {
       class: RankType,
       isSaved: boolean,
       public_url: string
-    } 
+    },
+    email?:string
   }
 }

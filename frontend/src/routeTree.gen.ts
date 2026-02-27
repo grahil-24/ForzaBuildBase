@@ -9,6 +9,7 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as VerifyEmailRouteImport } from './routes/verify-email'
 import { Route as SignUpRouteImport } from './routes/sign-up'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as AuthenticatedRouteImport } from './routes/_authenticated'
@@ -24,6 +25,11 @@ import { Route as AuthenticatedViewCarCarIdRouteImport } from './routes/_authent
 import { Route as AuthenticatedTuneEditTuneIdRouteImport } from './routes/_authenticated/tune/edit/$tuneId'
 import { Route as AuthenticatedTuneCarCarIdRouteImport } from './routes/_authenticated/tune/car/$carId'
 
+const VerifyEmailRoute = VerifyEmailRouteImport.update({
+  id: '/verify-email',
+  path: '/verify-email',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const SignUpRoute = SignUpRouteImport.update({
   id: '/sign-up',
   path: '/sign-up',
@@ -104,6 +110,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/login': typeof LoginRoute
   '/sign-up': typeof SignUpRoute
+  '/verify-email': typeof VerifyEmailRoute
   '/browse': typeof AuthenticatedBrowseRoute
   '/search': typeof AuthenticatedSearchRoute
   '/share/$public_url': typeof SharePublic_urlRoute
@@ -119,6 +126,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/login': typeof LoginRoute
   '/sign-up': typeof SignUpRoute
+  '/verify-email': typeof VerifyEmailRoute
   '/browse': typeof AuthenticatedBrowseRoute
   '/search': typeof AuthenticatedSearchRoute
   '/share/$public_url': typeof SharePublic_urlRoute
@@ -136,6 +144,7 @@ export interface FileRoutesById {
   '/_authenticated': typeof AuthenticatedRouteWithChildren
   '/login': typeof LoginRoute
   '/sign-up': typeof SignUpRoute
+  '/verify-email': typeof VerifyEmailRoute
   '/_authenticated/browse': typeof AuthenticatedBrowseRoute
   '/_authenticated/search': typeof AuthenticatedSearchRoute
   '/share/$public_url': typeof SharePublic_urlRoute
@@ -153,6 +162,7 @@ export interface FileRouteTypes {
     | '/'
     | '/login'
     | '/sign-up'
+    | '/verify-email'
     | '/browse'
     | '/search'
     | '/share/$public_url'
@@ -168,6 +178,7 @@ export interface FileRouteTypes {
     | '/'
     | '/login'
     | '/sign-up'
+    | '/verify-email'
     | '/browse'
     | '/search'
     | '/share/$public_url'
@@ -184,6 +195,7 @@ export interface FileRouteTypes {
     | '/_authenticated'
     | '/login'
     | '/sign-up'
+    | '/verify-email'
     | '/_authenticated/browse'
     | '/_authenticated/search'
     | '/share/$public_url'
@@ -201,11 +213,19 @@ export interface RootRouteChildren {
   AuthenticatedRoute: typeof AuthenticatedRouteWithChildren
   LoginRoute: typeof LoginRoute
   SignUpRoute: typeof SignUpRoute
+  VerifyEmailRoute: typeof VerifyEmailRoute
   SharePublic_urlRoute: typeof SharePublic_urlRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/verify-email': {
+      id: '/verify-email'
+      path: '/verify-email'
+      fullPath: '/verify-email'
+      preLoaderRoute: typeof VerifyEmailRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/sign-up': {
       id: '/sign-up'
       path: '/sign-up'
@@ -340,6 +360,7 @@ const rootRouteChildren: RootRouteChildren = {
   AuthenticatedRoute: AuthenticatedRouteWithChildren,
   LoginRoute: LoginRoute,
   SignUpRoute: SignUpRoute,
+  VerifyEmailRoute: VerifyEmailRoute,
   SharePublic_urlRoute: SharePublic_urlRoute,
 }
 export const routeTree = rootRouteImport
