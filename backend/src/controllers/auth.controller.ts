@@ -78,7 +78,41 @@ export const verifyEmail = catchAsync(async(req: Request, res: Response, next: N
     res.status(201).json({status: "success",message: "user created successfully", access_token: accessToken, user: {user_id:user.user_id!, username: user.username, profile_pic: user.profile_pic, email: user.email}});
 });
 
+export const resendVerifyMail = catchAsync(async(req: Request, res: Response, next: NextFunction) => {
+    const {email} = req.body;
+  
+    if (!email) {
+        return next(new AppError("Email is required", 400));
+    }
 
+    const em = RequestContext.getEntityManager();
+    if (!em) {
+        return next(new AppError("Entity manager not available", 500));
+    }
+    const user = await em.findOne(User, {email});
+    if(!user){
+        res.status(200).json({status: "success", message: "Verification mail has been sent successfully"});
+        return;
+    }
+    if(user.is_verified || !user.created_at || !user.expires_at){
+        res.status(400).json({status: "error", message: "Email is already verified"});
+        return;
+    }
+    const now = new Date();
+    const oneMinuteAfterCreation = new Date(user.created_at.getTime() + 60 * 1000);
+    const canResend = oneMinuteAfterCreation <= now;
+    if(!canResend){
+        res.status(429).json({status: "error", message: "Cant resend email! Try again after some time"});
+        return;
+    }
+    const new_otp = generateOTP();
+    user.verification_code = new_otp;
+    user.created_at = now; 
+    user.expires_at = new Date(user.created_at.getTime() + 10 * 60000);
+    await em.persistAndFlush(user);
+    await sendVerificationMail(new_otp, user.username!, user.email!);
+    res.status(200).json({status: "success", message: "Verification mail resent successfully!"});
+})
 
 export const checkUsername = catchAsync(async (req, res, next) => {
   const em = RequestContext.getEntityManager();

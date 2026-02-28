@@ -65,10 +65,10 @@ const sendVerificationMail = async (otp: string, username: string, email: string
             margin: 30px 0;
           }
           .otp-code {
-            font-size: 48px;
+            font-size: 36px;
             font-weight: bold;
             /* This creates the visual gap without adding actual characters */
-            letter-spacing: 12px; 
+            letter-spacing: 8px; 
             padding-left: 12px; /* Offsets the letter-spacing to keep it centered */
             color: #ffffff;
             user-select: all;
@@ -139,7 +139,6 @@ const sendVerificationMail = async (otp: string, username: string, email: string
           
           <div class="footer">
             <p>This is an automated message, please do not reply to this email.</p>
-            <p>© 2024 Your App Name. All rights reserved.</p>
           </div>
         </div>
       </body>

@@ -1,7 +1,7 @@
 import { createFileRoute, redirect, useNavigate, useRouterState } from '@tanstack/react-router'
-import { useState, type KeyboardEvent, type ClipboardEvent, useRef, useContext } from 'react';
-import { BACKEND } from '../config/env';
+import { useState, type KeyboardEvent, type ClipboardEvent, useRef, useContext, useEffect } from 'react';
 import { AuthContext } from '../contexts/Auth/AuthContext';
+import { BACKEND } from '../config/env';
 
 export const Route = createFileRoute('/verify-email')({
      beforeLoad: ({location, context}) => {
@@ -31,7 +31,25 @@ function RouteComponent() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
   const [isResending, setIsResending] = useState(false);
+  const [lastSentTime, setLastSentTime] = useState<number>(Date.now());
+  const [resendCooldown, setResendCooldown] = useState<number>(0);
   const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
+
+  // Countdown timer effect
+  useEffect(() => {
+    const updateCooldown = () => {
+      const elapsed = Math.floor((Date.now() - lastSentTime) / 1000);
+      const remaining = Math.max(0, 60 - elapsed);
+      setResendCooldown(remaining);
+    };
+
+    updateCooldown(); // Initial update
+
+    if (resendCooldown > 0) {
+      const timer = setInterval(updateCooldown, 1000);
+      return () => clearInterval(timer);
+    }
+  }, [lastSentTime, resendCooldown]);
 
   const handleChange = (index: number, value: string) => {
     if (value.length > 1) return; // Only allow single character
@@ -95,14 +113,25 @@ function RouteComponent() {
     
     try {
       // Your resend API call here
-      await new Promise(resolve => setTimeout(resolve, 1000)); // Simulated
-      
-      // Show success message (you could add a success state)
+      const res = await fetch(`${BACKEND}/auth/resend-verification-mail`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email })
+      });
+      if(!res.ok){
+        const data = await res.json();
+        throw new Error(data.message);
+      }
+    } catch (err: any) {
+      setError(err.message);
+    } finally {
+      // Update last sent time and reset cooldown
+      setLastSentTime(Date.now());
+      setResendCooldown(60);
       setCode(['', '', '', '', '', '']);
       inputRefs.current[0]?.focus();
-    } catch (err) {
-      setError('Failed to resend code. Please try again.');
-    } finally {
       setIsResending(false);
     }
   };
@@ -200,10 +229,15 @@ function RouteComponent() {
           <p className="text-gray-600 text-sm mb-2">Didn't receive the code?</p>
           <button
             onClick={handleResend}
-            disabled={isResending}
+            disabled={isResending || resendCooldown > 0}
             className="text-black font-semibold hover:underline disabled:text-gray-400 disabled:no-underline transition-colors"
           >
-            {isResending ? 'Sending...' : 'Resend Code'}
+            {isResending 
+              ? 'Sending...' 
+              : resendCooldown > 0 
+                ? `Resend Code (${resendCooldown}s)` 
+                : 'Resend Code'
+            }
           </button>
         </div>
 
