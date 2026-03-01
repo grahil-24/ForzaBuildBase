@@ -37,8 +37,10 @@ function Login(): React.ReactElement {
     try {
       await auth.login(email, password);
       navigate({to: redirect as never})
-    }catch(err: unknown){
-      if(err instanceof TypeError){
+    }catch(err: any){
+      if(err.message === 'Email is not verified! Please verify email'){
+        navigate({to: '/verify-email', state: {email}})
+      }else if(err instanceof TypeError){
         setError('Unable to connect to server. Please check your connection and try again.');
       }else if(err instanceof Error){
         setError(err.message);
@@ -111,6 +113,7 @@ function Login(): React.ReactElement {
 
             <div>
               <button
+                disabled={isLoading}
                 type="submit"
                 className=" flex w-full justify-center rounded-md bg-indigo-600 px-3 py-1.5 text-sm/6 font-semibold text-white shadow-xs hover:bg-indigo-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
               >

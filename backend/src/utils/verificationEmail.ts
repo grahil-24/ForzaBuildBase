@@ -59,17 +59,17 @@ const sendVerificationMail = async (otp: string, username: string, email: string
             margin-bottom: 30px;
           }
           .otp-container {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            border-radius: 12px;
-            padding: 30px;
+            background: #1a1a1a;
+            border-radius: 8px;
+            padding: 20px;
             margin: 30px 0;
+            border: 2px solid #e0e0e0;
           }
           .otp-code {
-            font-size: 36px;
+            font-size: 28px;
             font-weight: bold;
-            /* This creates the visual gap without adding actual characters */
             letter-spacing: 8px; 
-            padding-left: 12px; /* Offsets the letter-spacing to keep it centered */
+            padding-left: 12px;
             color: #ffffff;
             user-select: all;
             -webkit-user-select: all;
@@ -77,9 +77,9 @@ const sendVerificationMail = async (otp: string, username: string, email: string
             font-family: 'Courier New', monospace;
           }
           .otp-label {
-            color: #ffffff;
-            font-size: 14px;
-            margin-top: 15px;
+            color: #cccccc;
+            font-size: 13px;
+            margin-top: 10px;
             opacity: 0.9;
           }
           .expiry-notice {

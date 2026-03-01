@@ -9,6 +9,7 @@ interface UserOptions {
 
 @Entity({tableName: "users"})
 @Index({properties: ['username'], type: 'fulltext', name: 'user_search'})
+@Index({ properties: ['reset_token'], name: 'idx_reset_token' })
 export class User{
     @PrimaryKey({type: "smallint", unsigned: true, autoincrement: true, nullable: false, hidden: true})
     user_id?:number
@@ -38,6 +39,15 @@ export class User{
 
     @Property({type: "char", nullable: true, length: 6})
     verification_code?: string | null
+
+    @Property({type: "char", nullable: true, length:64})
+    reset_token?: string | null
+
+    @Property({type: "timestamp", nullable: true})
+    reset_token_expires_at?: Date | null
+
+    @Property({type: "timestamp", nullable: true})
+    reset_token_created_at?: Date | null
 
     constructor(options?: UserOptions) {
         this.email = options?.email;

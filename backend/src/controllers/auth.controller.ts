@@ -10,7 +10,7 @@ import ms from 'ms';
 import { comparePasswords, hashPassword } from '../utils/passwordUtils';
 import { sendVerificationMail } from '../utils/verificationEmail';
 import { generateOTP } from '../utils/generateVerificationCode';
-import { stat } from 'fs';
+import { randomBytes, createHash } from 'crypto';
 
 interface JwtPayload {
     id: number
@@ -146,6 +146,16 @@ export const login = catchAsync(async(req: Request, res: Response, next: NextFun
     if(!await comparePasswords(user.password!, userFromDB.password!)){
         return next(new AppError("Email or password is incorrect", 401));
     }
+    if(!userFromDB.is_verified){
+        const otp = generateOTP();
+        userFromDB.verification_code = otp;
+        userFromDB.created_at = new Date();
+        userFromDB.expires_at = new Date(userFromDB.created_at.getTime() + 10 * 60000);
+        await em.persistAndFlush(userFromDB);
+        await sendVerificationMail(otp, userFromDB.username!, userFromDB.email!);
+        res.status(403).json({status: "error", message: "Email is not verified! Please verify email"});
+        return;
+    }
     const accessToken = signToken(Number(userFromDB.user_id), JWT_EXPIRATION);
     const refreshToken = signToken(Number(userFromDB.user_id), JWT_REFRESH_EXPIRATION);
     res.cookie('refresh_token', refreshToken, {httpOnly: true, sameSite: "strict", secure, expires: new Date(Date.now() + ms(JWT_REFRESH_EXPIRATION as ms.StringValue))});
@@ -202,6 +212,30 @@ export const verify = catchAsync(async(req: Request, res: Response, next: NextFu
     }
 });
 
+export const forgotPassword = catchAsync(async(req: Request, res: Response, next: NextFunction): Promise<void> => {
+    const {email} = req.body;
+    const em = RequestContext.getEntityManager();
+    if(!em) {
+        return next(new AppError("Entity manager not available", 500));
+    }
+    const user = await em.findOne(User, {email});
+    if(!user){
+        res.status(200).json({status: "success", message: "If the email is registered, mail with password reset link has been sent!"})
+        return;
+    }
+    //generate random string as token
+    const resetToken = randomBytes(32).toString('hex');
+    const hashedToken = createHash('sha256').update(resetToken).digest('hex');
+
+    user.reset_token = hashedToken;
+    user.reset_token_created_at = new Date();
+    user.reset_token_expires_at = new Date(user.reset_token_created_at.getTime() + 60 * 60 * 1000) //1 hour
+    await em.persistAndFlush(user);
+});
+
+export const resetPassword = catchAsync(async(req: Request, res: Response, next: NextFunction): Promise<void> => {
+
+});
 
 
 
