@@ -1,4 +1,4 @@
-import { createFileRoute, redirect } from '@tanstack/react-router'
+import { createFileRoute, Link, redirect } from '@tanstack/react-router'
 import type React from 'react'
 import { useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -90,9 +90,9 @@ function Login(): React.ReactElement {
                   Password
                 </label>
                 <div className="text-sm">
-                  <a href="#" className="font-semibold text-indigo-600 hover:text-indigo-500">
+                  <Link to={'/forgot-password'} className="font-semibold text-indigo-600 hover:text-indigo-500">
                     Forgot password?
-                  </a>
+                  </Link>
                 </div>
               </div>
               <div className="mt-2 relative">

@@ -11,6 +11,7 @@ import { comparePasswords, hashPassword } from '../utils/passwordUtils';
 import { sendVerificationMail } from '../utils/verificationEmail';
 import { generateOTP } from '../utils/generateVerificationCode';
 import { randomBytes, createHash } from 'crypto';
+import { sendPasswordResetMail } from '../utils/resetPasswordMail';
 
 interface JwtPayload {
     id: number
@@ -218,6 +219,9 @@ export const forgotPassword = catchAsync(async(req: Request, res: Response, next
     if(!em) {
         return next(new AppError("Entity manager not available", 500));
     }
+    if(!validateEmail(email)){
+        return next(new AppError('Invalid email', 404));
+    }
     const user = await em.findOne(User, {email});
     if(!user){
         res.status(200).json({status: "success", message: "If the email is registered, mail with password reset link has been sent!"})
@@ -231,7 +235,9 @@ export const forgotPassword = catchAsync(async(req: Request, res: Response, next
     user.reset_token_created_at = new Date();
     user.reset_token_expires_at = new Date(user.reset_token_created_at.getTime() + 60 * 60 * 1000) //1 hour
     await em.persistAndFlush(user);
-});
+    await sendPasswordResetMail(`${process.env.FRONTEND}/reset-password?token=${resetToken}`, user.email!, user.username!);
+    res.status(200).json({status: "success", message: "Password reset link has been sent successfully!"});
+}); 
 
 export const resetPassword = catchAsync(async(req: Request, res: Response, next: NextFunction): Promise<void> => {
 
