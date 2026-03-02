@@ -1,9 +1,17 @@
-import { createFileRoute, Link } from '@tanstack/react-router'
+import { createFileRoute, Link, redirect } from '@tanstack/react-router'
 import { useState, useEffect } from 'react';
 import { ArrowLeftIcon } from '@heroicons/react/24/outline';
 import { BACKEND } from '../config/env';
 
 export const Route = createFileRoute('/forgot-password')({
+  beforeLoad: ({context}) => {
+    if(context.auth.isAuthenticated){
+      throw redirect({
+        to: '/dashboard',
+        replace: true
+      })
+    }
+  },
   component: RouteComponent,
 })
 

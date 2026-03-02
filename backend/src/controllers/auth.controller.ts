@@ -115,6 +115,24 @@ export const resendVerifyMail = catchAsync(async(req: Request, res: Response, ne
     res.status(200).json({status: "success", message: "Verification mail resent successfully!"});
 })
 
+export const verifyResetLink = catchAsync(async(req: Request, res: Response, next: NextFunction) => {
+    const {token} = req.query;
+    if(!token || typeof token !== 'string' || token.length !== 64){
+        return next(new AppError('The link is invalid or expired!', 404));
+    }
+    const em = RequestContext.getEntityManager();
+    if (!em) {
+        return next(new AppError("Entity manager not available", 500));
+    }
+    const hashedToken = createHash('sha256').update(token).digest('hex');
+    const user = await em.findOne(User, {reset_token: hashedToken});
+    const now = new Date();
+    if(!user || !user.reset_token_expires_at || now >= user.reset_token_expires_at){
+        return next(new AppError('The link is invalid or expired!', 404));
+    }
+    res.status(200).json({status: "success", message: "Reset link is valid!"});
+});
+
 export const checkUsername = catchAsync(async (req, res, next) => {
   const em = RequestContext.getEntityManager();
   if (!em) {
@@ -240,7 +258,31 @@ export const forgotPassword = catchAsync(async(req: Request, res: Response, next
 }); 
 
 export const resetPassword = catchAsync(async(req: Request, res: Response, next: NextFunction): Promise<void> => {
-
+    const {token} = req.query;
+    const {newPassword} = req.body;
+    if(!token || typeof token !== 'string' || token.length !== 64){
+        return next(new AppError('The link is invalid or expired!', 404));
+    }
+    if(!validatePassword(newPassword)){
+        return next(new AppError('Invalid password! Password should have atleast 8 chars, one uppercase char and one numerical char', 409));
+    }
+    const em = RequestContext.getEntityManager();
+    if (!em) {
+        return next(new AppError("Entity manager not available", 500));
+    }
+    const hashedToken = createHash('sha256').update(token).digest('hex');
+    const user = await em.findOne(User, {reset_token: hashedToken});
+    const now = new Date();
+    if(!user || !user.reset_token_expires_at || now >= user.reset_token_expires_at){
+        return next(new AppError('The link is invalid or expired!', 404));
+    }
+    const newHashedPassword = await hashPassword(newPassword);
+    user.password = newHashedPassword;
+    user.reset_token = null;
+    user.reset_token_created_at = null; 
+    user.reset_token_expires_at = null;
+    await em.upsert(user);
+    res.status(200).json({status: "success", message: "Password reset successful!"});
 });
 
 
