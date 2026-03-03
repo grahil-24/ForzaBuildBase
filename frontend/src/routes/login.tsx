@@ -15,6 +15,13 @@ export const Route = createFileRoute('/login')({
       throw redirect({to: search.redirect});
     }
   },
+  head: () => ({
+    meta: [
+        {
+            title: 'Login'
+        }
+    ]
+  }),
   component: Login,
 })
 

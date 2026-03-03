@@ -14,6 +14,13 @@ import { PasswordStrengthChecklist } from '../../../components/PasswordStrengthC
 
 export const Route = createFileRoute('/_authenticated/settings/')({
   component: RouteComponent,
+  head: () => ({
+        meta: [
+            {
+                title: 'Settings'
+            }
+        ]
+    }),
 })
 
 

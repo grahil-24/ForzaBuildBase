@@ -28,6 +28,13 @@ export const Route = createFileRoute('/_authenticated/tune/edit/$tuneId')({
   loader: async ({context, params}) => {
     return await fetchTune(params, context.auth);
   },
+  head: () => ({
+    meta: [
+        {
+            title: 'Edit Tune'
+        }
+    ]
+  }),
   component: RouteComponent,
   notFoundComponent: NotFoundComponent,
   errorComponent: ErrorToast

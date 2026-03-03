@@ -20,6 +20,13 @@ export const Route = createFileRoute('/verify-email')({
     validateSearch: (search): { redirect?: string } => ({
         redirect: (search.redirect as string) || '/dashboard'
     }),
+    head: () => ({
+      meta: [
+          {
+              title: 'Verify email'
+          }
+      ]
+    }),
     component: RouteComponent,
 })
 
