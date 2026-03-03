@@ -5,11 +5,12 @@ import { SavedTunes } from "../entities/SavedTunes";
 import { Tune } from "../entities/Tunes";
 
 export default defineConfig({
-  entities: [Car, User, SavedTunes, Tune],       // all entities go here
-  dbName: process.env.MYSQL_DB,
-  host: process.env.MYSQL_HOST,
-  user: process.env.MYSQL_USER,
-  password: process.env.MYSQL_PWD,
-  port: 3306,
+  entities: [User, SavedTunes, Tune, Car],       // all entities go here
+  // dbName: process.env.MYSQL_DB,
+  // host: process.env.MYSQL_HOST,
+  // user: process.env.MYSQL_USER,
+  // password: process.env.MYSQL_PWD,
+  // port: Number(process.env.MYSQL_DB_PORT),
+  clientUrl: process.env.MYSQL_DB_URL,
   debug: true,
 });
