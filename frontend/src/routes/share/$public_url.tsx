@@ -6,6 +6,7 @@ import { BACKEND, PROFILE_PIC } from '../../config/env';
 import type { RankType } from '../../types/car';
 import { formatS3BucketURL } from '../../util/urlFormatter';
 import { Link } from '@tanstack/react-router';
+import type { TuneDetails } from '../../types/tune';
 
 export const Route = createFileRoute('/share/$public_url')({
     beforeLoad: ({params}) => {
@@ -36,7 +37,7 @@ const classColors: Record<RankType, string> = {
 function RouteComponent() {
   const navigate = useNavigate();
   const { auth } = Route.useRouteContext();
-  const tuneDetails = Route.useLoaderData();
+  const tuneDetails: TuneDetails = Route.useLoaderData();
 
   useEffect(() => {
     // If user is authenticated, redirect to the authenticated tune view

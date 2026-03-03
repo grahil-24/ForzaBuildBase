@@ -129,7 +129,7 @@ function RouteComponent() {
   const [sortBy, setSortBy] = useState<SortOption>('newest');
   const [shareDialogTuneId, setShareDialogTuneId] = useState<number | null>(null);
 
-  const {data, fetchNextPage, hasNextPage, isFetching, isFetchingNextPage, status, error} = useInfiniteQuery({
+  const {data, fetchNextPage, hasNextPage, isFetching, isFetchingNextPage, status} = useInfiniteQuery({
     queryKey: ['tunes', user],
     queryFn: ({pageParam}) => fetchTunes({user, auth, pageParam}),
     initialPageParam: undefined as string | undefined,

@@ -1,4 +1,6 @@
-const TuneDetailsComponent = ({tuneDetails}) => {
+import type { TuneDetails } from "../../types/tune";
+
+const TuneDetailsComponent = ({tuneDetails}: {tuneDetails: TuneDetails}) => {
 
     return (
         <div className="mb-6">

@@ -11,12 +11,10 @@ import { useRemoveTune } from '../../../../hooks/useRemoveTune';
 import { RemoveDialogModal } from '../../../../components/profile/RemoveDialogModal';
 import { useState, useEffect } from 'react';
 import {toast} from 'react-toastify';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-// import { faBookmark as faBookmarkSolid } from '@fortawesome/free-solid-svg-icons';
-import {faBookmark} from '@fortawesome/free-regular-svg-icons'
 import { useMutation, useQueryClient, useQuery } from '@tanstack/react-query';
 import ShareTuneDialogComponent from '../../../../components/tune/ShareTuneDialog';
 import TuneDetailsComponent from '../../../../components/tune/TuneDetailsComponent';
+import type { TuneDetails } from '../../../../types/tune';
 
 export const Route = createFileRoute('/_authenticated/view/tune/$tuneId')({
   component: RouteComponent,
@@ -29,7 +27,7 @@ export const Route = createFileRoute('/_authenticated/view/tune/$tuneId')({
   }),
 })
 
-const fetchTuneDetails = async(tune_id: string, auth: AuthState) => {
+const fetchTuneDetails = async(tune_id: string, auth: AuthState): Promise<TuneDetails> => {
   const res = await authFetch(`${BACKEND}/tune/${tune_id}`, {method: 'GET', headers: {'Content-Type': 'application/json'}}, auth)
   if(!res.ok){
     const error = new Error('Failed to fetch tunes');
@@ -217,8 +215,7 @@ function RouteComponent() {
                   {tuneDetails?.creator === auth.user?.username && (
                     <Link 
                       to='/tune/edit/$tuneId' 
-                      params={{tuneId: tuneDetails!.tune_id.toString()}} 
-                      state={{tuneDetails}}
+                      params={{tuneId: tuneDetails!.tune_id.toString()}}
                       className=" bg-blue-600 hover:bg-blue-700 text-white pl-2 pr-3 py-2 rounded-lg font-semibold transition-colors flex items-center gap-2"
                     >
                       <PencilIcon className='size-4'/>

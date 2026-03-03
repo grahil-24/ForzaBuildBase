@@ -1,5 +1,4 @@
 import { redirect, Outlet, createFileRoute} from "@tanstack/react-router";
-import Nav from "../components/Navbar";
 import NotFoundComponent from "../components/NotFoundComponent";
 import ErrorComponent from "../components/ErrorComponent";
 
