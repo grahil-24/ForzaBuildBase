@@ -7,7 +7,7 @@ import { SavedTunes } from '../entities/SavedTunes';
 import { validateUsername } from '../utils/Validator';
 
 export const getUserTunes = catchAsync(async(req: Request, res: Response, next: NextFunction) => {
-    const targetUsername = req.params.user;
+    const targetUsername = typeof req.params.user === 'string' ? req.params.user : req.params.user[0];
     const cursor = req.query.cursor ? String(req.query.cursor) : undefined;
     const currentUserId = req.user_id;
 
