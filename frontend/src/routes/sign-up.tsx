@@ -1,4 +1,4 @@
-import { createFileRoute, redirect } from "@tanstack/react-router";
+import { createFileRoute, Link, redirect } from "@tanstack/react-router";
 import type React from "react";
 import { useContext, useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -178,9 +178,9 @@ function Signup(): React.ReactElement {
 
             <p className="mt-10 text-center text-sm/6 text-gray-500">
                 Already a user?{' '}
-                <a href="/login" className="font-semibold text-indigo-600 hover:text-indigo-500">
+                <Link to={'/login'} className="font-semibold text-indigo-600 hover:text-indigo-500">
                 Login
-                </a>
+                </Link>
             </p>
             </div>
         </div>

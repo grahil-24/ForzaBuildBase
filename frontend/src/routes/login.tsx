@@ -131,9 +131,9 @@ function Login(): React.ReactElement {
 
           <p className="mt-10 text-center text-sm/6 text-gray-500">
             Not a user?{' '}
-            <a href="/sign-up" className="font-semibold text-indigo-600 hover:text-indigo-500">
+            <Link to={'/sign-up'} className="font-semibold text-indigo-600 hover:text-indigo-500">
               Sign up
-            </a>
+            </Link>
           </p>
         </div>
       </div>
