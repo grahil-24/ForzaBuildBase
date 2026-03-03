@@ -75,7 +75,7 @@ export const verifyEmail = catchAsync(async(req: Request, res: Response, next: N
     await em.persistAndFlush(user);
     const accessToken = signToken(user.user_id!, JWT_EXPIRATION);
     const refreshToken = signToken(user.user_id!, JWT_REFRESH_EXPIRATION);
-    res.cookie('refresh_token', refreshToken, {httpOnly: true, sameSite: "strict", secure ,expires: new Date(Date.now() + ms(JWT_REFRESH_EXPIRATION as ms.StringValue))});
+    res.cookie('refresh_token', refreshToken, {httpOnly: true, sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax', secure ,expires: new Date(Date.now() + ms(JWT_REFRESH_EXPIRATION as ms.StringValue))});
     res.status(201).json({status: "success",message: "user created successfully", access_token: accessToken, user: {user_id:user.user_id!, username: user.username, profile_pic: user.profile_pic, email: user.email}});
 });
 
@@ -177,12 +177,12 @@ export const login = catchAsync(async(req: Request, res: Response, next: NextFun
     }
     const accessToken = signToken(Number(userFromDB.user_id), JWT_EXPIRATION);
     const refreshToken = signToken(Number(userFromDB.user_id), JWT_REFRESH_EXPIRATION);
-    res.cookie('refresh_token', refreshToken, {httpOnly: true, sameSite: "strict", secure, expires: new Date(Date.now() + ms(JWT_REFRESH_EXPIRATION as ms.StringValue))});
+    res.cookie('refresh_token', refreshToken, {httpOnly: true, sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax', secure, expires: new Date(Date.now() + ms(JWT_REFRESH_EXPIRATION as ms.StringValue))});
     res.status(200).json({status: "success",message: "logged in successfully", access_token: accessToken, user: {user_id:userFromDB.user_id, username: userFromDB.username, email: userFromDB.email,profile_pic: userFromDB.profile_pic}});       
 });
 
 export const logout = catchAsync(async(req: Request, res: Response, next: NextFunction): Promise<void> => {
-    res.cookie('refresh_token', "", {httpOnly: true, sameSite: "strict", secure, maxAge: 0});
+    res.cookie('refresh_token', "", {httpOnly: true, sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax', secure, maxAge: 0});
     res.status(200).json({status: "success", message: "signed out"});
 });
 
@@ -195,7 +195,7 @@ export const refresh = catchAsync(async(req: Request, res: Response, next: NextF
     const decoded = await jwtVerifyPromisifed(refreshToken, JWT_SECRET, 'refresh');
     const newRefreshToken = signToken(decoded.id, JWT_REFRESH_EXPIRATION);
     const newAccessToken = signToken(decoded.id, JWT_EXPIRATION);
-    res.cookie('refresh_token', newRefreshToken, {httpOnly: true, sameSite: "strict", secure, expires: new Date(Date.now() + ms(JWT_REFRESH_EXPIRATION as ms.StringValue))});
+    res.cookie('refresh_token', newRefreshToken, {httpOnly: true, sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax', secure, expires: new Date(Date.now() + ms(JWT_REFRESH_EXPIRATION as ms.StringValue))});
     res.status(200).json({status: "success", message: "tokens refreshed", access_token: newAccessToken, user: {user_id:decoded.id}});
 
 });
@@ -217,7 +217,7 @@ export const verify = catchAsync(async(req: Request, res: Response, next: NextFu
                     const decoded: JwtPayload = await jwtVerifyPromisifed(refreshToken, JWT_SECRET, 'refresh');
                     const newAccessToken = signToken(decoded.id, JWT_EXPIRATION);
                     const newRefreshToken = signToken(decoded.id, JWT_REFRESH_EXPIRATION);
-                    res.cookie('refresh_token', newRefreshToken, {httpOnly: true, sameSite: "strict", secure, expires: new Date(Date.now() + ms(JWT_REFRESH_EXPIRATION as ms.StringValue))});
+                    res.cookie('refresh_token', newRefreshToken, {httpOnly: true, sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax', secure, expires: new Date(Date.now() + ms(JWT_REFRESH_EXPIRATION as ms.StringValue))});
                     res.status(200).json({status: "success", access_token: newAccessToken, message: "Token refreshed successfully!", user: {user_id: decoded.id}});
                 //refresh token is invalid or expired. log user out
                 }catch(refreshTokenErr){
