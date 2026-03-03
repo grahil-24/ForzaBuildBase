@@ -6,7 +6,7 @@
     "dev": "tsx --watch --env-file .env.development src/index.ts",
     "dev:staging": "tsx --watch --env-file .env.staging src/index.ts",
     "dev:prod": "tsx --watch --env-file .env.production src/index.ts",
-    "start": "node  --env-file .env dist/index.js",
+    "start": "node dist/index.js",
     "build": "tsc",
     "type-check": "tsc --noEmit",
     "lint": "eslint .",
