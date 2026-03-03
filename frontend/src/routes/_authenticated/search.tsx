@@ -88,9 +88,9 @@ type LoadMoreProps = {
 }
 
 const LoadMoreButton = ({ query }: LoadMoreProps) => (
-  <div className="flex justify-center w-full py-8">
+  <div className="flex justify-center w-full py-6 sm:py-8">
     <button
-      className={`px-8 py-2.5 rounded-full font-semibold transition-all duration-200 
+      className={`px-5 py-2 text-sm sm:px-8 sm:py-2.5 sm:text-base rounded-full font-semibold transition-all duration-200 
         ${query.hasNextPage 
           ? 'bg-gray-800 text-white hover:bg-black shadow-md hover:shadow-lg active:scale-95' 
           : 'bg-gray-100 text-gray-400 cursor-not-allowed'}`}
@@ -98,7 +98,7 @@ const LoadMoreButton = ({ query }: LoadMoreProps) => (
       disabled={!query.hasNextPage || query.isFetching}
     >
       {query.isFetchingNextPage
-        ? 'Loading more...'
+        ? 'Loading...'
         : query.hasNextPage
           ? 'Load More Results'
           : 'End of Results'}

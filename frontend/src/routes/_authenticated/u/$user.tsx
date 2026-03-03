@@ -424,7 +424,7 @@ function RouteComponent() {
                       
                       {/* Class Badge - Top Right */}
                       <div className='absolute top-2 right-2 sm:top-3 sm:right-16 md:right-10'>
-                        <span className={`inline-block px-2 py-0.5 sm:px-3 sm:py-1 ${rank_to_color[tune.tune.resultant_rank as RankType]} text-white text-[10px] sm:text-xs md:text-sm font-bold shadow-md rounded`}>
+                        <span className={`inline-block px-1 py-0.5 sm:px-3 sm:py-1 ${rank_to_color[tune.tune.resultant_rank as RankType]} text-white text-[10px] sm:text-xs md:text-sm font-bold shadow-md rounded`}>
                           CLASS {tune.tune.resultant_rank}
                         </span>
                       </div>
@@ -510,12 +510,16 @@ function RouteComponent() {
             {processedTunes.length > 0 && (
               <div className='flex justify-center'>
                 <button
-                  className={`${hasNextPage ? 'border  hover:bg-gray-50' : 'border-0'} border-gray-300 rounded-lg px-6 py-3 mt-5 font-medium text-gray-700 transition-colors`}
+                  className={`${hasNextPage ? 'border hover:bg-gray-50' : 'border-0'} 
+                    border-gray-300 rounded-lg 
+                    px-4 py-2 mt-4 text-sm           /* Mobile Styles */
+                    sm:px-6 sm:py-3 sm:mt-5 sm:text-base /* Desktop Styles */
+                    font-medium text-gray-700 transition-colors`}
                   onClick={async() => await fetchNextPage()}
                   disabled={!hasNextPage || isFetching}
                 >
                   {isFetchingNextPage
-                    ? 'Loading more...'
+                    ? 'Loading...'
                     : hasNextPage
                       ? 'Load More'
                       : 'You have reached the end!'}

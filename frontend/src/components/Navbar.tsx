@@ -1,4 +1,4 @@
-import { useContext, useEffect, useState, useRef } from "react";
+import { useContext, useState, useRef } from "react";
 import { Transition, Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/react";
 import { Link, useLocation, useNavigate} from "@tanstack/react-router";
 import { Cog8ToothIcon, ArrowRightStartOnRectangleIcon, MagnifyingGlassIcon, XMarkIcon } from "@heroicons/react/24/outline";
@@ -14,21 +14,17 @@ function Nav() {
   const location = useLocation();
   const [query, setQuery] = useState('');
   const [isOpen, setIsOpen] = useState(false);
-  const [searchHistory, setSearchHistory] = useState<string[]>([]);
+  const [prevPath, setPrevPath] = useState(location.pathname);
+  const [searchHistory, setSearchHistory] = useState<string[]>(() => {
+    try {
+      const history = localStorage.getItem(SEARCH_HISTORY_KEY);
+      return history ? JSON.parse(history) : [];
+    }catch{
+      return [];
+    }
+  });
   const [showHistory, setShowHistory] = useState(false);
   const searchInputRef = useRef<HTMLInputElement>(null);
-
-  // Load search history from localStorage on mount
-  useEffect(() => {
-    const history = localStorage.getItem(SEARCH_HISTORY_KEY);
-    if (history) {
-      try {
-        setSearchHistory(JSON.parse(history));
-      } catch (e) {
-        console.error("Failed to load search history", e);
-      }
-    }
-  }, []);
 
   // Save search history to localStorage
   const saveSearchHistory = (history: string[]) => {
@@ -63,10 +59,6 @@ function Nav() {
     }
   };
 
-  useEffect(() => {
-    setQuery('');
-  },[location.pathname]);
-
   const handleEnterKeyDownSearchbar = (e: React.KeyboardEvent<HTMLInputElement>)=> {
     if(e.key === 'Enter' && query.trim()){
       addToSearchHistory(query.trim());
@@ -80,6 +72,11 @@ function Nav() {
     navigate({to: '/search', search: {q: term}});
     setShowHistory(false);
   };
+
+  if (location.pathname !== prevPath) {
+    setPrevPath(location.pathname);
+    setQuery('');
+  }
 
   return (
     <nav className="fixed bg-white w-full shadow-sm z-10">
@@ -120,6 +117,7 @@ function Nav() {
             <div className="flex gap-1 border border-gray-300 rounded-full px-3 py-1.5 sm:py-2 bg-transparent text-sm">
               <MagnifyingGlassIcon className="size-4 sm:size-5 text-gray-400 shrink-0"/>
               <input
+                key={location.pathname}
                 ref={searchInputRef}
                 type="text"
                 value={query}

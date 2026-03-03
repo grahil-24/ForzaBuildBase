@@ -75,7 +75,10 @@ export function AuthProvider({children}: {children: React.ReactNode}){
         if (!response.ok) {
             throw new Error(data.message || 'Login failed');
         }
-
+        //remove temporary search history when logging in
+        if(localStorage.getItem('SearchHistory')){
+            localStorage.removeItem('SearchHistory');
+        }
         setIsAuthenticated(true);
         setUser(data.user);
         setAccessToken(data.access_token);
@@ -111,6 +114,10 @@ export function AuthProvider({children}: {children: React.ReactNode}){
         if(!res.ok){
             throw new Error(data.message);
         }
+        //remove temporary search history when signing up
+        if(localStorage.getItem('SearchHistory')){
+            localStorage.removeItem('SearchHistory');
+        }
         setUser(data.user);
         setAccessToken(data.access_token);
         setIsAuthenticated(true);
@@ -128,6 +135,10 @@ export function AuthProvider({children}: {children: React.ReactNode}){
             throw new Error('Failed to logout! Please try again');
         }
         window.location.href = '/';
+        //remove temporary search history when logging out
+        if(localStorage.getItem('SearchHistory')){
+            localStorage.removeItem('SearchHistory');
+        }
         setUser(null);
         setIsAuthenticated(false);
         setAccessToken(null);
