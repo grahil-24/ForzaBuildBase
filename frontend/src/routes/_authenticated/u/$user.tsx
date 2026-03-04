@@ -414,7 +414,7 @@ function RouteComponent() {
                               alt={`${tune.tune.creator.username}'s profile`}
                               className='size-4 sm:size-5 md:size-9 rounded-full object-cover'
                             />
-                            <span className='hover:underline font-semibold text-gray-800 truncate max-w-[80px] sm:max-w-none'>{tune.tune.creator.username}</span>
+                            <span className='hover:underline font-semibold text-gray-800 truncate max-w-20 sm:max-w-none'>{tune.tune.creator.username}</span>
                           </Link>
                           <span className='hidden sm:inline text-gray-400'>•</span>
                           <span className='hidden sm:inline'>Created: {new Date(tune.saved_on).toLocaleString('en-GB',{day: 'numeric', month: 'short', year: 'numeric' })}</span>

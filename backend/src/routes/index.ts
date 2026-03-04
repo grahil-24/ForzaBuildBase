@@ -6,6 +6,7 @@ import viewRouter from './viewCar.routes';
 import tuneRouter from './tunes.routes';
 import meRouter from './me.routes';
 import searchRouter from './search.routes';
+import healthcheckRouter from './healthcheck.routes';
 
 const router = Router();
 
@@ -16,5 +17,6 @@ router.use('/view/car', viewRouter);
 router.use('/tune', tuneRouter);
 router.use('/me', meRouter);
 router.use('/search', searchRouter);
+router.use('/health', healthcheckRouter);
 
 export default router;

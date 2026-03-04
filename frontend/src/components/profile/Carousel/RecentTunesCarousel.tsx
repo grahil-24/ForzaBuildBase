@@ -46,7 +46,7 @@ const EmblaCarousel: React.FC<PropType> = (props) => {
               image_filename: tune.tune.car.image_filename,
             })
             return (
-              <div className="min-w-0 flex-[0_0_100%] pl-6 sm:flex-[0_0_50%] lg:flex-[0_0_33.33%]" key={tune.tune.tune_id}>
+              <div className="min-w-0 flex-[0_0_100%] pl-6 pb-2 pr-2 sm:flex-[0_0_50%] lg:flex-[0_0_33.33%]" key={tune.tune.tune_id}>
                 <div className="group relative bg-white border border-slate-100 rounded-2xl p-5 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 h-full flex flex-col">
                   
                   {/* Rank Badge */}

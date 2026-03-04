@@ -47,7 +47,7 @@ export const Route = createRootRouteWithContext<MyRouterContext>()({
 })
 
 function RootComponent() {
-  const hideNavinRoutes = ['/login', '/sign-up', '/'];
+  const hideNavinRoutes = ['/login', '/sign-up', '/', '/forgot-password', '/reset-password', '/verify-email'];
 
   const matchRoute = useMatchRoute();
 
