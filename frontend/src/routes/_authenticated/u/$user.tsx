@@ -251,85 +251,82 @@ function RouteComponent() {
         ) : (
       <>
         <div className='top-0 bg-white border-b border-gray-200 shadow-sm'>
-          <div className='max-w-4xl mx-auto px-4 py-6'>
-            <div className='flex items-center justify-between flex-wrap gap-4'>
-            <div className='flex items-center gap-4'>
-              {data?.pages[0]?.profile_pic ? (
+          <div className='max-w-5xl mx-auto px-4 py-3 sm:py-6'>
+            <div className='flex flex-row items-center justify-between flex-wrap gap-2 sm:gap-4'>
+              <div className='flex items-center gap-3 sm:gap-4'>
+                {data?.pages[0]?.profile_pic ? (
                   <img 
                     src={`${PROFILE_PIC}/${data.pages[0].profile_pic}`}
                     alt={`${user}'s profile`}
-                    className='size-16 sm:size-20 rounded-full object-cover border-2 border-gray-200'
+                    className='size-12 sm:size-20 rounded-full object-cover border-2 border-gray-200'
                   />
                 ) : (
-                  <div className='size-16 sm:size-20 rounded-full bg-gray-200 border-2 border-gray-200' />
+                  <div className='size-12 sm:size-20 rounded-full bg-gray-200 border-2 border-gray-200' />
                 )}
                 <div>
-                  <h1 className='sm:text-3xl text-xl font-bold text-gray-900'>{user}'s Tunes</h1>
-                  <p className='text-sm text-gray-600 mt-1'>
+                  <h1 className='text-lg sm:text-3xl font-bold text-gray-900'>{user}'s Tunes</h1>
+                  <p className='text-xs sm:text-sm text-gray-600 mt-0.5 sm:mt-1'>
                     {data?.pages[0]?.totalCount || 0} {(data?.pages[0]?.totalCount || 0) === 1 ? 'tune' : 'tunes'} saved
                   </p>
                 </div>
               </div>
-      
-              <div className='flex items-center gap-8'>
-                <div className='w-1/2 sm:w-full'>
+              <div className='w-32 sm:w-1/3'>
                 <SearchBar onChange={(input: string) => {setSearch(input)}}/>
-                </div>
-                <Menu as="div" className="relative inline-block text-left">
-                  <MenuButton className="group inline-flex text-sm font-medium text-gray-700 hover:text-gray-900">
-                    Sort: {getSortLabel(sortBy)}
-                    <ChevronDownIcon 
-                      className="-mr-1 ml-1 h-5 w-5 shrink-0 text-gray-400 group-hover:text-gray-500" 
-                      aria-hidden="true"
-                    />
-                  </MenuButton>
-                
-                  <MenuItems
-                    transition
-                    anchor="bottom end"
-                    className="absolute right-0 z-1 mt-2 w-30 origin-top-right rounded-md bg-white shadow-2xl ring-1 ring-black/5 focus:outline-none transition flex justify-center duration-100 ease-out data-closed:scale-95 data-closed:opacity-0"
-                  >
-                    <div className="py-1">
-                      <MenuItem>
-                        {({ focus }) => (
-                          <button
-                            onClick={() => setSortBy('newest')}
-                            className={`block w-full text-left px-4 py-2 text-sm ${
-                              focus ? 'bg-gray-100' : ''
-                            } ${sortBy === 'newest' ? 'font-medium text-gray-900' : 'text-gray-500'}`}
-                          >
-                            Newest
-                          </button>
-                        )}
-                      </MenuItem>
-                      <MenuItem>
-                        {({ focus }) => (
-                          <button
-                            onClick={() => setSortBy('oldest')}
-                            className={`block w-full text-left px-4 py-2 text-sm ${
-                              focus ? 'bg-gray-100' : ''
-                            } ${sortBy === 'oldest' ? 'font-medium text-gray-900' : 'text-gray-500'}`}
-                          >
-                            Oldest
-                          </button>
-                        )}
-                      </MenuItem>
-                      <MenuItem>
-                        {({ focus }) => (
-                          <button
-                            onClick={() => setSortBy('alphabetical')}
-                            className={`block w-full text-left px-4 py-2 text-sm ${
-                              focus ? 'bg-gray-100' : ''
-                            } ${sortBy === 'alphabetical' ? 'font-medium text-gray-900' : 'text-gray-500'}`}
-                          >
-                            Alphabetical
-                          </button>
-                        )}
-                      </MenuItem>
-                    </div>
-                  </MenuItems>
-                </Menu>
               </div>
+              <Menu as="div" className="relative w-1/3 sm:w-1/5 text-left">
+                <MenuButton className="group inline-flex text-xs sm:text-sm font-medium text-gray-700 hover:text-gray-900">
+                  Sort: {getSortLabel(sortBy)}
+                  <ChevronDownIcon 
+                    className="-mr-1 ml-1 h-4 w-4 sm:h-5 sm:w-5 shrink-0 text-gray-400 group-hover:text-gray-500" 
+                    aria-hidden="true"
+                  />
+                </MenuButton>
+              
+                <MenuItems
+                  transition
+                  anchor="bottom end"
+                  className="absolute right-0 z-1 mt-2 w-30 origin-top-right rounded-md bg-white shadow-2xl ring-1 ring-black/5 focus:outline-none transition flex justify-center duration-100 ease-out data-closed:scale-95 data-closed:opacity-0"
+                >
+                  <div className="py-1">
+                    <MenuItem>
+                      {({ focus }) => (
+                        <button
+                          onClick={() => setSortBy('newest')}
+                          className={`block w-full text-left px-4 py-2 text-sm ${
+                            focus ? 'bg-gray-100' : ''
+                          } ${sortBy === 'newest' ? 'font-medium text-gray-900' : 'text-gray-500'}`}
+                        >
+                          Newest
+                        </button>
+                      )}
+                    </MenuItem>
+                    <MenuItem>
+                      {({ focus }) => (
+                        <button
+                          onClick={() => setSortBy('oldest')}
+                          className={`block w-full text-left px-4 py-2 text-sm ${
+                            focus ? 'bg-gray-100' : ''
+                          } ${sortBy === 'oldest' ? 'font-medium text-gray-900' : 'text-gray-500'}`}
+                        >
+                          Oldest
+                        </button>
+                      )}
+                    </MenuItem>
+                    <MenuItem>
+                      {({ focus }) => (
+                        <button
+                          onClick={() => setSortBy('alphabetical')}
+                          className={`block w-full text-left px-4 py-2 text-sm ${
+                            focus ? 'bg-gray-100' : ''
+                          } ${sortBy === 'alphabetical' ? 'font-medium text-gray-900' : 'text-gray-500'}`}
+                        >
+                          Alphabetical
+                        </button>
+                      )}
+                    </MenuItem>
+                  </div>
+                </MenuItems>
+              </Menu>
             </div>
           </div>
         </div>
@@ -391,7 +388,7 @@ function RouteComponent() {
                       </div>
                       
                       {/* Car Image */}
-                      <div className='w-32 sm:w-40 md:w-48 lg:w-56 shrink-0 flex items-center justify-center from-gray-50 to-gray-100'>
+                      <div className='w-24 sm:w-40 md:w-48 lg:w-56 shrink-0 flex items-center justify-center from-gray-50 to-gray-100'>
                         <img 
                           className='w-full h-auto object-contain' 
                           src={image_url}
@@ -401,23 +398,23 @@ function RouteComponent() {
                       
                       {/* Content */}
                       <div className='flex-1 px-2 py-2 sm:px-4 md:px-6 pr-14 sm:pr-24 md:pr-28 flex flex-col justify-center min-w-0'>
-                        <h2 className='overflow-hidden text-[11px] sm:text-sm md:text-xl font-bold text-gray-900 mb-0.5 sm:mb-1 truncate'>
+                        <h2 className='overflow-hidden text-sm sm:text-sm md:text-xl font-bold text-gray-900 mb-0.5 sm:mb-1 truncate'>
                           {tune.tune.car.Manufacturer} {tune.tune.car.Model}
                         </h2>
                         
-                        <p className='text-[10px] sm:text-sm md:text-base text-gray-600 mb-1 sm:mb-2 truncate'>
+                        <p className='text-xs sm:text-sm md:text-base text-gray-600 mb-1 sm:mb-2 truncate'>
                           {tune.tune.tune_name}
                         </p>
                         
-                        <div className='flex flex-wrap items-center gap-x-2 sm:gap-x-4 gap-y-2 text-[10px] sm:text-xs md:text-sm text-gray-600'>
+                        <div className='flex flex-wrap items-center gap-x-2 sm:gap-x-4 gap-y-2 text-xs sm:text-xs md:text-sm text-gray-600'>
                           <Link className='pointer-events-auto flex items-center gap-1 sm:gap-2' to='/u/$user' params={{user: tune.tune.creator.username}}>
                             <span className='text-gray-600 hidden sm:inline'>Creator:</span>
                             <img 
                               src={`${PROFILE_PIC}/${tune.tune.creator.profile_pic}`}
                               alt={`${tune.tune.creator.username}'s profile`}
-                              className='size-4 sm:size-5 md:size-9 rounded-full object-cover'
+                              className='size-5 sm:size-5 md:size-9 rounded-full object-cover'
                             />
-                            <span className='hover:underline font-semibold text-gray-800 truncate max-w-20 sm:max-w-none'>{tune.tune.creator.username}</span>
+                            <span className='hover:underline font-semibold text-gray-800 truncate max-w-24 sm:max-w-none'>{tune.tune.creator.username}</span>
                           </Link>
                           <span className='hidden sm:inline text-gray-400'>•</span>
                           <span className='hidden sm:inline'>Created: {new Date(tune.saved_on).toLocaleString('en-GB',{day: 'numeric', month: 'short', year: 'numeric' })}</span>
@@ -427,7 +424,7 @@ function RouteComponent() {
                       
                       {/* Class Badge - Top Right */}
                       <div className='absolute top-2 right-2 sm:top-3 sm:right-16 md:right-10'>
-                        <span className={`inline-block px-1 py-0.5 sm:px-3 sm:py-1 ${rank_to_color[tune.tune.resultant_rank as RankType]} text-white text-[10px] sm:text-xs md:text-sm font-bold shadow-md rounded`}>
+                        <span className={`inline-block px-1.5 py-0.5 sm:px-3 sm:py-1 ${rank_to_color[tune.tune.resultant_rank as RankType]} text-white text-xs sm:text-xs md:text-sm font-bold shadow-md rounded`}>
                           CLASS {tune.tune.resultant_rank}
                         </span>
                       </div>
