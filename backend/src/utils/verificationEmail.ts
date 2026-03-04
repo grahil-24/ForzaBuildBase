@@ -6,7 +6,16 @@ let transport: any;
 // Initialize transport based on environment
 if (process.env.NODE_ENV === 'production') {
   // Use Resend for production
-  transport = new Resend(process.env.RESEND_API_KEY);
+  // transport = new Resend(process.env.RESEND_API_KEY);
+  transport = nodemailer.createTransport({
+    host: process.env.BREVO_HOST,
+    port: 587,
+    secure: true,
+    auth: {
+      user: process.env.BREVO_USER,
+      pass: process.env.BREVO_PASSWORD
+    },
+  });
 } else {
   // Use Mailtrap for development
   transport = nodemailer.createTransport({
