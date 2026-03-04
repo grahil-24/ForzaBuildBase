@@ -96,6 +96,9 @@ const fetchTunes = async({user, pageParam, auth}: {user: string, pageParam: stri
   const res = await authFetch(url, {method: 'GET'}, auth);
   
   if(!res.ok){
+    if(res.status === 404){
+      throw notFound();
+    }
     const error = new Error('Failed to fetch tunes');
     // Attach the status so we can check it in the component
     (error as any).status = res.status;

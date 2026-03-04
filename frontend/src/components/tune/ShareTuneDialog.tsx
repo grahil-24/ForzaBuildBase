@@ -22,7 +22,7 @@ const ShareTuneDialogComponent = ({isShareDialogOpen, handleDialogClose, url}: {
                 <div className="flex min-h-full items-center justify-center p-2 sm:p-4">
                 <DialogPanel
                     transition
-                    className="w-full max-w-xl rounded-xl bg-white shadow-2xl border-black/10 border p-2 sm:p-4 backdrop-blur-4xl duration-300 ease-out data-closed:transform-[scale(95%)] data-closed:opacity-0"
+                    className="w-full max-w-2xl rounded-xl bg-white shadow-2xl border-black/10 border p-2 sm:p-4 backdrop-blur-4xl duration-300 ease-out data-closed:transform-[scale(95%)] data-closed:opacity-0"
                 >
                     <div className='flex'>
                     <DialogTitle as="h3" className="text-base/7 font-medium text-black">

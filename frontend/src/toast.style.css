@@ -1,5 +1,3 @@
-/* Import in your main file (e.g., main.tsx or App.tsx) */
-
 /* Toast Container Styles */
 .Toastify__toast-container {
   width: auto !important;
@@ -12,11 +10,12 @@
   border-radius: 0px;
   font-family: inherit;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  font-size: 15px;
 }
 
 /* Success Toast */
 .Toastify__toast--success {
-  background-color: #e8f5e9 !important; /* green-500 */
+  background-color: #e8f5e9 !important;
   color: #6ba96a !important;
   border-color: #a5d6a7;
   border-width: 1px;
@@ -61,15 +60,49 @@
 }
 
 .Toastify__progress-bar--wrp {
- border-radius: 0px !important;
+  border-radius: 0px !important;
 }
 
 /* Progress Bar */
 .Toastify__progress-bar--success {
-  background: #ffffff !important; /* darker green */
-  border-radius: 0px !important; 
+  background: #ffffff !important;
+  border-radius: 0px !important;
 }
 
 .Toastify__progress-bar--error {
-  background: #fdfdfd !important; /* darker red */
+  background: #fdfdfd !important;
+}
+
+/* Mobile-specific container adjustments */
+@media (max-width: 640px) {
+  .Toastify__toast-container {
+    /* Use 100% width and set a very small gutter */
+    width: 100% !important;
+    max-width: 90vw !important;
+    left: 5% !important;
+    transform: none !important;
+    padding: 0 10px !important; 
+    margin: 0 !important;
+  }
+
+  .Toastify__toast {
+    font-size: 14px !important; 
+    padding: 12px 8px !important; 
+    width: 100% !important;
+    display: flex !important;
+    align-items: center !important;
+  }
+  
+  .Toastify__toast-body {
+    padding-right: 4px !important; 
+    margin-left: 4px !important;  
+    white-space: nowrap;          
+    flex-grow: 1;
+  }
+
+  /* Override the fit-content specifically for errors on mobile */
+  .Toastify__toast--error {
+    width: 100% !important;
+    max-width: none !important;
+  }
 }
