@@ -158,7 +158,7 @@ const sendVerificationMail = async (otp: string, username: string, email: string
       // Use brevo for production
       const result = await transport.transactionalEmails.sendTransacEmail({
         sender: {name: 'ForzaBuildBase', email: 'rahilganatra@gmail.com'},
-        to: email,
+        to: [{email}],
         subject: 'Verify Your Email Address',
         textContent: htmlContent
       });
