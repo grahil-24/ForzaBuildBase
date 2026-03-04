@@ -1,0 +1,19 @@
+name: Keep render instance alive
+
+on: 
+  schedule: 
+    # runs every 10 mins
+    - cron: '*/10 * * * *'
+  workflow_dispatch: #allow manual trigger
+
+jobs:
+    ping:
+        runs-on: ubuntu-latest
+
+        steps:
+            - name: Ping render app
+              run: |
+                 echo "Pinging Render instance..."
+                    # Replace with your actual Render URL
+                    curl -f https://your-app-name.onrender.com || echo "Ping failed"
+                    echo "Ping completed at $(date)"
