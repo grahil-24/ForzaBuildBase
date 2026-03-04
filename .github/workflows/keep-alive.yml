@@ -15,5 +15,5 @@ jobs:
               run: |
                  echo "Pinging Render instance..."
                     # Replace with your actual Render URL
-                    curl -f https://your-app-name.onrender.com || echo "Ping failed"
+                    curl -f https://forzabuildbase.onrender.com || echo "Ping failed"
                     echo "Ping completed at $(date)"
