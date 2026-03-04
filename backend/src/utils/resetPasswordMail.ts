@@ -1,4 +1,5 @@
 const nodemailer = require('nodemailer');
+import { BrevoClient} from '@getbrevo/brevo';
 
 let transport: any;
 
@@ -6,15 +7,10 @@ let transport: any;
 if (process.env.NODE_ENV === 'production') {
   // Use Resend for production
   // transport = new Resend(process.env.RESEND_API_KEY);
-  transport = nodemailer.createTransport({
-    host: process.env.BREVO_HOST,
-    port: 587,
-    secure: false,
-    auth: {
-      user: process.env.BREVO_USER,
-      pass: process.env.BREVO_PASSWORD
-    },
-  });
+  //use brevo for prod
+  transport = new BrevoClient({
+    apiKey: process.env.BREVO_API!
+  })
 } else {
   // Use Mailtrap for development
   transport = nodemailer.createTransport({
@@ -101,19 +97,14 @@ const sendPasswordResetMail = async (url: string, email: string, username: strin
 
   try {
     if (process.env.NODE_ENV === 'production') {
-      // Use Resend for production
-      const { data, error } = await transport.sendMail({
-        from: process.env.BREVO_SENDER,
-        to: email,
+      // Use brevo for production
+      const result = await transport.transactionalEmails.sendTransacEmail({
+        sender: {name: 'ForzaBuildBase', email: 'rahilganatra@gmail.com'},
+        to: [{email}],
         subject: 'Password Reset Link',
-        html: htmlContent
+        textContent: htmlContent
       });
-
-      if (error) {
-        throw error;
-      }
-
-      return { success: true, messageId: data.id };
+      return result;
     } else {
       // Use Mailtrap for development
       const info = await transport.sendMail({
