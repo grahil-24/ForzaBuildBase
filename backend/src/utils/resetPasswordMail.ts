@@ -1,5 +1,3 @@
-import { Resend } from 'resend';
-
 const nodemailer = require('nodemailer');
 
 let transport: any;
@@ -104,7 +102,7 @@ const sendPasswordResetMail = async (url: string, email: string, username: strin
   try {
     if (process.env.NODE_ENV === 'production') {
       // Use Resend for production
-      const { data, error } = await transport.emails.send({
+      const { data, error } = await transport.sendMail({
         from: process.env.BREVO_SENDER,
         to: email,
         subject: 'Password Reset Link',

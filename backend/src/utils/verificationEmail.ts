@@ -159,8 +159,8 @@ const sendVerificationMail = async (otp: string, username: string, email: string
 
   try {
     if (process.env.NODE_ENV === 'production') {
-      // Use Resend for production
-      const { data, error } = await transport.emails.send({
+      // Use brevo for production
+      const { data, error } = await transport.sendMail({
         from: process.env.BREVO_SENDER,
         to: email,
         subject: 'Verify Your Email Address',
