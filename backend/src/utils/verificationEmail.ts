@@ -9,7 +9,7 @@ if (process.env.NODE_ENV === 'production') {
   transport = nodemailer.createTransport({
     host: process.env.BREVO_HOST,
     port: 587,
-    secure: true,
+    secure: false,
     auth: {
       user: process.env.BREVO_USER,
       pass: process.env.BREVO_PASSWORD
