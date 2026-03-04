@@ -1,4 +1,5 @@
 const nodemailer = require('nodemailer');
+import { BrevoClient} from '@getbrevo/brevo';
 
 let transport: any;
 
@@ -6,15 +7,10 @@ let transport: any;
 if (process.env.NODE_ENV === 'production') {
   // Use Resend for production
   // transport = new Resend(process.env.RESEND_API_KEY);
-  transport = nodemailer.createTransport({
-    host: process.env.BREVO_HOST,
-    port: 587,
-    secure: false,
-    auth: {
-      user: process.env.BREVO_USER,
-      pass: process.env.BREVO_PASSWORD
-    },
-  });
+  //use brevo for prod
+  transport = new BrevoClient({
+    apiKey: process.env.BREVO_API!
+  })
 } else {
   // Use Mailtrap for development
   transport = nodemailer.createTransport({
@@ -160,18 +156,13 @@ const sendVerificationMail = async (otp: string, username: string, email: string
   try {
     if (process.env.NODE_ENV === 'production') {
       // Use brevo for production
-      const { data, error } = await transport.sendMail({
-        from: process.env.BREVO_SENDER,
+      const result = await transport.transactionalEmails.sendTransacEmail({
+        sender: {name: 'ForzaBuildBase', email: 'rahilganatra@gmail.com'},
         to: email,
         subject: 'Verify Your Email Address',
-        html: htmlContent
+        textContent: htmlContent
       });
-
-      if (error) {
-        throw error;
-      }
-
-      return { success: true, messageId: data.id };
+      return result;
     } else {
       // Use Mailtrap for development
       const info = await transport.sendMail({
@@ -183,8 +174,8 @@ const sendVerificationMail = async (otp: string, username: string, email: string
 
       return { success: true, messageId: info.messageId };
     }
-  } catch (error) {
-    throw error;
+  } catch (err) {
+      throw err;
   }
 };
 
