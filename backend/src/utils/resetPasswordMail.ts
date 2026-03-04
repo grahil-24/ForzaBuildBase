@@ -25,7 +25,7 @@ if (process.env.NODE_ENV === 'production') {
 
 const sendPasswordResetMail = async (url: string, email: string, username: string) => {
   const htmlContent = `
-   <!DOCTYPE html>
+    <!DOCTYPE html>
     <html>
       <head>
         <meta charset="UTF-8">
@@ -33,19 +33,15 @@ const sendPasswordResetMail = async (url: string, email: string, username: strin
       </head>
       <body style="margin: 0; padding: 0; font-family: 'Arial', sans-serif; background-color: #f4f4f4;">
         <div style="max-width: 600px; margin: 0 auto; background-color: #ffffff; padding: 40px 20px;">
-          <h1>Password Reset Request</h1>
-          <p>Hello <strong>${username}</strong>,</p>
-          <p>We received a request to reset your password. Click the button below to create a new password:</p>
-          <a href="${url}" style="background-color: #1a1a1a; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; display: inline-block; margin: 20px 0; font-weight: bold;">
-            Reset Password
-          </a>
-          <p style="color: #666; font-size: 14px; margin: 20px 0;">
-            This link will expire in <strong>1 hour</strong>.
-          </p>
+          <h1 style="margin: 0 0 20px 0; padding: 0;">Password Reset Request</h1>
+          <p style="margin: 0 0 15px 0; padding: 0;">Hello <strong>${username}</strong>,</p>
+          <p style="margin: 0 0 20px 0; padding: 0;">We received a request to reset your password. Click the button below to create a new password:</p>
+          <div style="margin: 20px 0;">
+            <a href="${url}" style="background-color: #1a1a1a; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; display: inline-block; font-weight: bold;">Reset Password</a>
+          </div>
+          <p style="color: #666; font-size: 14px; margin: 20px 0 0 0; padding: 0;">This link will expire in <strong>1 hour</strong>.</p>
           <hr style="border: none; border-top: 1px solid #eee; margin: 30px 0;">
-          <p style="color: #999; font-size: 13px;">
-            If you didn't request this password reset, you can safely ignore this email
-          </p>
+          <p style="color: #999; font-size: 13px; margin: 0; padding: 0;">If you didn't request this password reset, you can safely ignore this email</p>
         </div>
       </body>
     </html>
