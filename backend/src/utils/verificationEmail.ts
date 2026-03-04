@@ -1,4 +1,3 @@
-import { Resend } from 'resend';
 const nodemailer = require('nodemailer');
 
 let transport: any;
@@ -162,7 +161,7 @@ const sendVerificationMail = async (otp: string, username: string, email: string
     if (process.env.NODE_ENV === 'production') {
       // Use Resend for production
       const { data, error } = await transport.emails.send({
-        from: 'ForzaBuildBase <onboarding@resend.dev>',
+        from: process.env.BREVO_SENDER,
         to: email,
         subject: 'Verify Your Email Address',
         html: htmlContent

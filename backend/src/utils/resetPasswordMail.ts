@@ -105,7 +105,7 @@ const sendPasswordResetMail = async (url: string, email: string, username: strin
     if (process.env.NODE_ENV === 'production') {
       // Use Resend for production
       const { data, error } = await transport.emails.send({
-        from: 'ForzaBuildBase <onboarding@resend.dev>',
+        from: process.env.BREVO_SENDER,
         to: email,
         subject: 'Password Reset Link',
         html: htmlContent
