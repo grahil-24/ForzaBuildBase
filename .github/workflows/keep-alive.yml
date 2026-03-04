@@ -4,8 +4,7 @@ on:
   schedule: 
     # runs every 10 mins
     - cron: '*/10 * * * *'
-  workflow_dispatch: #allow manual trigger
-
+    
 jobs:
     ping:
         runs-on: ubuntu-latest
