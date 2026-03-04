@@ -25,73 +25,29 @@ if (process.env.NODE_ENV === 'production') {
 
 const sendPasswordResetMail = async (url: string, email: string, username: string) => {
   const htmlContent = `
-    <!DOCTYPE html>
+   <!DOCTYPE html>
     <html>
-    <head>
-      <meta charset="UTF-8">
-      <meta name="viewport" content="width=device-width, initial-scale=1.0">
-      <style>
-        body {
-          margin: 0;
-          padding: 0;
-          font-family: 'Arial', sans-serif;
-          background-color: #f4f4f4;
-        }
-        .email-container {
-          max-width: 600px;
-          margin: 0 auto;
-          background-color: #ffffff;
-          padding: 40px 20px;
-        }
-        .btn-primary {
-          background-color: #1a1a1a;
-          color: white;
-          padding: 12px 24px;
-          text-decoration: none;
-          border-radius: 6px;
-          display: inline-block;
-          margin: 20px 0;
-          font-weight: bold;
-        }
-        .expiry-info {
-          color: #666;
-          font-size: 14px;
-          margin: 20px 0;
-        }
-        .divider {
-          border: none;
-          border-top: 1px solid #eee;
-          margin: 30px 0;
-        }
-        .footer-text {
-          color: #999;
-          font-size: 13px;
-        }
-      </style>
-    </head>
-    <body>
-      <div class="email-container">
-        <h1>Password Reset Request</h1>
-        
-        <p>Hello <strong>${username}</strong>,</p>
-        
-        <p>We received a request to reset your password. Click the button below to create a new password:</p>
-        
-        <a href="${url}" class="btn-primary">
-          Reset Password
-        </a>
-        
-        <p class="expiry-info">
-          This link will expire in <strong>1 hour</strong>.
-        </p>
-        
-        <hr class="divider">
-        
-        <p class="footer-text">
-          If you didn't request this password reset, you can safely ignore this email
-        </p>
-      </div>
-    </body>
+      <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      </head>
+      <body style="margin: 0; padding: 0; font-family: 'Arial', sans-serif; background-color: #f4f4f4;">
+        <div style="max-width: 600px; margin: 0 auto; background-color: #ffffff; padding: 40px 20px;">
+          <h1>Password Reset Request</h1>
+          <p>Hello <strong>${username}</strong>,</p>
+          <p>We received a request to reset your password. Click the button below to create a new password:</p>
+          <a href="${url}" style="background-color: #1a1a1a; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; display: inline-block; margin: 20px 0; font-weight: bold;">
+            Reset Password
+          </a>
+          <p style="color: #666; font-size: 14px; margin: 20px 0;">
+            This link will expire in <strong>1 hour</strong>.
+          </p>
+          <hr style="border: none; border-top: 1px solid #eee; margin: 30px 0;">
+          <p style="color: #999; font-size: 13px;">
+            If you didn't request this password reset, you can safely ignore this email
+          </p>
+        </div>
+      </body>
     </html>
   `;
 
