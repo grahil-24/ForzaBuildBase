@@ -57,7 +57,7 @@ function RouteComponent() {
   const imageUrl = formatS3BucketURL({manufacturer: tuneDetails.car.Manufacturer!, image_filename: tuneDetails.car.image_filename!, size: "medium"});
 
   return (
-    <div className="min-h-screen w-full flex justify-center px-19 sm:px-21 py-21 md:py-25 bg-slate-50">
+    <div className="min-h-screen w-full flex justify-center px-2 sm:px-4 pb-4 md:pb-8 pt-21 md:pt-25 bg-slate-50">
       <div className="w-full max-w-6xl">
         
         {/* Header Section */}
@@ -65,35 +65,35 @@ function RouteComponent() {
           <div className="flex flex-col md:flex-row gap-6">
             
             {/* LEFT SIDE - Image Only */}
-            <div className="w-full md:w-auto shrink-0">
+            <div className="w-full md:w-auto -mt-5 sm:mt-0 shrink-0">
               <img 
                 src={imageUrl} 
                 alt="Car"
-                className="w-64 md:w-72 md:-mt-8 h-auto object-contain drop-shadow-lg"
+                className="w-64 mx-auto md:w-72 h-auto object-contain drop-shadow-lg"
               />
             </div>
 
             {/* RIGHT SIDE - All Info */}
             <div className="flex-1 text-center md:text-left">
               {/* Car Manufacturer */}
-              <div className="text-blue-600 text-sm font-bold uppercase tracking-wider mb-1">
+              <div className="text-blue-600 text-xs sm:text-sm font-bold uppercase tracking-wider mb-1">
                 {tuneDetails?.car.Manufacturer}
               </div>
               
               {/* Car Model */}
-              <h1 className="text-3xl font-bold text-slate-900 mb-2">
+              <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-slate-900 mb-2">
                 {tuneDetails?.car.Model}
               </h1>
               
               {/* Year */}
-              <div className="text-slate-500 text-lg font-medium mb-4">
+              <div className="text-slate-500 text-sm sm:text-base md:text-lg font-medium mb-4">
                 {tuneDetails?.car.Year}
               </div>
 
               {/* Tune Name */}
-              <div className="bg-slate-50 rounded-lg">
-                <div className="text-sm text-slate-600 font-semibold mb-1">Tune Name</div>
-                <h2 className="text-2xl font-bold text-slate-900">
+              <div className="rounded-lg">
+                <div className="text-xs sm:text-sm text-slate-600 font-semibold mb-1">Tune Name</div>
+                <h2 className="text-base sm:text-lg md:text-2xl font-bold text-slate-900">
                   {tuneDetails?.tune_name}
                 </h2>
               </div>
@@ -132,7 +132,7 @@ function RouteComponent() {
             <Link 
               to='/login' 
               search={{redirect: `/view/tune/${tuneDetails.tune_id}`}}
-              className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-semibold transition-colors inline-block"
+              className="bg-blue-600 hover:bg-blue-700 w-fit text-white px-4 py-2 text-sm sm:text-md rounded-lg font-semibold transition-colors"
             >
               Login to Save
             </Link>

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 export const SearchBar = ({onChange}: {onChange: (input: string) => void}) => {
     const [inputValue, setInputValue] = useState<string>("");
@@ -12,6 +12,13 @@ export const SearchBar = ({onChange}: {onChange: (input: string) => void}) => {
         setInputValue("");
         onChange("");
     }
+
+    useEffect(() => {
+        const input = document.getElementById("search") as HTMLInputElement;
+        if (input) {
+            input.blur();
+        }
+    }, []);
 
     return (
         <div className="relative">

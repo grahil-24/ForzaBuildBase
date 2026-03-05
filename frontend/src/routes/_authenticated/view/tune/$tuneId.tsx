@@ -143,7 +143,7 @@ function RouteComponent() {
           <div className="flex flex-col md:flex-row gap-6">
             
             {/* LEFT SIDE - Image Only */}
-            <div className="w-full md:w-auto shrink-0">
+            <div className="w-full md:w-auto -mt-5 sm:mt-0 shrink-0">
               <img 
                 src={imageUrl} 
                 alt="Car"
@@ -169,7 +169,7 @@ function RouteComponent() {
               </div>
 
               {/* Tune Name */}
-              <div className="bg-slate-50 rounded-lg">
+              <div className="rounded-lg">
                 <div className="text-xs sm:text-sm text-slate-600 font-semibold mb-1">Tune Name</div>
                 <h2 className="text-base sm:text-lg md:text-2xl font-bold text-slate-900">
                   {tuneDetails?.tune_name}
@@ -216,9 +216,9 @@ function RouteComponent() {
                     <Link 
                       to='/tune/edit/$tuneId' 
                       params={{tuneId: tuneDetails!.tune_id.toString()}}
-                      className=" bg-blue-600 hover:bg-blue-700 text-white pl-2 pr-3 py-2 rounded-lg font-semibold transition-colors flex items-center gap-2"
+                      className=" bg-blue-600 hover:bg-blue-700 text-white text-sm sm:text-md pl-2 pr-3 py-2 rounded-lg font-semibold transition-colors flex items-center gap-2"
                     >
-                      <PencilIcon className='size-4'/>
+                      <PencilIcon className='size-3.5 sm:size-4'/>
                       Edit Tune
                     </Link>
                   )}
@@ -234,18 +234,18 @@ function RouteComponent() {
                     isLoading={removeTune.isPending}
                   />
                   {tuneDetails?.creator === auth.user?.username ? (
-                    <button onClick={() => setRemoveModalOpen(true)} className=" bg-red-600 hover:bg-red-700 text-white px-3 py-2 rounded-lg font-semibold transition-colors flex items-center gap-2">
-                      <TrashIcon className='size-5'/>
+                    <button onClick={() => setRemoveModalOpen(true)} className=" bg-red-600 hover:bg-red-700 text-sm sm:text-md text-white pl-2 pr-3 py-2 rounded-lg font-semibold transition-colors flex items-center gap-2">
+                      <TrashIcon className='size-4 sm:size-5'/>
                       Delete
                     </button>
                   ) : (
-                    <button onClick={() => setRemoveModalOpen(true)} className=" bg-slate-200 hover:bg-slate-300 text-slate-700 px-3 py-2 rounded-lg font-semibold transition-colors flex items-center gap-2">
-                      <BookMarkSolidIcon className='size-5'/>
+                    <button onClick={() => setRemoveModalOpen(true)} className=" text-sm sm:text-md bg-slate-200 hover:bg-slate-300 text-slate-700 pl-2 pr-3 py-2 rounded-lg font-semibold transition-colors flex items-center gap-2">
+                      <BookMarkSolidIcon className='size-4 sm:size-5'/>
                       Unsave
                     </button>
                   )}
-                  <button onClick={() => setIsShareDialogOpen(true)}className=" bg-slate-200 hover:bg-slate-300 text-slate-700 px-3 py-2 rounded-lg font-semibold transition-colors flex items-center gap-2">
-                    <ShareIcon className='size-5'/>
+                  <button onClick={() => setIsShareDialogOpen(true)}className=" bg-slate-200 hover:bg-slate-300 text-slate-700 pl-2 pr-3 py-2 rounded-lg font-semibold transition-colors flex items-center gap-2">
+                    <ShareIcon className='size-4 sm:size-5'/>
                     Share
                   </button>
                 </>

@@ -672,7 +672,7 @@ function RouteComponent (){
                   <button
                     onClick={handleDeleteAccount}
                     disabled={deleteAccountMutation.isPending || deleteConfirmation !== 'DELETE'}
-                    className="flex-1 py-2 text-sm bg-red-600 text-white rounded-md hover:bg-red-700 transition-smooth disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-1.5 font-medium"
+                    className="flex-1 py-2 text-[13px] sm:text-sm bg-red-600 text-white rounded-md hover:bg-red-700 transition-smooth disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-1.5 font-medium"
                   >
                     {!deleteAccountMutation.isPending ? (
                         <>
