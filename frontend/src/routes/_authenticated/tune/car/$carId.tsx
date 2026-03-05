@@ -207,12 +207,12 @@ function RouteComponent() {
   return (
     <div className="min-h-screen w-full flex justify-center px-2 sm:px-4 py-4 md:py-8 bg-slate-50">
       <div className="w-full max-w-6xl">
-        <div className="flex flex-col md:flex-row items-center md:items-start bg-white rounded-xl shadow-md border border-slate-200 p-4 mb-6 gap-4">
+        <div className="flex flex-col md:flex-row items-center md:items-start bg-white rounded-xl shadow-md border border-slate-200 p-4 mb-6 sm:gap-10">
           <div className="w-full md:w-auto flex-col sm:flex sm:flex-row items-center gap-4">
             <img 
               src={imageURL} 
               alt={`${car.Manufacturer} ${car.Model}`}
-              className="w-48 sm:w-56 md:w-60 md:-mt-8 h-auto mx-auto object-contain drop-shadow-lg"
+              className="w-56 sm:w-56 md:w-60 -mt-4 sm:p-0 pb-2 md:-mt-8 h-auto mx-auto object-contain drop-shadow-lg"
             />
             <div className="text-center sm:text-left flex-1 min-w-0">
               <div className="text-blue-600 text-xs md:text-sm font-bold uppercase tracking-wider">
@@ -227,7 +227,7 @@ function RouteComponent() {
             </div>
           </div>
 
-          <div className="w-full md:w-auto flex flex-col gap-3 pt-4 md:pt-0 border-t md:border-t-0 border-slate-100">
+          <div className="w-full md:w-auto flex flex-col gap-3 md:pt-0 border-t md:border-t-0 border-slate-100">
             {/* Tune Name */}
             <div className="flex items-center gap-2">
               <label className="text-sm font-bold text-slate-700">Tune:</label>
@@ -264,18 +264,18 @@ function RouteComponent() {
             {/* Class Selection */}
             <div className="flex items-center gap-10">
               <div className='flex items-center gap-2'>
-              <label className="text-sm font-bold text-slate-700">Class:</label>
-              <div className="relative flex h-13 w-13 items-center justify-center overflow-hidden rounded-full ">
-                {/* The Rotating Gradient - Increased size to ensure it covers the edges */}
-                <div className="animate-rotate absolute -inset-full bg-[conic-gradient(from_0deg,#ec4899_0deg_60deg,#a855f7_60deg_120deg,#3b82f6_120deg_180deg,#f97316_180deg_240deg,#facc15_240deg_300deg,#22c55e_300deg_360deg)]"></div>
-                <button
-                  ref={classButtonRef}
-                  onClick={handleClassButtonClick}
-                  className={`${classColors[carClass]}  relative z-2 h-12 w-12 rounded-full font-black italic text-white shadow-lg outline-none`}
-                >
-                  {carClass}
-                </button>
-              </div>
+                <label className="text-sm font-bold text-slate-700">Class:</label>
+                <div className="relative flex h-13 w-13 items-center justify-center overflow-hidden rounded-full ">
+                  {/* The Rotating Gradient - Increased size to ensure it covers the edges */}
+                  <div className="animate-rotate absolute -inset-full bg-[conic-gradient(from_0deg,#ec4899_0deg_60deg,#a855f7_60deg_120deg,#3b82f6_120deg_180deg,#f97316_180deg_240deg,#facc15_240deg_300deg,#22c55e_300deg_360deg)]"></div>
+                  <button
+                    ref={classButtonRef}
+                    onClick={handleClassButtonClick}
+                    className={`${classColors[carClass]}  relative z-2 h-12 w-12 rounded-full font-black italic text-white shadow-lg outline-none`}
+                  >
+                    {carClass}
+                  </button>
+                </div>
               </div>
               <button
               disabled={createTune.isPending} 

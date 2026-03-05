@@ -82,9 +82,11 @@ function Nav() {
     <nav className="fixed bg-white w-full shadow-sm z-10">
       <div className="h-16 flex items-center justify-between gap-2 px-3 sm:px-6 lg:px-10">
         {/* Logo */}
-        <div className="shrink-0 w-36 sm:w-40 lg:w-60 h-full flex items-center">
-          <img src="/logo/header.png" className="w-full h-auto" alt="Logo"/>
-        </div>
+        <Link to='/dashboard'>
+          <div className="shrink-0 w-36 sm:w-40 lg:w-60 h-full flex items-center">
+            <img src="/logo/header.png" className="w-full h-auto" alt="Logo"/>
+          </div>
+        </Link>
         
         {/* Desktop Navigation Links */}
         {authContext?.isAuthenticated && (
