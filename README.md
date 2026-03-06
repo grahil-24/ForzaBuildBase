@@ -2,6 +2,10 @@
 
 A full-stack web application for creating, sharing, and discovering Forza Horizon 5 car tunes and builds. Browse all 903 cars, create custom setups, and share them with the community.
 
+### Live Demo
+
+**[View Live Project](https://forza-build-base.vercel.app/)**
+
 ## Features
 
 - **User Authentication**: Secure sign-up, login, email verification, and password reset
