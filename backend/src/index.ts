@@ -23,6 +23,7 @@ AdminJS.registerAdapter({
 })
 
 const app = express();
+app.enable('trust proxy');
 const port: string = process.env.PORT ?? '3000';
 
 app.use((req, res, next) => {
@@ -144,6 +145,7 @@ async function start(){
                 path: '/admin' // Scope cookie to admin routes only
             },
             name: 'adminjs',
+            proxy: true
         }
     );
     
