@@ -99,7 +99,7 @@ async function start(){
                 const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD;
                 
                 if (email === ADMIN_EMAIL && password === ADMIN_PASSWORD) {
-                    return { email: ADMIN_EMAIL };
+                    return { email: ADMIN_EMAIL, password: ADMIN_PASSWORD };
                 }
                 return null;
             },
@@ -114,7 +114,10 @@ async function start(){
             cookie: {
                 httpOnly: process.env.NODE_ENV === 'production',
                 secure: process.env.NODE_ENV === 'production',
-            }
+                sameSite: 'lax', 
+                maxAge: 24 * 60 * 60 * 1000 
+            },
+            name: 'adminjs',
         }
     );
     
