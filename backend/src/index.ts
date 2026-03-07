@@ -137,8 +137,11 @@ async function start(){
             saveUninitialized: true,
             secret: sessionSecret,
             cookie: {
-                httpOnly: process.env.NODE_ENV === 'production',
-                secure: process.env.NODE_ENV === 'production',
+                httpOnly: true,
+                secure: true, // Always true on Render
+                sameSite: 'lax', // Changed from 'none' - same domain doesn't need 'none'
+                maxAge: 24 * 60 * 60 * 1000, // 24 hours
+                path: '/admin' // Scope cookie to admin routes only
             },
             name: 'adminjs',
         }
