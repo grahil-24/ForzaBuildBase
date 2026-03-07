@@ -22,16 +22,21 @@ AdminJS.registerAdapter({
 const app = express();
 const port: string = process.env.PORT ?? '3000';
 
-app.use(helmet({
-    contentSecurityPolicy: {
-        directives: {
-            defaultSrc: ["'self'"],
-            scriptSrc: ["'self'", "'unsafe-inline'", "'unsafe-eval'"],
-            styleSrc: ["'self'", "'unsafe-inline'"],
-            imgSrc: ["'self'", "data:", "https:"],
-        }
+app.use((req, res, next) => {
+    if (req.path.startsWith('/admin')) {
+        return next();  // Skip Helmet for AdminJS
     }
-}));
+    helmet({
+        contentSecurityPolicy: {
+            directives: {
+                defaultSrc: ["'self'"],
+                scriptSrc: ["'self'", "'unsafe-inline'", "'unsafe-eval'"],
+                styleSrc: ["'self'", "'unsafe-inline'"],
+                imgSrc: ["'self'", "data:", "https:"],
+            }
+        }
+    })(req, res, next);
+});
 
 app.use(cors({
     origin: `${process.env.FRONTEND}`,
