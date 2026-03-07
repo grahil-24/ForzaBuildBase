@@ -13,6 +13,9 @@ import AdminJS from "adminjs";
 import AdminJSExpress from '@adminjs/express';
 import * as AdminJSMikroORM from '@adminjs/mikroorm';
 import { User } from './entities/User';
+import session from 'express-session';
+import MySQLStore from 'express-mysql-session';
+
 
 AdminJS.registerAdapter({
     Resource: AdminJSMikroORM.Resource,
@@ -62,6 +65,27 @@ export let orm: MikroORM;
 
 async function start(){
     orm = await MikroORM.init(mikroOrmConfig);
+
+    const MySQLStoreSession = MySQLStore(session);
+    const sessionStore = new MySQLStoreSession({
+        host: process.env.DB_HOST,
+        port: parseInt(process.env.DB_PORT || '3306'),
+        user: process.env.DB_USER,
+        password: process.env.DB_PASSWORD,
+        database: process.env.DB_NAME,
+        clearExpired: true,
+        checkExpirationInterval: 900000, // 15 minutes
+        expiration: 86400000, // 24 hours
+        createDatabaseTable: true, // Automatically create sessions table
+        schema: {
+            tableName: 'sessions',
+            columnNames: {
+                session_id: 'session_id',
+                expires: 'expires',
+                data: 'data'
+            }
+        }
+    });
     
     const adminOptions = {
         resources: [
@@ -108,14 +132,15 @@ async function start(){
         },
         null,
         {
+            store: sessionStore,
             resave: false,
             saveUninitialized: true,
             secret: sessionSecret,
             cookie: {
                 httpOnly: process.env.NODE_ENV === 'production',
                 secure: process.env.NODE_ENV === 'production',
-                sameSite: 'lax', 
-                maxAge: 24 * 60 * 60 * 1000 
+                sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
+                maxAge: 24 * 60 * 60 * 1000 // 24 hours
             },
             name: 'adminjs',
         }
