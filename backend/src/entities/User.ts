@@ -11,7 +11,7 @@ interface UserOptions {
 @Index({properties: ['username'], type: 'fulltext', name: 'user_search'})
 @Index({ properties: ['reset_token'], name: 'idx_reset_token' })
 export class User{
-    @PrimaryKey({type: "smallint", unsigned: true, autoincrement: true, nullable: false, hidden: true})
+    @PrimaryKey({type: "smallint", unsigned: true, autoincrement: true, nullable: false})
     user_id?:number
 
     @Unique()

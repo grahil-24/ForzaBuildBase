@@ -3,13 +3,12 @@
   "compilerOptions": {
     "outDir": "./dist",
     "rootDir": "./src",
+    "module": "ESNext",
+    "moduleResolution": "bundler",
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,
-    "lib": [
-      "dom.iterable", "dom", "es5", "es6"
-    ]
+    "lib": ["dom.iterable", "dom", "es2022"]
   },
-  "include": ["**/*.ts"],
-  "exclude": ["dist"],
-  "files": ["./src/types.d.ts"]
+  "include": ["src/**/*.ts"],
+  "exclude": ["dist"]
 }

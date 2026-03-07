@@ -1,4 +1,4 @@
-const nodemailer = require('nodemailer');
+import nodemailer from 'nodemailer';
 import { BrevoClient} from '@getbrevo/brevo';
 
 let transport: any;

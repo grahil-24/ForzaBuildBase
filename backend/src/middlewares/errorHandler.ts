@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from "express";
-import { AppError } from "../utils/AppError";
-import { JsonWebTokenError} from "jsonwebtoken";
+import { AppError } from "../utils/AppError.js";
+import jwt from "jsonwebtoken";
 
 export const globalErrorHandler = (
   err: Error | AppError,
@@ -9,10 +9,17 @@ export const globalErrorHandler = (
   next: NextFunction
 ) => {
   // Handle JWT errors
-  if (err instanceof JsonWebTokenError) {
+  if (err instanceof jwt.JsonWebTokenError) {
     return res.status(403).json({
       status: 'error',
       message: 'Invalid token. Please log in again.'
+    });
+  }
+
+  if (err instanceof jwt.TokenExpiredError) {
+    return res.status(401).json({
+      status: 'error',
+      message: 'Your session has expired. Please log in again.'
     });
   }
 
@@ -26,7 +33,7 @@ export const globalErrorHandler = (
 
   // Log unexpected errors
   console.error('ERROR 💥:', err);
-  
+
   // Generic error response
   res.status(500).json({
     status: 'error',
